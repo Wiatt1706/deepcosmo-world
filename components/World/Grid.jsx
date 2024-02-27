@@ -29,43 +29,19 @@ export default function GridBox() {
     };
   }, []);
 
-
   return (
     <>
-      <Grid />
+      <gridHelper args={[200, 200, "#bbb", "#bbb"]} position={[0, -0.01, 0]} />
+
       <OrbitControls
         ref={controls}
         enableDamping
         enableRotate={false}
         enableZoom={true}
         enablePan={isMove}
-        dampingFactor={0.25}
+        dampingFactor={1}
         mouseButtons={{ LEFT: 2, MIDDLE: 1, RIGHT: 0 }}
       />
     </>
   );
 }
-
-const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => (
-  // Renders a grid and crosses as instances
-  <Instances position={[0, -1.02, 0]}>
-    <planeGeometry args={[lineWidth, height]} />
-    <meshBasicMaterial color="#999" />
-    {Array.from({ length: number }, (_, y) =>
-      Array.from({ length: number }, (_, x) => (
-        <group
-          key={x + ":" + y}
-          position={[
-            x * 2 - Math.floor(number / 2) * 2,
-            -0.01,
-            y * 2 - Math.floor(number / 2) * 2,
-          ]}
-        >
-          <Instance rotation={[-Math.PI / 2, 0, 0]} />
-          <Instance rotation={[-Math.PI / 2, 0, Math.PI / 2]} />
-        </group>
-      ))
-    )}
-    <gridHelper args={[100, 100, "#bbb", "#bbb"]} position={[0, -0.01, 0]} />
-  </Instances>
-);
