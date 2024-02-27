@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect, useState, useContext } from "react";
+import React, { useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -12,7 +12,6 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  Link,
   Textarea,
 } from "@nextui-org/react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
