@@ -18,7 +18,7 @@ export function HtmlTooltip({ children, ...props }) {
       transform
       portal
     >
-      <Card>
+      <Card className="bg-[#18181b]">
         <CardHeader className="flex gap-3 mt-2 mx-2">
           <i className="w-4 h-4 bg-[#ff5f59] rounded-full" />
           <i className="w-4 h-4 bg-[#ffbe2c] rounded-full" />
@@ -27,9 +27,7 @@ export function HtmlTooltip({ children, ...props }) {
         <CardBody className="p-0">{children}</CardBody>
         <Divider />
         <CardFooter>
-          <Button color="primary" variant="solid" size="sm">
-            Solid
-          </Button>
+        
         </CardFooter>
       </Card>
     </Html>

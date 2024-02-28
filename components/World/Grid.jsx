@@ -1,33 +1,13 @@
 "use client";
-import { Instance, Instances, OrbitControls } from "@react-three/drei";
-import { useEffect, useRef, useState } from "react";
+import { OrbitControls } from "@react-three/drei";
+import { useRef } from "react";
+import { useAtom } from "jotai";
+import { isEnablePanAtom } from "@/components/comment-editor/tool";
+
 export default function GridBox() {
   // We turn this into a spring animation that interpolates between 0 and 1
-
   const controls = useRef();
-  const [isMove, setIsMove] = useState(false);
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.code === "Space") {
-        setIsMove(true);
-      }
-    };
-
-    const handleKeyUp = (event) => {
-      if (event.code === "Space") {
-        setIsMove(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
+  const [isEnablePan] = useAtom(isEnablePanAtom);
 
   return (
     <>
@@ -38,7 +18,7 @@ export default function GridBox() {
         enableDamping
         enableRotate={false}
         enableZoom={true}
-        enablePan={isMove}
+        enablePan={isEnablePan}
         dampingFactor={1}
         mouseButtons={{ LEFT: 2, MIDDLE: 1, RIGHT: 0 }}
       />

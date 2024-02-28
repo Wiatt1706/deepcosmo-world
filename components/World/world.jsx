@@ -19,6 +19,14 @@ export default function World() {
         <HtmlTooltip position={[0, 0.5, 0]} title="Hello World!">
           <ContentEditor text="Hello World!" />
         </HtmlTooltip>
+
+        <HtmlTooltip position={[10, 0.5, 0]} title="Hello World!">
+          <ContentEditor text="Hello World!" />
+        </HtmlTooltip>
+
+        <HtmlTooltip position={[-10, 0.5, 0]} title="Hello World!">
+          <ContentEditor text="Hello World!" />
+        </HtmlTooltip>
       </Canvas>
     </div>
   );
