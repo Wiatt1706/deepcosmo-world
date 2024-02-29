@@ -2,12 +2,12 @@
 import { OrbitControls } from "@react-three/drei";
 import { useRef } from "react";
 import { useAtom } from "jotai";
-import { isEnablePanAtom } from "@/components/comment-editor/tool";
+import { mouseStageAtom } from "@/components/SocketManager";
 
 export default function GridBox() {
   // We turn this into a spring animation that interpolates between 0 and 1
   const controls = useRef();
-  const [isEnablePan] = useAtom(isEnablePanAtom);
+  const [mouseStage, setMouseStage] = useAtom(mouseStageAtom);
 
   return (
     <>
@@ -18,7 +18,7 @@ export default function GridBox() {
         enableDamping
         enableRotate={false}
         enableZoom={true}
-        enablePan={isEnablePan}
+        enablePan={mouseStage == 1}
         dampingFactor={1}
         mouseButtons={{ LEFT: 2, MIDDLE: 1, RIGHT: 0 }}
       />

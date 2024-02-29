@@ -6,68 +6,38 @@ import { TbBrandAirtable } from "react-icons/tb";
 import { FaCode } from "react-icons/fa6";
 import { BsMagic } from "react-icons/bs";
 import { LuTableProperties } from "react-icons/lu";
+import { controlStatusAtom, mouseStageAtom } from "@/components/SocketManager";
 
-export const mouseStageAtom = atom(0);
-export const isEnablePanAtom = atom(false);
 export const ToolView = () => {
   // 鼠标可操作阶段
   const [mouseStage, setMouseStage] = useAtom(mouseStageAtom);
-  const [isEnablePan, setIsEnablePan] = useAtom(isEnablePanAtom);
-  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [controlStatus, setControlStatus] = useAtom(controlStatusAtom);
 
-  const handlemouseStage = (stage) => {
+  const handleCheckStage = (stage) => {
     setMouseStage(stage);
+    // 默认选择阶段
+    setControlStatus((prev) => ({ ...prev, defStage: stage }));
   };
 
   useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.code === "Space") {
-        setIsEnablePan(true);
-        handlemouseStage(1);
+    if (controlStatus.isSpaceDown) {
+      setMouseStage(1);
+    } else {
+      if (!controlStatus.isMouseDown) {
+        setMouseStage(controlStatus.defStage);
       }
-    };
+    }
 
-    const handleKeyUp = (event) => {
-      if (event.code === "Space") {
-        handlemouseStage(0);
-
-        if (!isMouseDown) {
-          setIsEnablePan(false);
-        }
-      }
-    };
-
-    const handleMouseDown = () => {
-      setIsMouseDown(true);
-    };
-
-    const handleMouseUp = () => {
-      setIsMouseDown(false);
-      if (isEnablePan) {
-        // If Pan is enabled and mouse left button is released, disable Pan
-        setIsEnablePan(false);
-        handlemouseStage(0);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-    window.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-      window.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isEnablePan, isMouseDown]); // Add isEnablePan as a dependency
+    if (!controlStatus.isMouseDown && mouseStage == 1) {
+      setMouseStage(controlStatus.defStage);
+    }
+  }, [controlStatus.isSpaceDown, controlStatus.isMouseDown]);
 
   return (
     <div className="bottom-tool">
       <div className="bottom-tool-left-box">
         <div
-          onClick={() => handlemouseStage(0)}
+          onClick={() => handleCheckStage(0)}
           className={`${
             mouseStage == 0
               ? "bottom-tool-left-box-itme-active"
@@ -77,7 +47,7 @@ export const ToolView = () => {
           <SelectToolSvg />
         </div>
         <div
-          onClick={() => handlemouseStage(1)}
+          onClick={() => handleCheckStage(1)}
           className={`${
             mouseStage == 1
               ? "bottom-tool-left-box-itme-active"

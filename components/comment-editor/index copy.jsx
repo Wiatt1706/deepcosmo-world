@@ -18,7 +18,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { ChevronDownIcon } from "@/components/utils/icons";
 
-export const ContentEditor = () => {
+export const ContentEditor3 = () => {
   const [text, setText] = useState(""); // 文本内容
   const [loading, setLoading] = useState(false); // 加载状态
   const handleClick = (e) => {
