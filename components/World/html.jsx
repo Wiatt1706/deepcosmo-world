@@ -10,99 +10,86 @@ import { Html } from "@react-three/drei";
 import { useDrag } from "@use-gesture/react";
 import { animated, useSpring } from "@react-spring/three";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useThree } from "@react-three/fiber";
+import { useThree, extend } from "@react-three/fiber";
+import { easing, geometry } from "maath";
+import "@/components/World/BentPlane";
+extend({ RoundedPlaneGeometry: geometry.RoundedPlaneGeometry });
 
-export function HtmlTooltip({ children, position, ...props }) {
+export function HtmlTooltip({ children, position }) {
   const viewRef = useRef();
-  const [pos, setPos] = useState(() => new THREE.Vector3(...position));
 
-  // Drag n drop, hover
-  const [hovered, setHovered] = useState(false);
+  const [pos, setPos] = useState(position);
+  const [planeSize, setPlaneSize] = useState({ width: 6, height: 8 }); // Initial siz
 
-  const [planeSize, setPlaneSize] = useState({ width: 0, height: 0 }); // Initial siz
-
-  const { size, camera } = useThree();
-
-  useEffect(
-    () => void (document.body.style.cursor = hovered ? "grab" : "auto"),
-    [hovered]
-  );
-
-  useEffect(() => {
-    if (viewRef.current) {
-      const { offsetWidth, offsetHeight } = viewRef.current;
-      console.log(viewRef.current);
-      setPlaneSize({ width: offsetWidth / 26, height: offsetHeight / 26 });
-    }
-  }, [viewRef.current]);
-
+  const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   let planeIntersectPoint = new THREE.Vector3();
 
   const [spring, api] = useSpring(() => ({
+    // position: [0, 0, 0],
     position: pos,
-    scale: 1,
-    config: { friction: 20 },
+    config: { friction: 10 },
   }));
 
   const bind = useDrag(
     ({ active, movement: [x, y], timeStamp, event }) => {
       if (active) {
-        console.log("x, y", x, y);
-        setPos(
-          new THREE.Vector3(
-            (x / size.width) * 2 - 1,
-            -(y / size.height) * 2 + 1,
-            0
-          )
-            .unproject(camera)
-            .multiply({ x: 1, y: 0, z: 1 })
-            .clone()
-        );
+        event.ray.intersectPlane(floorPlane, planeIntersectPoint);
+        setPos([planeIntersectPoint.x, 0.01, planeIntersectPoint.z]);
       }
 
-      api.start({
-        position: pos,
-        scale: active ? 1.1 : 1,
-      });
       return timeStamp;
     },
     { delay: true }
   );
 
   return (
-    <animated.mesh
-      // {...props}
-      {...spring}
-      {...bind()}
-      rotation-x={-Math.PI / 2}
-      onPointerOver={() => {
-        setHovered(true);
-        console.log("onPointerOver");
-      }}
-      onPointerOut={() => setHovered(false)}
-    >
-      <planeGeometry args={[planeSize.width, planeSize.height]} />
-      <meshBasicMaterial />
+    <mesh rotation-x={-Math.PI / 2} position={pos} {...bind()}>
+      <roundedPlaneGeometry
+        attach="geometry"
+        args={[planeSize.width, planeSize.height, 0.5]}
+      />
+      <meshNormalMaterial attach="material" />
 
-      <Html
-        position-z={0.001}
-        style={{ userSelect: "none" }}
-        occlude="raycast"
-        distanceFactor={15}
-        transform
-        portal
+      <mesh
+        position={[
+          -planeSize.width / 2 + 0.2 + 0.6,
+          planeSize.height / 2 - 0.8,
+          0,
+        ]}
       >
-        <Card ref={viewRef} className="bg-[#18181b]">
-          <CardHeader className="flex gap-3 mt-2 mx-2">
-            <i className="w-4 h-4 bg-[#ff5f59] rounded-full" />
-            <i className="w-4 h-4 bg-[#ffbe2c] rounded-full" />
-            <i className="w-4 h-4 bg-[#2aca44] rounded-full" />
-          </CardHeader>
+        <circleGeometry args={[0.25, 32]} />
+        <meshBasicMaterial color={"#ff5f59"} />
+      </mesh>
+
+      <mesh
+        position={[
+          -planeSize.width / 2 + 0.2 + 1.5,
+          planeSize.height / 2 - 0.8,
+          0,
+        ]}
+      >
+        <circleGeometry args={[0.25, 32]} />
+        <meshBasicMaterial color={"#ffbe2c"} />
+      </mesh>
+
+      <mesh
+        position={[
+          -planeSize.width / 2 + 0.2 + 2.4,
+          planeSize.height / 2 - 0.8,
+          0,
+        ]}
+      >
+        <circleGeometry args={[0.25, 32]} />
+        <meshBasicMaterial color={"#2aca44"} />
+      </mesh>
+      <Html position-z={0.001} style={{ userSelect: "none" }} transform portal>
+        <Card className="bg-[#18181b]">
+          
           <CardBody className="p-0">{children}</CardBody>
           <Divider />
           <CardFooter></CardFooter>
         </Card>
       </Html>
-    </animated.mesh>
+    </mesh>
   );
 }
