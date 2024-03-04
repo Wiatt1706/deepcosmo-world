@@ -1,4 +1,3 @@
-import World from "@/components/World/world";
 import { ToolView } from "@/components/comment-editor/tool";
 import { Navbar } from "@/components/comment-editor/navbar";
 import { Button } from "@nextui-org/button";

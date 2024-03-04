@@ -1,4 +1,5 @@
-import { Suspense, useDeferredValue, useState } from "react";
+"use client";
+import { Suspense, useDeferredValue, useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { listModelsAtom } from "@/components/SocketManager";
 import { useGLTF, Text } from "@react-three/drei";
@@ -12,14 +13,14 @@ export function ListModels() {
 
   return (
     <group>
-      {listModels.map((modelData) => (
+      {listModels?.map((modelData) => (
         <Suspense fallback={<LoadingMessage />}>
           <Model
             key={modelData.id}
             position={modelData.position}
             rotation={modelData.rotation}
             scale={modelData.scale}
-            url={modelData.modelUrl}
+            url={modelData.model_url}
           />
         </Suspense>
       ))}
@@ -63,7 +64,7 @@ function Model({ url, ...props }) {
         scale: active ? 1.2 : 1,
       });
       setControlStatus((prev) => ({ ...prev, isDragging: active }));
-      
+
       return timeStamp;
     },
     {

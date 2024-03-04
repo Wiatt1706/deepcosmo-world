@@ -6,12 +6,14 @@ export default async function LandInfo() {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  const { data: todos } = await supabase.from("land_info").select();
+  const { data } = await supabase.from("land_info").select();
 
   return (
     <ul>
-      {todos?.map((todo) => (
-        <Link href={`/land/${todo.id}`}>{todo.id}</Link>
+      {data?.map((todo) => (
+        <Link key={todo.id} href={`/land/${todo.id}`}>
+          {todo.id}
+        </Link>
       ))}
     </ul>
   );

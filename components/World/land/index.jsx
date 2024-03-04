@@ -1,18 +1,17 @@
 "use client";
 import styles from "@/styles/world/index.module.css";
 import { Canvas } from "@react-three/fiber";
-import { HtmlTooltip } from "@/components/World/html";
-import { ContentEditor } from "../comment-editor";
-import { ContentEditor3 } from "../comment-editor/index copy";
-import GridBox from "../World/Grid";
-import { useControlListeners } from "../hook/useControlListeners";
-import * as THREE from "three";
+import GridBox from "../Grid";
+import { useControlListeners } from "../../hook/useControlListeners";
 import { useRef } from "react";
-
-import { ListModels } from "@/components/World/ListModels";
+import { ListModels } from "@/components/World/land/ListModels";
 import { ContactShadows, Environment } from "@react-three/drei";
+import { listModelsAtom } from "@/components/SocketManager";
+import { useAtom } from "jotai";
 
-export default function World() {
+export default function LandWorld({ id, models }) {
+  const [listModels, setListModels] = useAtom(listModelsAtom);
+  setListModels(models);
   const domContent = useRef();
   // 绑定操作控制器
   const { elementRef } = useControlListeners();
@@ -41,7 +40,7 @@ export default function World() {
         <ambientLight intensity={1} color={"#ffffff"} />
         <Environment preset="sunset" />
         <ContactShadows scale={50} blur={3} far={20} />
-        
+
         <GridBox />
         <ListModels />
       </Canvas>

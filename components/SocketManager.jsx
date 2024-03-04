@@ -9,9 +9,7 @@ export const controlStatusAtom = atom({
   defStage: 0,
 });
 
-export const listModelsAtom = atom([
- {},
-]);
+export const listModelsAtom = atom(null);
 
 export const mouseStageAtom = atom(0);
 
