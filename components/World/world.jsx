@@ -9,6 +9,9 @@ import { useControlListeners } from "../hook/useControlListeners";
 import * as THREE from "three";
 import { useRef } from "react";
 
+import { ListModels } from "@/components/World/ListModels";
+import { ContactShadows, Environment } from "@react-three/drei";
+
 export default function World() {
   const domContent = useRef();
   // 绑定操作控制器
@@ -29,36 +32,18 @@ export default function World() {
 
       <Canvas
         ref={elementRef}
+        shadows
         orthographic
-        camera={{ position: [0, 20, 0], zoom: 50 }}
+        camera={{ position: [0, 50, 0], zoom: 50 }}
         gl={{ preserveDrawingBuffer: true }}
       >
-        <color attach="background" args={["#f2f2f5"]} />
-
+        <color attach="background" args={["#fff"]} />
+        <ambientLight intensity={1} color={"#ffffff"} />
+        <Environment preset="sunset" />
+        <ContactShadows scale={50} blur={3} far={20} />
+        
         <GridBox />
-        <HtmlTooltip
-          portal={domContent}
-          position={[0, 0.5, 0]}
-          title="Hello World!"
-        >
-          <ContentEditor3 text="Hello World!" />
-        </HtmlTooltip>
-
-        <HtmlTooltip
-          portal={domContent}
-          position={[10, 0.5, 0]}
-          title="Hello World!"
-        >
-          <ContentEditor text="Hello World!" />
-        </HtmlTooltip>
-
-        <HtmlTooltip
-          portal={domContent}
-          position={[-10, 0.5, 0]}
-          title="Hello World!"
-        >
-          <ContentEditor text="Hello World!" />
-        </HtmlTooltip>
+        <ListModels />
       </Canvas>
     </div>
   );

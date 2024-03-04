@@ -5,8 +5,13 @@ import { atom, useAtom } from "jotai";
 export const controlStatusAtom = atom({
   isSpaceDown: false,
   isMouseDown: false,
+  isDragging: false,
   defStage: 0,
 });
+
+export const listModelsAtom = atom([
+ {},
+]);
 
 export const mouseStageAtom = atom(0);
 
