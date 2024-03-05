@@ -3,33 +3,35 @@ import styles from "@/styles/world/index.module.css";
 import { Canvas } from "@react-three/fiber";
 import GridBox from "../Grid";
 import { useControlListeners } from "../../hook/useControlListeners";
-import { useRef } from "react";
 import { ListModels } from "@/components/World/land/ListModels";
-import { ContactShadows, Environment } from "@react-three/drei";
-import { listModelsAtom } from "@/components/SocketManager";
+import {
+  ContactShadows,
+  Environment,
+  TransformControls,
+} from "@react-three/drei";
+import { listModelsAtom, useStore } from "@/components/SocketManager";
 import { useAtom } from "jotai";
 
-export default function LandWorld({ id, models }) {
-  const [listModels, setListModels] = useAtom(listModelsAtom);
-  setListModels(models);
-  const domContent = useRef();
+export default function LandWorld({ info }) {
   // 绑定操作控制器
   const { elementRef } = useControlListeners();
+
+  const { target, setTarget } = useStore();
+  const [listModels, setListModels] = useAtom(listModelsAtom);
+  setListModels(info.models);
+
+  const handleTransformEnd = (event) => {
+    // 获取被 TransformControls 控制的对象的信息
+    console.log(target.object.position.x);
+    target.onUpdate({
+      position: target.object.position,
+    });
+  };
+
   return (
     <div className={styles["editor"]}>
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          overflow: "hidden",
-        }}
-        ref={domContent}
-      />
-
       <Canvas
+        onPointerMissed={() => setTarget(null)}
         ref={elementRef}
         shadows
         orthographic
@@ -39,9 +41,18 @@ export default function LandWorld({ id, models }) {
         <color attach="background" args={["#fff"]} />
         <ambientLight intensity={1} color={"#ffffff"} />
         <Environment preset="sunset" />
-        <ContactShadows scale={50} blur={3} far={20} />
+        {target && (
+          <>
+            <TransformControls
+              onMouseUp={(event) => handleTransformEnd(event)}
+              object={target.object}
+              showY={false}
+              mode={"translate"}
+            />
 
-        <GridBox />
+          </>
+        )}
+        <GridBox size={info.size} />
         <ListModels />
       </Canvas>
     </div>

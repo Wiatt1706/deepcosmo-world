@@ -5,7 +5,6 @@ import {
   BreadcrumbItem,
   Breadcrumbs,
   Button,
-  Divider,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -14,7 +13,7 @@ import {
 import React, { useState } from "react";
 import { ChevronDownIcon } from "../utils/icons";
 
-export const Navbar = () => {
+export const Navbar = ({ title }) => {
   const handleWheel = (event) => {
     // 阻止鼠标滚轮事件的默认行为
     event.preventDefault();
@@ -90,7 +89,7 @@ export const Navbar = () => {
                   size="sm"
                   variant="light"
                 >
-                  Untitled
+                  {title}
                 </Button>
               </DropdownTrigger>
               <DropdownMenu aria-label="Routes">
@@ -103,38 +102,14 @@ export const Navbar = () => {
         </Breadcrumbs>
       </div>
       <div className="flex items-center">
-        <AvatarGroup max={3} size="sm">
-          <Avatar
-            className="w-6 h-6 text-tiny"
-            src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
-          />
-          <Avatar
-            className="w-6 h-6 text-tiny"
-            src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-          />
-          <Avatar
-            className="w-6 h-6 text-tiny"
-            src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-          />
-          <Avatar
-            className="w-6 h-6 text-tiny"
-            src="https://i.pravatar.cc/150?u=a04258114e29026302d"
-          />
-          <Avatar
-            className="w-6 h-6 text-tiny"
-            src="https://i.pravatar.cc/150?u=a04258114e29026702d"
-          />
-          <Avatar
-            className="w-6 h-6 text-tiny"
-            src="https://i.pravatar.cc/150?u=a04258114e29026708c"
-          />
-        </AvatarGroup>
 
         <Button
           className="bg-primary text-white border border-conditionalborder-transparent mx-2"
           size="sm"
+          radius="none"
+          auto
         >
-          Share
+          Save
         </Button>
       </div>
     </div>

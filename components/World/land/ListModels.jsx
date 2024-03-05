@@ -1,30 +1,37 @@
 "use client";
-import { Suspense, useDeferredValue, useEffect, useState } from "react";
+import { Suspense, useDeferredValue, useState } from "react";
 import { useAtom } from "jotai";
-import { listModelsAtom } from "@/components/SocketManager";
-import { useGLTF, Text } from "@react-three/drei";
-import { useDrag } from "@use-gesture/react";
-import * as THREE from "three";
-import { controlStatusAtom } from "@/components/SocketManager";
-import { animated, useSpring } from "@react-spring/three";
+import { useStore, listModelsAtom } from "@/components/SocketManager";
+import { useGLTF, Text, useCursor } from "@react-three/drei";
 
-export function ListModels() {
+export function ListModels({ ...props }) {
   const [listModels, setListModels] = useAtom(listModelsAtom);
 
+  const updateModelData = (modelId, newData) => {
+    console.log("updateModelData", modelId, newData);
+    // 根据模型的 ID 更新模型数据
+    setListModels((prevList) =>
+      prevList.map((model) =>
+        model.id === modelId ? { ...model, ...newData } : model
+      )
+    );
+  };
+
   return (
-    <group>
-      {listModels?.map((modelData) => (
-        <Suspense fallback={<LoadingMessage />}>
+    <Suspense fallback={<LoadingMessage />}>
+      <group {...props}>
+        {listModels?.map((modelData) => (
           <Model
             key={modelData.id}
+            onUpdate={(newData) => updateModelData(modelData.id, newData)}
+            url={modelData.model_url}
+            scale={modelData.scale}
             position={modelData.position}
             rotation={modelData.rotation}
-            scale={modelData.scale}
-            url={modelData.model_url}
           />
-        </Suspense>
-      ))}
-    </group>
+        ))}
+      </group>
+    </Suspense>
   );
 }
 
@@ -37,45 +44,23 @@ function LoadingMessage() {
   );
 }
 
-function Model({ url, ...props }) {
-  const [controlStatus, setControlStatus] = useAtom(controlStatusAtom);
-
-  const [pos, setPos] = useState(props.position);
+function Model({ url, onUpdate, ...props }) {
   const deferred = useDeferredValue(url);
   const { scene } = useGLTF(deferred);
-  let planeIntersectPoint = new THREE.Vector3();
-  const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
-  const [spring, api] = useSpring(() => ({
-    position: pos,
-    scale: 1,
-    config: { friction: 10 },
-  }));
+  const setTarget = useStore((state) => state.setTarget);
+  const [hovered, setHovered] = useState(false);
+  useCursor(hovered);
 
-  const bind = useDrag(
-    ({ active, movement: [x, y], timeStamp, event }) => {
-      if (active) {
-        event.ray.intersectPlane(floorPlane, planeIntersectPoint);
-        setPos([planeIntersectPoint.x, 0.01, planeIntersectPoint.z]);
-      }
-
-      api.start({
-        position: pos,
-        scale: active ? 1.2 : 1,
-      });
-      setControlStatus((prev) => ({ ...prev, isDragging: active }));
-
-      return timeStamp;
-    },
-    {
-      delay: true,
-    }
-  );
-
-  // <primitive object={...} mounts an already existing object
   return (
-    <animated.mesh {...spring} position={pos} {...bind()} castShadow>
+    <mesh
+      {...props}
+      position={props.position}
+      onClick={(e) => setTarget({ object: e.object, onUpdate: onUpdate })}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+    >
       <primitive object={scene} />
-    </animated.mesh>
+    </mesh>
   );
 }

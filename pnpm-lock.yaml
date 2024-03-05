@@ -56,6 +56,9 @@ dependencies:
   '@react-three/fiber':
     specifier: ^8.15.16
     version: 8.15.16(react-dom@18.2.0)(react@18.2.0)(three@0.161.0)
+  '@react-three/postprocessing':
+    specifier: ^2.16.0
+    version: 2.16.0(@react-three/fiber@8.15.16)(@types/three@0.161.2)(react@18.2.0)(three@0.161.0)
   '@supabase/ssr':
     specifier: ^0.1.0
     version: 0.1.0(@supabase/supabase-js@2.39.7)
@@ -128,6 +131,9 @@ dependencies:
   typescript:
     specifier: 5.0.4
     version: 5.0.4
+  zustand:
+    specifier: ^4.5.2
+    version: 4.5.2(@types/react@18.2.21)(react@18.2.0)
 
 packages:
 
@@ -3017,6 +3023,25 @@ packages:
       zustand: 3.7.2(react@18.2.0)
     dev: false
 
+  /@react-three/postprocessing@2.16.0(@react-three/fiber@8.15.16)(@types/three@0.161.2)(react@18.2.0)(three@0.161.0):
+    resolution: {integrity: sha512-Cc+VIOxD2jVEgXrc66W6yQaAxTMg02ef2N1B5ldyLtTt22n75JxolYTullQqY4zTsyLEmORvaO85SRlZwg6Avw==, tarball: https://registry.npmmirror.com/@react-three/postprocessing/-/postprocessing-2.16.0.tgz}
+    peerDependencies:
+      '@react-three/fiber': '>=8.0'
+      react: '>=18.0'
+      three: '>= 0.138.0'
+    dependencies:
+      '@react-three/fiber': 8.15.16(react-dom@18.2.0)(react@18.2.0)(three@0.161.0)
+      buffer: 6.0.3
+      maath: 0.6.0(@types/three@0.161.2)(three@0.161.0)
+      n8ao: 1.8.1(postprocessing@6.35.0)(three@0.161.0)
+      postprocessing: 6.35.0(three@0.161.0)
+      react: 18.2.0
+      three: 0.161.0
+      three-stdlib: 2.29.4(three@0.161.0)
+    transitivePeerDependencies:
+      - '@types/three'
+    dev: false
+
   /@react-types/accordion@3.0.0-alpha.17(react@18.2.0):
     resolution: {integrity: sha512-Wsp31bYRu9wy4zAAV2W8FLvVGFF3Vk/JKn2MxqhzaSHwHBw/dfgJTvRRUW+OmBgnqVN97ur893TP9A3odpoZEg==, tarball: https://registry.npmmirror.com/@react-types/accordion/-/accordion-3.0.0-alpha.17.tgz}
     peerDependencies:
@@ -5308,6 +5333,16 @@ packages:
       three: 0.161.0
     dev: false
 
+  /maath@0.6.0(@types/three@0.161.2)(three@0.161.0):
+    resolution: {integrity: sha512-dSb2xQuP7vDnaYqfoKzlApeRcR2xtN8/f7WV/TMAkBC8552TwTLtOO0JTcSygkYMjNDPoo6V01jTw/aPi4JrMw==, tarball: https://registry.npmmirror.com/maath/-/maath-0.6.0.tgz}
+    peerDependencies:
+      '@types/three': '>=0.144.0'
+      three: '>=0.144.0'
+    dependencies:
+      '@types/three': 0.161.2
+      three: 0.161.0
+    dev: false
+
   /merge-value@1.0.0:
     resolution: {integrity: sha512-fJMmvat4NeKz63Uv9iHWcPDjCWcCkoiRoajRTEO8hlhUC6rwaHg0QCF9hBOTjZmm4JuglPckPSTtcuJL5kp0TQ==, tarball: https://registry.npmmirror.com/merge-value/-/merge-value-1.0.0.tgz}
     engines: {node: '>=0.10.0'}
@@ -5387,6 +5422,16 @@ packages:
       any-promise: 1.3.0
       object-assign: 4.1.1
       thenify-all: 1.6.0
+    dev: false
+
+  /n8ao@1.8.1(postprocessing@6.35.0)(three@0.161.0):
+    resolution: {integrity: sha512-biKUW09KnflZpeWmbCy1gjuiyZsbeG6y+EsqV+1IDqQ1KqEydXc6nUUseZp9ZRbjvEOPnsvsjaTce8Pta0803A==, tarball: https://registry.npmmirror.com/n8ao/-/n8ao-1.8.1.tgz}
+    peerDependencies:
+      postprocessing: '>=6.30.0'
+      three: '>=0.137'
+    dependencies:
+      postprocessing: 6.35.0(three@0.161.0)
+      three: 0.161.0
     dev: false
 
   /nanoid@3.3.7:
@@ -5711,6 +5756,15 @@ packages:
       nanoid: 3.3.7
       picocolors: 1.0.0
       source-map-js: 1.0.2
+    dev: false
+
+  /postprocessing@6.35.0(three@0.161.0):
+    resolution: {integrity: sha512-a7ozbPX/m6HFmAVfCpu5uzysGcqlefn/Y64Bcrjt/v2t5yrVJyBLj5tHTHSgjemh5QeiMfAFJ0gosysgRDJ9EA==, tarball: https://registry.npmmirror.com/postprocessing/-/postprocessing-6.35.0.tgz}
+    engines: {node: '>= 0.13.2'}
+    peerDependencies:
+      three: '>= 0.152.0 < 0.163.0'
+    dependencies:
+      three: 0.161.0
     dev: false
 
   /potpack@1.0.2:
@@ -6456,7 +6510,7 @@ packages:
   /tunnel-rat@0.1.2(@types/react@18.2.21)(react@18.2.0):
     resolution: {integrity: sha512-lR5VHmkPhzdhrM092lI2nACsLO4QubF0/yoOhzX7c+wIpbN1GjHNzCc91QlpxBi+cnx8vVJ+Ur6vL5cEoQPFpQ==, tarball: https://registry.npmmirror.com/tunnel-rat/-/tunnel-rat-0.1.2.tgz}
     dependencies:
-      zustand: 4.5.1(@types/react@18.2.21)(react@18.2.0)
+      zustand: 4.5.2(@types/react@18.2.21)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -6793,8 +6847,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /zustand@4.5.1(@types/react@18.2.21)(react@18.2.0):
-    resolution: {integrity: sha512-XlauQmH64xXSC1qGYNv00ODaQ3B+tNPoy22jv2diYiP4eoDKr9LA+Bh5Bc3gplTrFdb6JVI+N4kc1DZ/tbtfPg==, tarball: https://registry.npmmirror.com/zustand/-/zustand-4.5.1.tgz}
+  /zustand@4.5.2(@types/react@18.2.21)(react@18.2.0):
+    resolution: {integrity: sha512-2cN1tPkDVkwCy5ickKrI7vijSjPksFRfqS6237NzT0vqSsztTNnQdHw9mmN7uBdk3gceVXU0a+21jFzFzAc9+g==, tarball: https://registry.npmmirror.com/zustand/-/zustand-4.5.2.tgz}
     engines: {node: '>=12.7.0'}
     peerDependencies:
       '@types/react': '>=16.8'

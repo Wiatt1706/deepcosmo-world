@@ -56,6 +56,7 @@
 .bottom-tool-box:hover {
     background-color: rgba(0, 0, 0, 0.1);
 }
+
 .bottom-tool-left-box-itme {
     width: 44px;
     height: 40px;
@@ -88,4 +89,85 @@
 .pen-Tool svg {
     width: 40px;
     height: 70px;
+}
+
+
+
+
+
+.right-tool {
+    position: absolute;
+    width: 200px;
+    right: 20px;
+    top: 68px;
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: #bbb 1px solid;
+    z-index: 9;
+}
+
+.inputGroup {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #000;
+    border-radius: 5px;
+}
+
+.numInput {
+    height: 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    border-top: 1px solid transparent;
+}
+
+.numInput:not(:first-child) {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    /* 除了第一个以外的设置实际颜色的上边框 */
+}
+
+.numInput:hover .btn {
+    opacity: 1;
+    /* 在:hover状态下设置不透明 */
+}
+
+.numInput .text {
+    height: 20px;
+    width: calc(100% - 28px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    cursor: ew-resize;
+    padding: 0 2px;
+}
+
+.numInput .btn {
+    height: 20px;
+    width: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    /* 默认情况下设置透明 */
+    transition: opacity 0.3s ease;
+    /* 添加过渡效果 */
+}
+
+.numInput .btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.numInput .text:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.numInput input {
+    all: unset;
+    border: none;
+    /* 移除边框 */
+    font-size: 12px;
+    width: 100%;
+    /* 设置字体大小 */
 }
