@@ -19,7 +19,7 @@ const NumInput = ({
   const isDragging = useRef(false);
   const hasMoved = useRef(false);
 
-  const [text, setText] = useState(value);
+  const [text, setText] = useState(parseFloat(value.toFixed(precision)));
   const [editing, setEditing] = useState(false);
 
   const handleWheel = (event) => {
@@ -95,6 +95,10 @@ const NumInput = ({
       inputRef.current.focus();
     }
   }, [editing]);
+
+  useEffect(() => {
+    setText(parseFloat(value.toFixed(precision)));
+  }, [value]);
 
   return (
     <div className="numInput" onWheel={(e) => handleWheel(e)} ref={numInputRef}>

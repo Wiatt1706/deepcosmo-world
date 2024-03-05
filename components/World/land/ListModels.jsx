@@ -8,7 +8,6 @@ export function ListModels({ ...props }) {
   const [listModels, setListModels] = useAtom(listModelsAtom);
 
   const updateModelData = (modelId, newData) => {
-    console.log("updateModelData", modelId, newData);
     // 根据模型的 ID 更新模型数据
     setListModels((prevList) =>
       prevList.map((model) =>
