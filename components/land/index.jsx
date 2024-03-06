@@ -1,10 +1,9 @@
-import { createClient } from "@/utils/supabase/server";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import Link from "next/link";
 
 export default async function LandInfo() {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createServerComponentClient({ cookies });
 
   const { data } = await supabase.from("land_info").select();
 

@@ -1,20 +1,11 @@
 "use client";
-import { Suspense, useDeferredValue, useState } from "react";
+import { Suspense, useDeferredValue, useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { useStore, listModelsAtom } from "@/components/SocketManager";
 import { useGLTF, Text, useCursor } from "@react-three/drei";
 
 export function ListModels({ ...props }) {
-  const [listModels, setListModels] = useAtom(listModelsAtom);
-
-  const updateModelData = (modelId, newData) => {
-    // 根据模型的 ID 更新模型数据
-    setListModels((prevList) =>
-      prevList.map((model) =>
-        model.id === modelId ? { ...model, ...newData } : model
-      )
-    );
-  };
+  const [listModels] = useAtom(listModelsAtom);
 
   return (
     <Suspense fallback={<LoadingMessage />}>
@@ -22,7 +13,7 @@ export function ListModels({ ...props }) {
         {listModels?.map((modelData) => (
           <Model
             key={modelData.id}
-            onUpdate={(newData) => updateModelData(modelData.id, newData)}
+            id={modelData.id}
             url={modelData.model_url}
             scale={modelData.scale}
             position={modelData.position}
@@ -43,7 +34,7 @@ function LoadingMessage() {
   );
 }
 
-function Model({ url, onUpdate, ...props }) {
+function Model({ url, id, ...props }) {
   const deferred = useDeferredValue(url);
   const { scene } = useGLTF(deferred);
 
@@ -54,8 +45,7 @@ function Model({ url, onUpdate, ...props }) {
   return (
     <mesh
       {...props}
-      position={props.position}
-      onClick={(e) => setTarget({ object: e.object, onUpdate: onUpdate })}
+      onClick={(e) => setTarget({ object: e.object, id })}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >

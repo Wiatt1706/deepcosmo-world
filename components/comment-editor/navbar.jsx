@@ -9,14 +9,39 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import { ChevronDownIcon } from "../utils/icons";
+import { listModelsAtom, useStore } from "@/components/SocketManager";
+import { useAtom } from "jotai";
 
 export const Navbar = ({ title }) => {
   const handleWheel = (event) => {
     // 阻止鼠标滚轮事件的默认行为
     event.preventDefault();
+  };
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [listModels, setListModels] = useAtom(listModelsAtom);
+
+  const handleSave = async () => {
+    try {
+      // 执行保存操作
+      const { data, error } = await supabase
+        .from("block_models")
+        .update({ other_column: "otherValue" })
+        .eq("some_column", "someValue")
+        .select();
+
+      console.log("Save result:", data, error);
+    } catch (error) {
+      console.error("Save error:", error);
+    }
   };
 
   const items = [
@@ -93,25 +118,48 @@ export const Navbar = ({ title }) => {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu aria-label="Routes">
-                <DropdownItem href="#song-1">Song 1</DropdownItem>
-                <DropdownItem href="#song2">Song 2</DropdownItem>
-                <DropdownItem href="#song3">Song 3</DropdownItem>
+                <DropdownItem href="#song-1">更改名称</DropdownItem>
+                <DropdownItem href="#song2">升级扩展</DropdownItem>
+                <DropdownItem href="#song3">删除</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </BreadcrumbItem>
         </Breadcrumbs>
       </div>
       <div className="flex items-center">
-
         <Button
           className="bg-primary text-white border border-conditionalborder-transparent mx-2"
           size="sm"
           radius="none"
           auto
+          onPress={onOpen}
         >
           Save
         </Button>
       </div>
+
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                保存提醒
+              </ModalHeader>
+              <ModalBody>
+                <p>是否将当前的元素保存至土块（{title}）</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={onClose} onClick={handleSave}>
+                  Save
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

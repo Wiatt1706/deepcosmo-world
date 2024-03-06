@@ -1,13 +1,12 @@
 import React from "react";
 import LandWorld from "@/components/World/land";
-import { createClient } from "@/utils/supabase/server";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { ToolView } from "@/components/comment-editor/tool";
 import { Navbar } from "@/components/comment-editor/navbar";
 
 export default async function land({ params }) {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createServerComponentClient({ cookies });
 
   let data = {};
   const { data: lands } = await supabase

@@ -127,18 +127,58 @@ export const ToolView = () => {
           <div className="inputGroup">
             <NumInput
               value={target.object.rotation.x}
+              onUpdate={(value) => {
+                target.object.rotation.x = value;
+              }}
               prefix="X"
               suffix="m"
               step={0.1}
             />
             <NumInput
               value={target.object.rotation.y}
+              onUpdate={(value) => {
+                target.object.rotation.y = value;
+              }}
               prefix="Y"
               suffix="m"
               step={0.1}
             />
             <NumInput
               value={target.object.rotation.z}
+              onUpdate={(value) => {
+                target.object.rotation.z = value;
+              }}
+              prefix="Z"
+              suffix="m"
+              step={0.1}
+            />
+          </div>
+
+          <label className="text-xs">Scale</label>
+          <div className="inputGroup">
+            <NumInput
+              value={target.object.scale.x}
+              onUpdate={(value) => {
+                target.object.scale.x = value;
+              }}
+              prefix="X"
+              suffix="m"
+              step={0.1}
+            />
+            <NumInput
+              value={target.object.scale.y}
+              onUpdate={(value) => {
+                target.object.scale.y = value;
+              }}
+              prefix="Y"
+              suffix="m"
+              step={0.1}
+            />
+            <NumInput
+              value={target.object.scale.z}
+              onUpdate={(value) => {
+                target.object.scale.z = value;
+              }}
               prefix="Z"
               suffix="m"
               step={0.1}
