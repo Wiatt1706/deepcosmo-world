@@ -1,4 +1,4 @@
-import LandInfo from "@/components/land";
+import LandInfo from "@/components/land/land-info";
 import AuthButtonServer from "@/components/auth-button-server";
 
 export default function Home() {
