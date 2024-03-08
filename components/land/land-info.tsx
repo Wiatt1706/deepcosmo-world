@@ -1,44 +1,59 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+"use client";
 import Link from "next/link";
-import NewLand from "./new-land";
 import Likes from "./likes";
+import { useEffect, experimental_useOptimistic as useOptimistic } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
+export default function Lands({ lands }: { lands: LandWithAuthor[] }) {
+  // const [optimisticLands, addOptimisticLand] = useOptimistic<
+  //   LandWithAuthor[],
+  //   LandWithAuthor
+  // >(lands, (currentOptimisticLands, newLand) => {
+  //   const newOptimisticLands = [...currentOptimisticLands];
+  //   const index = newOptimisticLands.findIndex(
+  //     (land) => land.id === newLand.id
+  //   );
+  //   newOptimisticLands[index] = newLand;
+  //   return newOptimisticLands;
+  // });
 
-export default async function LandInfo() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createClientComponentClient<Database>();
+  const router = useRouter();
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  useEffect(() => {
+    const channel = supabase
+      .channel("realtime lands")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "land_info",
+        },
+        (payload) => {
+          router.refresh();
+        }
+      )
+      .subscribe();
 
-  const { data } = await supabase
-    .from("land_info")
-    .select("*, profiles(*),likes(*)");
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, router]);
 
-  const lands =
-    data?.map((land) => ({
-      ...land,
-      user_has_liked_land: !!land.likes.find(
-        (like) => like.user_id === session.user.id
-      ),
-      likes: land.likes.length,
-    })) ?? [];
-
-  return (
-    <ul>
-      <NewLand />
-      {lands?.map((land) => (
-        <div key={land.id}>
-          <p>
-            {land?.profiles?.name}
-            {land?.profiles?.username}
-          </p>
-          <p>
-            <Link href={`/land/${land.id}`}>{land.land_name}</Link>
-          </p>
-          <Likes land={land} />
-        </div>
-      ))}
-    </ul>
-  );
+  return lands.map((land) => (
+    <div key={land.id}>
+      <p>
+        {land.author.name}
+        {land.author.username}
+      </p>
+      <p>
+        <Link href={`/land/${land.id}`}>{land.land_name}</Link>
+      </p>
+      <Likes
+        land={land}
+        // addOptimisticLand={addOptimisticLand}
+      />
+    </div>
+  ));
 }
