@@ -4,6 +4,7 @@ import Lands from "@/components/land/land-info";
 import AuthButtonServer from "@/components/auth-button-server";
 import NewLand from "@/components/land/new-land";
 import { redirect } from "next/navigation";
+import { Navbar } from "@/components/navbar";
 
 export default async function Home() {
   const supabase = createServerComponentClient<Database>({ cookies });
@@ -30,10 +31,12 @@ export default async function Home() {
     })) ?? [];
 
   return (
-    <section className="flex flex-col items-center justify-center">
-      <AuthButtonServer />
-      <NewLand />
-      <Lands lands={lands} />
-    </section>
+    <>
+      <section className="flex flex-col items-center justify-center">
+        <Navbar />
+        <NewLand />
+        <Lands lands={lands} />
+      </section>
+    </>
   );
 }
