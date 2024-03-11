@@ -14,7 +14,7 @@
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
-    z-index: 8;
+    z-index: 9999;
     background-color: #fff;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
@@ -170,4 +170,15 @@
     font-size: 12px;
     width: 100%;
     /* 设置字体大小 */
+}
+
+.navbar_item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #272727;
+    font-size: 14px;
+    padding: 0 5px;
+    margin: 0 10px;
+    cursor: pointer;
 }
