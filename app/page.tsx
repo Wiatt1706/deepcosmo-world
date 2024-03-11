@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import Lands from "@/components/land/land-info";
 import NewLand from "@/components/land/new-land";
 import { Navbar } from "@/components/navbar";
-import { Chip } from "@nextui-org/react";
+import { Chip, Image } from "@nextui-org/react";
 import Link from "next/link";
 
 export default async function Home() {
@@ -32,17 +32,15 @@ export default async function Home() {
       <Navbar />
       <section className="flex flex-col items-center justify-center">
         {/* <NewLand /> */}
-        <div className="flex flex-col items-center justify-center mt-[100px]">
-          <h1 className="text-3xl font-bold text-center mb-10">
-            Welcome to DeepCosmo Community
+        <div className="flex flex-col items-center justify-center mt-[100px] w-full max-w-[1500px] mx-auto px-8">
+          <h1 className="text-4xl font-bold text-center mb-10">
+            Welcome to DeepCosmo Lands
           </h1>
         </div>
 
-        <div className="text-[17px]  w-full sticky top-[48px] z-20 bg-white">
+        <div className="text-[17px]  w-full sticky top-[48px] z-20 bg-white py-2">
           <div className="w-full max-w-[1500px] mx-auto px-8">
-            <div className="font-bold w-full">
-              By the community, for the community
-            </div>
+            <div className="font-bold w-full">By the Lands, for the Lands</div>
             <div className="flex py-2">
               <Chip className="mr-2">ALL</Chip>
               <Chip className="mr-2">PLAYERS</Chip>
@@ -50,13 +48,12 @@ export default async function Home() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center w-full max-w-[1500px] mx-auto px-8 pt-6">
+        <div className="flex flex-col items-center justify-center w-full max-w-[1500px] mx-auto p-8">
           <Lands lands={lands} />
         </div>
       </section>
       <footer className="w-full flex items-center justify-center py-3 border-t">
         <Link
-          isExternal
           className="flex items-center gap-1 text-current"
           href="https://nextui-docs-v2.vercel.app?utm_source=next-app-template"
           title="nextui.org homepage"
