@@ -208,11 +208,11 @@ export const Scale = ({
   return (
     <svg
       fill="none"
-      height={size || height}
       viewBox="0 0 24 24"
+      height={size || height}
       width={size || width}
-      xmlns="http://www.w3.org/2000/svg"
       {...props}
+      xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="M9 22h6c5 0 7-2 7-7V9c0-5-2-7-7-7H9C4 2 2 4 2 9v6c0 5 2 7 7 7ZM18 6 6 18"
@@ -227,6 +227,105 @@ export const Scale = ({
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={1.5}
+      />
+    </svg>
+  );
+};
+
+export const LogoSvg = ({
+  fill = "currentColor",
+  size,
+  height,
+  width,
+  ...props
+}) => {
+  return (
+    <svg
+      height={size || height}
+      width={size || width}
+      {...props}
+      viewBox="0 0 392 392"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g filter="url(#filter0_bd_139_385)">
+        <path
+          d="M46 42V342L196 192M46 42C46 42 91.7107 87.7107 121 117M46 42L121 117M346 42C346 42 300.289 87.7107 271 117M346 342C316.711 312.711 271 267 271 267C271 267 225.289 221.289 196 192M196 192C166.711 162.711 150.289 146.289 121 117M196 192L121 117"
+          stroke="#0070F0"
+          stroke-width="84"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          shape-rendering="crispEdges"
+        />
+      </g>
+      <defs>
+        <filter
+          id="filter0_bd_139_385"
+          x="0"
+          y="-4.00122"
+          width="392"
+          height="396.002"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feGaussianBlur in="BackgroundImageFix" stdDeviation="2" />
+          <feComposite
+            in2="SourceAlpha"
+            operator="in"
+            result="effect1_backgroundBlur_139_385"
+          />
+          <feColorMatrix
+            in="SourceAlpha"
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          />
+          <feOffset dy="4" />
+          <feGaussianBlur stdDeviation="2" />
+          <feComposite in2="hardAlpha" operator="out" />
+          <feColorMatrix
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
+          />
+          <feBlend
+            mode="normal"
+            in2="effect1_backgroundBlur_139_385"
+            result="effect2_dropShadow_139_385"
+          />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="effect2_dropShadow_139_385"
+            result="shape"
+          />
+        </filter>
+      </defs>
+    </svg>
+  );
+};
+export const PlaySvg = ({
+  fill = "currentColor",
+  size,
+  height,
+  width,
+  ...props
+}) => {
+  return (
+    <svg
+      height={size || height}
+      width={size || width}
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
       />
     </svg>
   );

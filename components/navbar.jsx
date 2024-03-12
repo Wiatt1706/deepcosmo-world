@@ -17,6 +17,7 @@ import {
   Server,
   TagUser,
   Scale,
+  LogoSvg,
 } from "@/components/utils/icons";
 import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
@@ -56,10 +57,11 @@ export const Navbar = () => {
   return (
     <div className="toolbar_view">
       <div className="flex items-center">
-        <div>
-          <></>
+        <div className="border-r border-conditionalborder-transparent  h-[48px] flex items-center px-3">
+          <LogoSvg width={25} height={25} />
         </div>
-        <div className="border-r border-conditionalborder-transparent  h-[48px] flex items-center px-2 mr-6">
+
+        <div className="navbar_item">
           <Dropdown>
             <DropdownTrigger>
               <Button
@@ -83,7 +85,6 @@ export const Navbar = () => {
             </DropdownMenu>
           </Dropdown>
         </div>
-
         <div className="navbar_item">
           <NextLink
             className={clsx(
@@ -168,7 +169,7 @@ export const Navbar = () => {
           size="sm"
           radius="none"
         >
-          创建账户
+          Build
         </Button>
       </div>
     </div>

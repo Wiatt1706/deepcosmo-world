@@ -1,0 +1,40 @@
+.left-tool {
+    position: absolute;
+    width: 300px;
+    left: 0;
+    top: 48px;
+    bottom: 0;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    background-color: #fff;
+    padding: 10px;
+    z-index: 9;
+}
+
+.navbar_box_item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #272727;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.navbar_box_item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.navbar_box_item:active {
+    background-color: #0070f0;
+    color: #fff;
+}
+
+.navbar_box_item_active {
+    background-color: #0070f0;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+}

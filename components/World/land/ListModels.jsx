@@ -1,11 +1,25 @@
 "use client";
 import { Suspense, useDeferredValue, useEffect, useState } from "react";
 import { useAtom } from "jotai";
-import { useStore, listModelsAtom } from "@/components/SocketManager";
+import {
+  useStore,
+  useElementStore,
+  listModelsAtom,
+} from "@/components/SocketManager";
 import { useGLTF, Text, useCursor } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
 
 export function ListModels({ ...props }) {
   const [listModels] = useAtom(listModelsAtom);
+  const { scene } = useThree(); // This will just crash
+  const [sceneList, setSceneList] = useElementStore((state) => [
+    state.sceneList,
+    state.setSceneList,
+  ]);
+
+  useEffect(() => {
+    setSceneList(scene.children);
+  }, [listModels]);
 
   return (
     <Suspense fallback={<LoadingMessage />}>

@@ -1,7 +1,7 @@
 "use client";
 import styles from "@/styles/world/index.module.css";
 import { Canvas } from "@react-three/fiber";
-import GridBox from "../Grid";
+import GridBox from "../element/Grid";
 import { useControlListeners } from "../../hook/useControlListeners";
 import { ListModels } from "@/components/World/land/ListModels";
 import {
@@ -20,9 +20,8 @@ export default function LandWorld({ info }) {
   const { target, setTarget } = useStore();
   const [listModels, setListModels] = useAtom(listModelsAtom);
 
-  useEffect(() => {
-    setListModels(info.models);
-  }, [info]);
+  setListModels(info.models);
+
   const handleTransformEnd = () => {
     // 获取被 TransformControls 控制的对象的信息
     setListModels((prevList) => {
@@ -50,22 +49,21 @@ export default function LandWorld({ info }) {
         }}
         ref={elementRef}
         shadows
-        orthographic
-        camera={{ position: [0, 50, 0], zoom: 50 }}
+        // orthographic
+        // camera={{ position: [0, 50, 0], zoom: 50 }}
+        camera={{ position: [0, 5, 5], fov: 75 }}
         gl={{ preserveDrawingBuffer: true }}
       >
         <color attach="background" args={["#fff"]} />
         <ambientLight intensity={1} color={"#ffffff"} />
         <Environment preset="sunset" />
         {target && (
-          <>
-            <TransformControls
-              onMouseUp={() => handleTransformEnd()}
-              object={target.object}
-              showY={false}
-              mode={"translate"}
-            />
-          </>
+          <TransformControls
+            onMouseUp={() => handleTransformEnd()}
+            object={target.object}
+            // showY={false}
+            mode={"translate"}
+          />
         )}
         <GridBox size={info.size} />
         <ListModels />

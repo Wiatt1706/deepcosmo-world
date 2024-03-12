@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { atom, useAtom } from "jotai";
 
 import create from "zustand";
@@ -7,6 +5,16 @@ import create from "zustand";
 export const useStore = create((set) => ({
   target: null,
   setTarget: (target) => set({ target }),
+}));
+
+export const useElementStore = create((set) => ({
+  isOpen: false,
+  sceneList: [],
+  setOpen: (isOpen) =>
+    set({
+      isOpen: isOpen,
+    }),
+  setSceneList: (sceneList) => set({ sceneList }),
 }));
 
 export const controlStatusAtom = atom({

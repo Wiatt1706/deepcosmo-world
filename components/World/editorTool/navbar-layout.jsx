@@ -17,9 +17,10 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import React, { useState } from "react";
-import { ChevronDownIcon } from "../utils/icons";
-import { listModelsAtom, useStore } from "@/components/SocketManager";
+import { ChevronDownIcon, LogoSvg, PlaySvg } from "../../utils/icons";
+import { listModelsAtom, useElementStore } from "@/components/SocketManager";
 import { useAtom } from "jotai";
+import { HiOutlinePlay, HiOutlineQueueList } from "react-icons/hi2";
 
 export const Navbar = ({ title }) => {
   const handleWheel = (event) => {
@@ -28,6 +29,11 @@ export const Navbar = ({ title }) => {
   };
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [listModels, setListModels] = useAtom(listModelsAtom);
+  const { isOpen: elOpen, setOpen } = useElementStore();
+
+  const handleElementView = () => {
+    setOpen(!elOpen);
+  };
 
   const handleSave = async () => {
     try {
@@ -65,33 +71,21 @@ export const Navbar = ({ title }) => {
 
   return (
     <div onWheel={handleWheel} className="toolbar_view">
-      <div>
-        <div>
-          <></>
+      <div className="flex items-center">
+        <div className="border-r border-conditionalborder-transparent  h-[48px] flex items-center px-3">
+          <LogoSvg width={25} height={25} />
         </div>
-        <div className="border-r border-conditionalborder-transparent  h-[48px] flex items-center px-2">
-          <Dropdown>
-            <DropdownTrigger>
-              <Button
-                radius="none"
-                className="bg-white text-black border border-conditionalborder-transparent "
-                size="sm"
-              >
-                New file
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Dynamic Actions" items={items}>
-              {(item) => (
-                <DropdownItem
-                  key={item.key}
-                  color={item.key === "delete" ? "danger" : "default"}
-                  className={item.key === "delete" ? "text-danger" : ""}
-                >
-                  {item.label}
-                </DropdownItem>
-              )}
-            </DropdownMenu>
-          </Dropdown>
+
+        <div
+          onClick={handleElementView}
+          className={`${
+            elOpen ? "navbar_box_item_active" : "navbar_box_item"
+          } h-[48px] w-[48px] flex items-center px-3 text-[#6B7280]`}
+        >
+          <HiOutlineQueueList size={20} />
+        </div>
+        <div className="navbar_box_item h-[48px] w-[48px] flex items-center px-3">
+          <HiOutlinePlay size={20} />
         </div>
       </div>
       <div>
@@ -127,6 +121,30 @@ export const Navbar = ({ title }) => {
         </Breadcrumbs>
       </div>
       <div className="flex items-center">
+        <div className="navbar_item">
+          <Dropdown>
+            <DropdownTrigger>
+              <Button
+                radius="none"
+                className="bg-white text-black border border-conditionalborder-transparent "
+                size="sm"
+              >
+                New file
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Dynamic Actions" items={items}>
+              {(item) => (
+                <DropdownItem
+                  key={item.key}
+                  color={item.key === "delete" ? "danger" : "default"}
+                  className={item.key === "delete" ? "text-danger" : ""}
+                >
+                  {item.label}
+                </DropdownItem>
+              )}
+            </DropdownMenu>
+          </Dropdown>
+        </div>
         <Button
           className="bg-primary text-white border border-conditionalborder-transparent mx-2"
           size="sm"
@@ -136,6 +154,9 @@ export const Navbar = ({ title }) => {
         >
           Save
         </Button>
+        <div className="navbar_box_item border-l border-conditionalborder-transparent h-[48px] flex items-center px-3">
+          <PlaySvg width={20} height={20} />
+        </div>
       </div>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
