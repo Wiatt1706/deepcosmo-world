@@ -3,25 +3,51 @@ import { useState, useEffect } from "react";
 import style from "./index.css";
 import { useElementStore } from "@/components/SocketManager";
 import Tree from "@/components/utils/Tree";
-import { Chip } from "@nextui-org/react";
-import { BiCube } from "react-icons/bi";
-
+import {
+  Button,
+  Chip,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
+} from "@nextui-org/react";
+import {
+  BiCube,
+  BiBox,
+  BiSearch,
+  BiFilterAlt,
+  BiChevronDown,
+} from "react-icons/bi";
+import { MdOutlineLightbulb } from "react-icons/md";
+import { PiCompassTool } from "react-icons/pi";
 function convertObjectToTreeNode(object) {
+  const { name, type, children } = object;
   const treeData = {
-    label: object.type,
-    children: [],
+    label: name || type,
+    children: children ? children.map(convertObjectToTreeNode) : [],
   };
 
-  if (object.children && object.children.length > 0) {
-    treeData.children = object.children.map((child) =>
-      convertObjectToTreeNode(child)
-    );
-  }
-
-  // Add additional properties based on your requirements
-  if (object.type === "Mesh") {
-    treeData.startContent = <BiCube size={18} />;
-    treeData.isEye = true;
+  switch (type) {
+    case "Mesh":
+      treeData.startContent = <BiCube size={16} />;
+      treeData.isEye = true;
+      break;
+    case "Group":
+      treeData.startContent = <BiBox size={16} />;
+      treeData.isEye = true;
+      break;
+    case "AmbientLight":
+      treeData.startContent = <MdOutlineLightbulb size={16} />;
+      treeData.isEye = true;
+      break;
+    case "AxesHelper":
+    case "GridHelper":
+      treeData.startContent = <PiCompassTool size={16} />;
+      treeData.isEye = true;
+      break;
+    default:
+      break;
   }
 
   return treeData;
@@ -30,10 +56,26 @@ function convertObjectToTreeNode(object) {
 export const ElementView = () => {
   const { isOpen, setOpen, sceneList } = useElementStore();
   const [treeData, setTreeData] = useState([]);
-  console.log("sceneList", sceneList);
+
+  const [selectedOption, setSelectedOption] = useState(new Set(["merge"]));
+
+  const descriptionsMap = {
+    merge: "merge.",
+    squash: "squash.",
+    rebase: "rebase.",
+  };
+
+  const labelsMap = {
+    merge: "Create a merge commit",
+    squash: "Squash and merge",
+    rebase: "Rebase and merge",
+  };
+
+  // Convert the Set to an Array and get the first value.
+  const selectedOptionValue = Array.from(selectedOption)[0];
 
   useEffect(() => {
-    const rootNodes = sceneList.map((child) => convertObjectToTreeNode(child));
+    const rootNodes = sceneList.map(convertObjectToTreeNode);
     setTreeData(rootNodes);
   }, [sceneList]);
 
@@ -41,10 +83,52 @@ export const ElementView = () => {
     <>
       {isOpen && (
         <div className="left-tool">
+          <div className="flex items-center bg-default-100/10">
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <Button isIconOnly color="default" variant="light" radius="none">
+                  <BiChevronDown />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Merge options"
+                selectedKeys={selectedOption}
+                selectionMode="single"
+                onSelectionChange={setSelectedOption}
+                className="max-w-[300px]"
+              >
+                <DropdownItem
+                  key="merge"
+                  description={descriptionsMap["merge"]}
+                >
+                  {labelsMap["merge"]}
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+            <Input
+              classNames={{
+                base: "max-w-full h-10",
+                mainWrapper: "h-full",
+                input: "text-small",
+                inputWrapper:
+                  "h-full font-normal text-default-500 bg-default-100/10 shadow-none rounded-none",
+              }}
+              clearable
+              radius="none"
+              placeholder="search..."
+              size="sm"
+              startContent={<BiSearch size={18} />}
+              type="search"
+            />
+            <div className="p-2 text-default-500 h-full flex items-center">
+              <BiFilterAlt size={18} />
+            </div>
+          </div>
           <div className="flex flex-col">
-            <div className="flex items-center hover:bg-gray-200 w-full">
-              <span className="text-sm">
-                <Chip startContent={<BiCube size={18} />} variant="light">
+            <div className="flex items-center hover:bg-gray-200 w-full px-2">
+              <span className="flex items-center p-1">
+                <Chip startContent={<BiBox size={18} />} variant="light">
                   场景集合
                 </Chip>
               </span>

@@ -13,15 +13,19 @@ const TreeNode = ({ node }) => {
 
   return (
     <div>
-      <div className="group flex items-center w-full justify-between hover:bg-gray-200">
+      <div className="group flex items-center w-full justify-between hover:bg-gray-200  px-4">
         <div className="flex items-center">
-          {node.children && (
+          {node.children && node.children.length > 0 && (
             <button className="pr-2 focus:outline-none" onClick={handleToggle}>
               {isOpen ? <BiCaretDown /> : <BiCaretRight />}
             </button>
           )}
-          <span className="text-sm">
-            <Chip startContent={node.startContent} variant="light">
+          <span className="flex items-center p-1">
+            <Chip
+              className="text-default-600"
+              startContent={node.startContent}
+              variant="light"
+            >
               {node.label}
             </Chip>
           </span>

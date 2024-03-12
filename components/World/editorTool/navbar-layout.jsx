@@ -21,6 +21,7 @@ import { ChevronDownIcon, LogoSvg, PlaySvg } from "../../utils/icons";
 import { listModelsAtom, useElementStore } from "@/components/SocketManager";
 import { useAtom } from "jotai";
 import { HiOutlinePlay, HiOutlineQueueList } from "react-icons/hi2";
+import { TbGrid3X3, TbGridScan } from "react-icons/tb";
 
 export const Navbar = ({ title }) => {
   const handleWheel = (event) => {
@@ -29,10 +30,18 @@ export const Navbar = ({ title }) => {
   };
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [listModels, setListModels] = useAtom(listModelsAtom);
-  const { isOpen: elOpen, setOpen } = useElementStore();
+  const {
+    isOpen: elOpen,
+    setOpen,
+    isPerspective,
+    setPerspective,
+  } = useElementStore();
 
   const handleElementView = () => {
     setOpen(!elOpen);
+  };
+  const handlePerspective = () => {
+    setPerspective(!isPerspective);
   };
 
   const handleSave = async () => {
@@ -84,8 +93,11 @@ export const Navbar = ({ title }) => {
         >
           <HiOutlineQueueList size={20} />
         </div>
-        <div className="navbar_box_item h-[48px] w-[48px] flex items-center px-3">
-          <HiOutlinePlay size={20} />
+        <div
+          onClick={handlePerspective}
+          className={`navbar_box_item h-[48px] w-[48px] flex items-center px-3`}
+        >
+          {isPerspective ? <TbGrid3X3 size={20} /> : <TbGridScan size={20} />}
         </div>
       </div>
       <div>

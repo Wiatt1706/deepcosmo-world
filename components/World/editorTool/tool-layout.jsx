@@ -44,7 +44,7 @@ export const ToolView = () => {
               mouseStage == 0
                 ? "bottom-tool-left-box-itme-active"
                 : "bottom-tool-left-box-itme"
-            } select-tool rounded-tl-[20px]`}
+            } select-tool rounded-tl-[15px]`}
           >
             <SelectToolSvg />
           </div>
@@ -54,7 +54,7 @@ export const ToolView = () => {
               mouseStage == 1
                 ? "bottom-tool-left-box-itme-active"
                 : "bottom-tool-left-box-itme"
-            } rounded-bl-[20px]`}
+            } rounded-bl-[15px]`}
           >
             <HandToolSvg />
           </div>

@@ -9,12 +9,14 @@ export const useStore = create((set) => ({
 
 export const useElementStore = create((set) => ({
   isOpen: false,
+  isPerspective: false,
   sceneList: [],
   setOpen: (isOpen) =>
     set({
       isOpen: isOpen,
     }),
   setSceneList: (sceneList) => set({ sceneList }),
+  setPerspective: (isPerspective) => set({ isPerspective }),
 }));
 
 export const controlStatusAtom = atom({

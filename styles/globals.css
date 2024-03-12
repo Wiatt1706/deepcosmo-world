@@ -2,84 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.toolbar_view {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 48px;
-    -webkit-user-select: none;
-    user-select: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: row;
-    z-index: 9999;
-    background-color: #fff;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
-    color: black;
-}
-
-.bottom-tool {
-    position: absolute;
-    width: 500px;
-    bottom: 0;
-    left: calc(50% - 250px);
-    background-color: #fff;
-    display: flex;
-    align-items: center;
-    border-radius: 20px;
-    margin-bottom: 1rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border: rgba(0, 0, 0, 0.1) 1px solid;
-    z-index: 9;
-}
-
-.bottom-tool-left-box {
-    width: 44px;
-    height: 80px;
-    border-right: rgba(0, 0, 0, 0.1) 1px solid;
-}
-
-.bottom-tool-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #272727;
-    width: 44px;
-    height: 44px;
-    border: rgba(0, 0, 0, 0.1) 1px solid;
-    border-radius: 5px;
-}
-
-.bottom-tool-box:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
-.bottom-tool-left-box-itme {
-    width: 44px;
-    height: 40px;
-    color: #272727;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-.bottom-tool-left-box-itme:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
-.bottom-tool-left-box-itme-active {
-    color: #fff;
-    background-color: #0070f0;
-    width: 44px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
 .select-tool svg {
     width: 20px;
@@ -91,20 +13,6 @@
     height: 70px;
 }
 
-
-
-
-.right-tool {
-    position: absolute;
-    width: 200px;
-    right: 20px;
-    top: 68px;
-    background-color: #fff;
-    padding: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border: rgba(0, 0, 0, 0.1) 1px solid;
-    z-index: 9;
-}
 
 .inputGroup {
     background-color: rgba(0, 0, 0, 0.05);

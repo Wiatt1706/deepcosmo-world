@@ -54,7 +54,7 @@ export default function LandWorld({ info }) {
         camera={{ position: [0, 5, 5], fov: 75 }}
         gl={{ preserveDrawingBuffer: true }}
       >
-        <color attach="background" args={["#fff"]} />
+        <color attach="background" args={["#f2f2f2"]} />
         <ambientLight intensity={1} color={"#ffffff"} />
         <Environment preset="sunset" />
         {target && (
