@@ -7,7 +7,7 @@ import { FaCode } from "react-icons/fa6";
 import { BsMagic } from "react-icons/bs";
 import { LuTableProperties } from "react-icons/lu";
 import { controlStatusAtom, mouseStageAtom } from "@/components/SocketManager";
-
+import { HiMiniPlus } from "react-icons/hi2";
 
 export const ToolView = () => {
   // 鼠标可操作阶段
@@ -20,6 +20,7 @@ export const ToolView = () => {
     setControlStatus((prev) => ({ ...prev, defStage: stage }));
   };
 
+  const handleAddBtn = () => {};
   useEffect(() => {
     if (controlStatus.isSpaceDown) {
       setMouseStage(1);
@@ -59,32 +60,28 @@ export const ToolView = () => {
             <HandToolSvg />
           </div>
         </div>
-
-        <div className="pen-Tool px-2">
-          <PenToolSvg />
-        </div>
-
-        <div className="px-2">
+        <div className="flex items-center px-2">
           <div className="bottom-tool-box">
             <TbBrandAirtable size={25} />
           </div>
-        </div>
 
-        <div className="px-2">
           <div className="bottom-tool-box">
             <FaCode size={25} />
           </div>
-        </div>
 
-        <div className="px-2">
           <div className="bottom-tool-box">
             <BsMagic size={25} />
           </div>
-        </div>
 
-        <div className="px-2">
           <div className="bottom-tool-box">
             <LuTableProperties size={25} />
+          </div>
+        </div>
+
+        <div className="bottom-tool-right-box px-3">
+          <div></div>
+          <div onClick={handleAddBtn} className="bottom-tool-box">
+            <HiMiniPlus size={25} />
           </div>
         </div>
       </div>

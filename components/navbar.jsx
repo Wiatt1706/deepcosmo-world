@@ -6,7 +6,6 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  NavbarItem,
 } from "@nextui-org/react";
 
 import {
@@ -19,7 +18,6 @@ import {
   Scale,
   LogoSvg,
 } from "@/components/utils/icons";
-import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
 export const Navbar = () => {

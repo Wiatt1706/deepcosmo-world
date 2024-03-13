@@ -19,8 +19,7 @@ import {
 import React, { useState } from "react";
 import { ChevronDownIcon, LogoSvg, PlaySvg } from "../../utils/icons";
 import { listModelsAtom, useElementStore } from "@/components/SocketManager";
-import { useAtom } from "jotai";
-import { HiOutlinePlay, HiOutlineQueueList } from "react-icons/hi2";
+import {  HiOutlineQueueList } from "react-icons/hi2";
 import { TbGrid3X3, TbGridScan } from "react-icons/tb";
 
 export const Navbar = ({ title }) => {
@@ -29,7 +28,6 @@ export const Navbar = ({ title }) => {
     event.preventDefault();
   };
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [listModels, setListModels] = useAtom(listModelsAtom);
   const {
     isOpen: elOpen,
     setOpen,
