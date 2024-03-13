@@ -25,7 +25,7 @@ export default async function land({ params }) {
 
   return (
     <section className="flex flex-col items-center justify-center">
-      <Navbar title={data.land_name} />
+      <Navbar title={data?.land_name} />
       <LandWorld info={data} />
       <ToolView />
       <InfoView />

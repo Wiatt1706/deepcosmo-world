@@ -1,29 +1,29 @@
 "use client";
-import { OrbitControls } from "@react-three/drei";
-import { useRef } from "react";
-import { useAtom } from "jotai";
-import { controlStatusAtom, mouseStageAtom } from "@/components/SocketManager";
+import { Grid } from "@react-three/drei";
 export default function GridBox({ size, ...props }) {
-  // We turn this into a spring animation that interpolates between 0 and 1
-  const controls = useRef();
-  const [mouseStage, setMouseStage] = useAtom(mouseStageAtom);
-  const [{ isDragging }] = useAtom(controlStatusAtom);
   return (
     <group {...props}>
-      <axesHelper args={[size[0] / 2]} color="#ff0000" />
-      <gridHelper
-        args={[size[0], size[1], "#bbb", "#bbb"]}
-        position={[0, -0.01, 0]}
-      />
-      <OrbitControls
-        ref={controls}
-        enableDamping
-        enableRotate={false}
-        enableZoom={true}
-        enablePan={mouseStage == 1 && !isDragging}
-        dampingFactor={1}
-        mouseButtons={{ LEFT: 2, MIDDLE: 1, RIGHT: 0 }}
-      />
+      <Ground args={[size[0], size[1]]} position={[0, -0.01, 0]} />
+      <mesh scale={size[0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry />
+        <shadowMaterial transparent opacity={0.5} />
+      </mesh>
     </group>
   );
+}
+
+function Ground({ ...props }) {
+  const gridConfig = {
+    cellSize: 0.5,
+    cellThickness: 0.5,
+    cellColor: "#6f6f6f",
+    sectionSize: 3,
+    sectionThickness: 1,
+    sectionColor: "#9d4b4b",
+    fadeDistance: 60,
+    fadeStrength: 1,
+    followCamera: false,
+    infiniteGrid: false,
+  };
+  return <Grid {...props} {...gridConfig} />;
 }

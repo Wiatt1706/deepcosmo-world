@@ -1,16 +1,12 @@
 "use client";
 import { Suspense, useDeferredValue, useEffect, useState } from "react";
-import { useAtom } from "jotai";
-import {
-  useStore,
-  useElementStore,
-  listModelsAtom,
-} from "@/components/SocketManager";
-import { useGLTF, Text, useCursor } from "@react-three/drei";
+import { useElementStore } from "@/components/SocketManager";
+import { useGLTF, Text } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
+import DynamicGeometry from "@/components/World/element/DynamicGeometry";
+import MeshComponent from "@/components/World/element/MeshComponent";
 
-export function ListModels({ ...props }) {
-  const [listModels] = useAtom(listModelsAtom);
+export function ListModels({ models }) {
   const { scene } = useThree(); // This will just crash
   const [sceneList, setSceneList] = useElementStore((state) => [
     state.sceneList,
@@ -19,22 +15,17 @@ export function ListModels({ ...props }) {
 
   useEffect(() => {
     setSceneList(scene.children);
-  }, [listModels]);
+  }, [models]);
 
   return (
     <Suspense fallback={<LoadingMessage />}>
-      <group {...props}>
-        {listModels?.map((modelData) => (
-          <Model
-            key={modelData.id}
-            id={modelData.id}
-            url={modelData.model_url}
-            scale={modelData.scale}
-            position={modelData.position}
-            rotation={modelData.rotation}
-          />
-        ))}
-      </group>
+      {models?.map((modelData) =>
+        modelData.model_url ? (
+          <Model key={modelData.id} data={modelData} />
+        ) : (
+          <DynamicGeometry key={modelData.id} data={modelData} />
+        )
+      )}
     </Suspense>
   );
 }
@@ -48,22 +39,18 @@ function LoadingMessage() {
   );
 }
 
-function Model({ url, id, ...props }) {
-  const deferred = useDeferredValue(url);
+function Model({ data }) {
+  const deferred = useDeferredValue(data.model_url);
   const { scene } = useGLTF(deferred);
 
-  const setTarget = useStore((state) => state.setTarget);
-  const [hovered, setHovered] = useState(false);
-  useCursor(hovered);
-
   return (
-    <mesh
-      {...props}
-      onClick={(e) => setTarget({ object: e.object, id })}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
+    <MeshComponent
+      id={data.id}
+      position={data.position}
+      rotation={data.rotation}
+      scale={data.scale}
     >
       <primitive object={scene} />
-    </mesh>
+    </MeshComponent>
   );
 }
