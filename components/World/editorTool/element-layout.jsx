@@ -55,6 +55,7 @@ function convertObjectToTreeNode(object) {
 
 export const ElementView = () => {
   const { isOpen, setOpen, sceneList } = useElementStore();
+
   const [treeData, setTreeData] = useState([]);
 
   const [selectedOption, setSelectedOption] = useState(new Set(["merge"]));
@@ -71,9 +72,6 @@ export const ElementView = () => {
     rebase: "Rebase and merge",
   };
 
-  // Convert the Set to an Array and get the first value.
-  const selectedOptionValue = Array.from(selectedOption)[0];
-
   useEffect(() => {
     const rootNodes = sceneList.map(convertObjectToTreeNode);
     setTreeData(rootNodes);
@@ -86,7 +84,12 @@ export const ElementView = () => {
           <div className="flex items-center bg-default-100/10">
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
-                <Button isIconOnly color="default" variant="light" radius="none">
+                <Button
+                  isIconOnly
+                  color="default"
+                  variant="light"
+                  radius="none"
+                >
                   <BiChevronDown />
                 </Button>
               </DropdownTrigger>

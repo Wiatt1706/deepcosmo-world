@@ -49,6 +49,7 @@ function Model({ data }) {
       position={data.position}
       rotation={data.rotation}
       scale={data.scale}
+      isSelect={data.isSelect}
     >
       <primitive object={scene} />
     </MeshComponent>

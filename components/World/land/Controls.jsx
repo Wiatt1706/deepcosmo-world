@@ -21,23 +21,7 @@ export default function Controls({ size, ...props }) {
   const [mouseStage, setMouseStage] = useAtom(mouseStageAtom);
   const [{ isDragging }] = useAtom(controlStatusAtom);
 
-  // const handleTransformEnd = () => {
-  //   // 获取被 TransformControls 控制的对象的信息
-  //   setListModels((prevList) => {
-  //     const updatedList = prevList.map((model) =>
-  //       model.id === target.id
-  //         ? {
-  //             ...model,
-  //             position: target.object.position,
-  //             rotation: target.object.rotation,
-  //             scale: target.object.scale,
-  //           }
-  //         : model
-  //     );
-  //     console.log("Updated List:", updatedList);
-  //     return updatedList;
-  //   });
-  // };
+  
   return (
     <>
       <GizmoHelper alignment="bottom-right" margin={[100, 100]}>

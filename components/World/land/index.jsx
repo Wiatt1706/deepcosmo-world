@@ -24,7 +24,7 @@ export default function LandWorld({ info }) {
       <Canvas
         ref={elementRef}
         shadows
-        camera={{ position: [0, 0, 5], fov: 60 }}
+        camera={{ position: [0, 10, 15], fov: 60 }}
         // orthographic
         // camera={{ position: [0, 50, 0], zoom: 50 }}
       >
@@ -37,7 +37,7 @@ export default function LandWorld({ info }) {
         />
         <Environment preset="city" />
 
-        <GridBox size={info.size} />
+        <GridBox size={info?.size} />
 
         <ListModels />
 

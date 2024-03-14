@@ -1,6 +1,6 @@
 "use client";
 import { Grid } from "@react-three/drei";
-export default function GridBox({ size, ...props }) {
+export default function GridBox({ size=[50, 50], ...props }) {
   return (
     <group {...props}>
       <Ground args={[size[0], size[1]]} position={[0, -0.01, 0]} />

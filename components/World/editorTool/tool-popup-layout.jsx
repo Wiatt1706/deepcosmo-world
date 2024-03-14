@@ -17,6 +17,8 @@ import {
 } from "react-icons/tb";
 import { ImportModelSvg } from "@/components/utils/icons";
 import { useKeyboardEvent } from "@/components/utils/GeneralEvent";
+import { uuid } from "uuidv4";
+
 export const ToolPopupView = () => {
   const { isOpenPopup, setOpenPopup } = useBottomToolStore();
   const modelList = useElementStore((state) => state.modelList);
@@ -102,7 +104,6 @@ const GeometryMenu = () => {
 
   const itemDataMap = {
     plane: {
-      id: 2,
       type: "PlaneGeometry",
       position: [0, 2, 0],
       rotation: [0, 0, 0],
@@ -112,7 +113,6 @@ const GeometryMenu = () => {
       material_color: "#0070f0",
     },
     cube: {
-      id: 3,
       type: "BoxGeometry",
       position: [0, 1, 0],
       rotation: [0, 0, 0],
@@ -122,7 +122,6 @@ const GeometryMenu = () => {
       material_color: "#0070f0",
     },
     sphere: {
-      id: 4,
       type: "SphereGeometry",
       position: [0, 1, 0],
       rotation: [0, 0, 0],
@@ -132,7 +131,6 @@ const GeometryMenu = () => {
       material_color: "#0070f0",
     },
     cylinder: {
-      id: 5,
       type: "CylinderGeometry",
       position: [0, 2, 0],
       rotation: [0, 0, 0],
@@ -142,7 +140,6 @@ const GeometryMenu = () => {
       material_color: "#0070f0",
     },
     cone: {
-      id: 6,
       type: "ConeGeometry",
       position: [0, 2, 0],
       rotation: [0, 0, 0],
@@ -156,7 +153,10 @@ const GeometryMenu = () => {
   const handleItemOnClick = (item) => {
     const newItem = itemDataMap[item];
     if (newItem) {
-      setModelList([...modelList, newItem]);
+      setModelList([
+        ...(modelList ?? []),
+        { ...newItem, isSelect: true, id: uuid(), isNew: true },
+      ]);
       setOpenPopup(false);
     }
   };

@@ -58,6 +58,7 @@ function DynamicGeometry({ data, onChange }) {
       position={data.position}
       rotation={data.rotation}
       scale={data.scale}
+      isSelect={data.isSelect}
     >
       {geometry}
       {material}

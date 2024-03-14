@@ -1,11 +1,27 @@
 "use client";
 import React from "react";
-import { useStore } from "@/components/SocketManager";
+import { useStore, useElementStore } from "@/components/SocketManager";
 import NumInput from "@/components/utils/NumInput";
+import { useKeyboardEvent } from "@/components/utils/GeneralEvent";
 
 export const InfoView = () => {
   // 鼠标可操作阶段
   const { target, setTarget } = useStore();
+  const [modelList, setModelList] = useElementStore((state) => [
+    state.modelList,
+    state.setModelList,
+  ]);
+
+  useKeyboardEvent("Delete", () => {
+    if (target) {
+      const updatedModelList = modelList.filter(
+        (item) => item.id !== target.id
+      );
+      // 更新状态以反映已删除的数据
+      setModelList(updatedModelList);
+      setTarget(null);
+    }
+  });
 
   return (
     <>
