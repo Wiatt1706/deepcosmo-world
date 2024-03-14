@@ -1,18 +1,29 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { atom, useAtom } from "jotai";
-import { HandToolSvg, PenToolSvg, SelectToolSvg } from "../../icons";
+import { HandToolSvg, SelectToolSvg } from "../../icons";
+import { StoreSvg } from "@/components/utils/icons";
 import { TbBrandAirtable } from "react-icons/tb";
 import { FaCode } from "react-icons/fa6";
 import { BsMagic } from "react-icons/bs";
 import { LuTableProperties } from "react-icons/lu";
-import { controlStatusAtom, mouseStageAtom } from "@/components/SocketManager";
+import {
+  controlStatusAtom,
+  mouseStageAtom,
+  useBottomToolStore,
+} from "@/components/SocketManager";
 import { HiMiniPlus } from "react-icons/hi2";
+import { ToolPopupView } from "@/components/World/editorTool/tool-popup-layout";
+import { Image } from "@nextui-org/react";
 
 export const ToolView = () => {
+  const popupRef = useRef(null);
+
   // 鼠标可操作阶段
   const [mouseStage, setMouseStage] = useAtom(mouseStageAtom);
   const [controlStatus, setControlStatus] = useAtom(controlStatusAtom);
+
+  const { isOpenPopup, setOpenPopup } = useBottomToolStore();
 
   const handleCheckStage = (stage) => {
     setMouseStage(stage);
@@ -34,6 +45,22 @@ export const ToolView = () => {
       setMouseStage(controlStatus.defStage);
     }
   }, [controlStatus.isSpaceDown, controlStatus.isMouseDown]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setOpenPopup(false);
+      }
+    };
+
+    // 添加事件监听器
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      // 在组件卸载时移除事件监听器
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpenPopup]);
 
   return (
     <>
@@ -78,12 +105,30 @@ export const ToolView = () => {
           </div>
         </div>
 
-        <div className="bottom-tool-right-box px-3">
-          <div></div>
-          <div onClick={handleAddBtn} className="bottom-tool-box">
+        <div
+          className="bottom-tool-right-box px-3 overflow-hidden select-none"
+          onMouseDown={() => !isOpenPopup && setOpenPopup(true)}
+        >
+          <div className="transform translate-y-[calc(20px)] rotate-[-20deg] w-[55px] h-[55px] z-10 hover:scale-110 focus:scale-110 transition-transform duration-300 ml-2">
+            <StoreSvg width={55} height={55} />
+          </div>
+          <div className="shadow rounded p-2 transform translate-y-[calc(20px)] rotate-[40deg] w-[65px] h-[60px] z-10 hover:scale-110 focus:scale-110 transition-transform duration-300">
+            <Image className="z-0 w-full" src="/images/Geometry.png" />
+          </div>
+          <div
+            onClick={handleAddBtn}
+            className={`bottom-tool-box ${
+              isOpenPopup ? "bg-primary text-white" : ""
+            }`}
+          >
             <HiMiniPlus size={25} />
           </div>
         </div>
+        {isOpenPopup && (
+          <div className="bottom-tool-popup" ref={popupRef}>
+            <ToolPopupView />
+          </div>
+        )}
       </div>
     </>
   );

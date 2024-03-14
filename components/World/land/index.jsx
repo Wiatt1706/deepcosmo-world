@@ -5,13 +5,19 @@ import GridBox from "../element/Grid";
 import { useControlListeners } from "../../hook/useControlListeners";
 import { ListModels } from "@/components/World/land/ListModels";
 import { Environment } from "@react-three/drei";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Controls from "@/components/World/land/Controls";
+import { useElementStore } from "@/components/SocketManager";
 
 export default function LandWorld({ info }) {
   // 绑定操作控制器
-  const [models, setModels] = useState(info.models);
   const { elementRef } = useControlListeners();
+
+  const setModelList = useElementStore((state) => state.setModelList);
+
+  useEffect(() => {
+    setModelList(info.models);
+  }, [info.models]);
 
   return (
     <div className={styles["editor"]}>
@@ -33,7 +39,7 @@ export default function LandWorld({ info }) {
 
         <GridBox size={info.size} />
 
-        <ListModels models={models} />
+        <ListModels />
 
         <Controls />
       </Canvas>

@@ -19,6 +19,9 @@ function DynamicGeometry({ data, onChange }) {
     case "PlaneGeometry":
       geometry = <planeGeometry args={data.args} />;
       break;
+    case "ConeGeometry":
+      geometry = <coneGeometry args={data.args} />;
+      break;
     // Add more geometry types here if needed
     default:
       geometry = null;

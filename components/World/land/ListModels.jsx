@@ -6,20 +6,20 @@ import { useThree } from "@react-three/fiber";
 import DynamicGeometry from "@/components/World/element/DynamicGeometry";
 import MeshComponent from "@/components/World/element/MeshComponent";
 
-export function ListModels({ models }) {
+export function ListModels() {
   const { scene } = useThree(); // This will just crash
-  const [sceneList, setSceneList] = useElementStore((state) => [
-    state.sceneList,
+  const [setSceneList, modelList] = useElementStore((state) => [
     state.setSceneList,
+    state.modelList,
   ]);
 
   useEffect(() => {
     setSceneList(scene.children);
-  }, [models]);
+  }, [modelList]);
 
   return (
     <Suspense fallback={<LoadingMessage />}>
-      {models?.map((modelData) =>
+      {modelList?.map((modelData) =>
         modelData.model_url ? (
           <Model key={modelData.id} data={modelData} />
         ) : (
