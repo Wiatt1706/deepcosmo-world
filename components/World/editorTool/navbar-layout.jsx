@@ -18,11 +18,11 @@ import {
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import { ChevronDownIcon, LogoSvg, PlaySvg } from "../../utils/icons";
-import { listModelsAtom, useElementStore } from "@/components/SocketManager";
-import {  HiOutlineQueueList } from "react-icons/hi2";
+import { useElementStore } from "@/components/SocketManager";
+import { HiOutlineQueueList } from "react-icons/hi2";
 import { TbGrid3X3, TbGridScan } from "react-icons/tb";
 
-export const Navbar = ({ title }) => {
+export const Navbar = ({ landInfo }) => {
   const handleWheel = (event) => {
     // 阻止鼠标滚轮事件的默认行为
     event.preventDefault();
@@ -33,6 +33,8 @@ export const Navbar = ({ title }) => {
     setOpen,
     isPerspective,
     setPerspective,
+    modelList,
+    sceneList,
   } = useElementStore();
 
   const handleElementView = () => {
@@ -42,16 +44,41 @@ export const Navbar = ({ title }) => {
     setPerspective(!isPerspective);
   };
 
+  const fetchData = async (modelList) => {
+    try {
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...landInfo, modelList }), // 传入一个对象
+      };
+
+      const res = await fetch("/api/land", requestOptions);
+      const data = await res.json();
+      console.log("Fetch data:", data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   const handleSave = async () => {
     try {
-      // 执行保存操作
-      const { data, error } = await supabase
-        .from("block_models")
-        .update({ other_column: "otherValue" })
-        .eq("some_column", "someValue")
-        .select();
+      sceneList.forEach((sceneItem) => {
+        const { userData, position, rotation, scale } = sceneItem;
+        if (userData && userData.primaryId) {
+          const matchingModel = modelList.find(
+            (modelItem) => modelItem.id === userData.primaryId
+          );
+          if (matchingModel) {
+            // 更新匹配的modelList元素的数据
+            matchingModel.position = position;
+            matchingModel.rotation = rotation;
+            matchingModel.scale = scale;
+          }
+        }
+      });
 
-      console.log("Save result:", data, error);
+    
+      await fetchData(modelList);
     } catch (error) {
       console.error("Save error:", error);
     }
@@ -118,7 +145,7 @@ export const Navbar = ({ title }) => {
                   size="sm"
                   variant="light"
                 >
-                  {title}
+                  {landInfo.land_name}
                 </Button>
               </DropdownTrigger>
               <DropdownMenu aria-label="Routes">
@@ -177,7 +204,7 @@ export const Navbar = ({ title }) => {
                 保存提醒
               </ModalHeader>
               <ModalBody>
-                <p>是否将当前的元素保存至土块（{title}）</p>
+                <p>是否将当前的元素保存至土块（{landInfo.land_name}）</p>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>

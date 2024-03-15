@@ -25,6 +25,7 @@ function DynamicGeometry({ data, onChange }) {
     // Add more geometry types here if needed
     default:
       geometry = null;
+      break;
   }
 
   // Define material based on type
@@ -55,6 +56,7 @@ function DynamicGeometry({ data, onChange }) {
   return (
     <MeshComponent
       id={data.id}
+      name={data.text}
       position={data.position}
       rotation={data.rotation}
       scale={data.scale}

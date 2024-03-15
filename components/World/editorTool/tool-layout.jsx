@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { HandToolSvg, SelectToolSvg } from "../../icons";
 import { StoreSvg } from "@/components/utils/icons";
 import { TbBrandAirtable } from "react-icons/tb";

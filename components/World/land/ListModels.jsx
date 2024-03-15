@@ -46,6 +46,7 @@ function Model({ data }) {
   return (
     <MeshComponent
       id={data.id}
+      name={data.text}
       position={data.position}
       rotation={data.rotation}
       scale={data.scale}

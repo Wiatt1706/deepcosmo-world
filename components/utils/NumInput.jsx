@@ -135,4 +135,27 @@ const NumInput = ({
   );
 };
 
+const radiansToDegrees = (radians) => (radians * 180) / Math.PI;
+
+// 以度为单位的 NumInput 组件
+export const DegreeNumInput = ({ value, onUpdate, prefix, suffix, step }) => {
+  const [inputValue, setInputValue] = useState(radiansToDegrees(value));
+
+  const handleChange = (value) => {
+    const newValue = parseFloat(value);
+    setInputValue(newValue);
+    console.log("newValue", newValue);
+    onUpdate(newValue * (Math.PI / 180)); // 将度转换为弧度并更新值
+  };
+
+  return (
+    <NumInput
+      value={inputValue}
+      onUpdate={handleChange}
+      prefix={prefix}
+      suffix={suffix}
+      step={step}
+    />
+  );
+};
 export default NumInput;

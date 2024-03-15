@@ -12,6 +12,7 @@ function MeshComponent({ id, children, isSelect = false, ...props }) {
   useCursor(hovered);
 
   const handleClick = (e) => {
+    e.stopPropagation();
     setTarget({ object: e.object, id });
   };
 
@@ -21,7 +22,8 @@ function MeshComponent({ id, children, isSelect = false, ...props }) {
     }
   };
 
-  const handlePointerOver = () => {
+  const handlePointerOver = (e) => {
+    e.stopPropagation();
     setHovered(true);
   };
 
@@ -31,7 +33,6 @@ function MeshComponent({ id, children, isSelect = false, ...props }) {
 
   useEffect(() => {
     if (isSelect && ref.current) {
-      console.log("ref.current", ref.current.object);
       setTarget({ object: ref.current, id });
       const { x, y, z } = ref.current.position;
       camera.position.set(x, y + 10, z + 10); // 这里的 +5 是一个示例，你可以根据需要进行调整
@@ -43,6 +44,7 @@ function MeshComponent({ id, children, isSelect = false, ...props }) {
     <mesh
       {...props}
       ref={ref}
+      userData={{ primaryId: id }}
       onClick={handleClick}
       onPointerMissed={handlePointerMissed}
       onPointerOver={handlePointerOver}

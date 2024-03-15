@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useStore, useElementStore } from "@/components/SocketManager";
-import NumInput from "@/components/utils/NumInput";
+import NumInput, { DegreeNumInput } from "@/components/utils/NumInput";
 import { useKeyboardEvent } from "@/components/utils/GeneralEvent";
 
 export const InfoView = () => {
@@ -25,7 +25,7 @@ export const InfoView = () => {
 
   return (
     <>
-      {target && (
+      {target && target.object && (
         <div className="right-tool">
           <label className="text-xs">Position</label>
           <div className="inputGroup">
@@ -59,32 +59,32 @@ export const InfoView = () => {
           </div>
           <label className="text-xs">Rotation</label>
           <div className="inputGroup">
-            <NumInput
+            <DegreeNumInput
               value={target.object.rotation.x}
               onUpdate={(value) => {
                 target.object.rotation.x = value;
               }}
               prefix="X"
-              suffix="m"
-              step={0.1}
+              suffix="&deg;"
+              step={1}
             />
-            <NumInput
+            <DegreeNumInput
               value={target.object.rotation.y}
               onUpdate={(value) => {
                 target.object.rotation.y = value;
               }}
               prefix="Y"
-              suffix="m"
-              step={0.1}
+              suffix="&deg;"
+              step={1}
             />
-            <NumInput
+            <DegreeNumInput
               value={target.object.rotation.z}
               onUpdate={(value) => {
                 target.object.rotation.z = value;
               }}
               prefix="Z"
-              suffix="m"
-              step={0.1}
+              suffix="&deg;"
+              step={1}
             />
           </div>
 

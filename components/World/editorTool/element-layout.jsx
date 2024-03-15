@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import style from "./index.css";
-import { useElementStore } from "@/components/SocketManager";
+import { useStore, useElementStore } from "@/components/SocketManager";
 import Tree from "@/components/utils/Tree";
 import {
   Button,
@@ -12,20 +12,29 @@ import {
   DropdownTrigger,
   Input,
 } from "@nextui-org/react";
-import {
-  BiCube,
-  BiBox,
-  BiSearch,
-  BiFilterAlt,
-  BiChevronDown,
-} from "react-icons/bi";
+import { BiCube, BiBox, BiSearch, BiChevronDown } from "react-icons/bi";
+import { GrTree } from "react-icons/gr";
 import { MdOutlineLightbulb } from "react-icons/md";
 import { PiCompassTool } from "react-icons/pi";
-function convertObjectToTreeNode(object) {
+import {
+  TbSphere,
+  TbCylinder,
+  TbCone,
+  TbCube,
+  TbSquare,
+  TbPackageImport,
+  TbListDetails,
+} from "react-icons/tb";
+import {
+  EyeBtn,
+  LoacationBtn,
+} from "@/components/World/editorTool/element-util";
+
+function convertSceneListToTreeNode(object) {
   const { name, type, children } = object;
   const treeData = {
     label: name || type,
-    children: children ? children.map(convertObjectToTreeNode) : [],
+    children: children ? children.map(convertSceneListToTreeNode) : [],
   };
 
   switch (type) {
@@ -39,12 +48,10 @@ function convertObjectToTreeNode(object) {
       break;
     case "AmbientLight":
       treeData.startContent = <MdOutlineLightbulb size={16} />;
-      treeData.isEye = true;
       break;
     case "AxesHelper":
     case "GridHelper":
       treeData.startContent = <PiCompassTool size={16} />;
-      treeData.isEye = true;
       break;
     default:
       break;
@@ -53,29 +60,89 @@ function convertObjectToTreeNode(object) {
   return treeData;
 }
 
+function convertModelListToTreeNode(object, target) {
+  const { text, type, id, children } = object;
+  const treeData = {
+    id,
+    label: text || type,
+    children: children ? children.map(convertSceneListToTreeNode) : [],
+  };
+
+  switch (type) {
+    case "BoxGeometry":
+      treeData.startContent = <TbCube size={16} />;
+      break;
+    case "SphereGeometry":
+      treeData.startContent = <TbSphere size={16} />;
+      break;
+    case "CylinderGeometry":
+      treeData.startContent = <TbCylinder size={16} />;
+      break;
+    case "PlaneGeometry":
+      treeData.startContent = <TbSquare size={16} />;
+      break;
+    case "ConeGeometry":
+      treeData.startContent = <TbCone size={16} />;
+      break;
+    case "ImportGeometry":
+      treeData.startContent = <TbPackageImport size={16} />;
+      break;
+    // Add more geometry types here if needed
+    default:
+      break;
+  }
+  if (target?.id === id) {
+    treeData.isSelect = true;
+  }
+  treeData.toolList = [<EyeBtn id={id} />, <LoacationBtn id={id} />];
+  return treeData;
+}
+
 export const ElementView = () => {
-  const { isOpen, setOpen, sceneList } = useElementStore();
+  const target = useStore((state) => state.target);
+  const [isOpen, setOpen, sceneList, modelList] = useElementStore((state) => [
+    state.isOpen,
+    state.setOpen,
+    state.sceneList,
+    state.modelList,
+  ]);
 
-  const [treeData, setTreeData] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(new Set(["asset"]));
 
-  const [selectedOption, setSelectedOption] = useState(new Set(["merge"]));
-
-  const descriptionsMap = {
-    merge: "merge.",
-    squash: "squash.",
-    rebase: "rebase.",
+  const treeMap = {
+    scene: {
+      label: "场景",
+      icon: <GrTree />,
+      description: "包括整个场景的物体树结构",
+      convertFunction: convertSceneListToTreeNode,
+      data: sceneList,
+    },
+    asset: {
+      label: "资产",
+      icon: <TbListDetails />,
+      description: "当前已加载的可用资源",
+      convertFunction: convertModelListToTreeNode,
+      data: modelList,
+    },
   };
 
-  const labelsMap = {
-    merge: "Create a merge commit",
-    squash: "Squash and merge",
-    rebase: "Rebase and merge",
-  };
+  const treeView = () => {
+    const { label, convertFunction, data } =
+      treeMap[selectedOption.values().next().value];
 
-  useEffect(() => {
-    const rootNodes = sceneList.map(convertObjectToTreeNode);
-    setTreeData(rootNodes);
-  }, [sceneList]);
+    return (
+      <>
+        <div className="flex items-center hover:bg-gray-200 w-full px-2">
+          <span className="flex items-center p-1">
+            <Chip startContent={<BiBox size={18} />} variant="light">
+              {label}
+            </Chip>
+          </span>
+        </div>
+        <Tree data={data.map((item) => convertFunction(item, target))} />
+      </>
+    );
+  };
 
   return (
     <>
@@ -85,12 +152,14 @@ export const ElementView = () => {
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
                 <Button
+                  className="pl-2"
                   isIconOnly
                   color="default"
                   variant="light"
                   radius="none"
                 >
-                  <BiChevronDown />
+                  {treeMap[selectedOption.values().next().value].icon}
+                  <BiChevronDown size={16} />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
@@ -102,10 +171,18 @@ export const ElementView = () => {
                 className="max-w-[300px]"
               >
                 <DropdownItem
-                  key="merge"
-                  description={descriptionsMap["merge"]}
+                  key="asset"
+                  startContent={treeMap["asset"].icon}
+                  description={treeMap["asset"].description}
                 >
-                  {labelsMap["merge"]}
+                  {treeMap["asset"].label}
+                </DropdownItem>
+                <DropdownItem
+                  key="scene"
+                  startContent={treeMap["scene"].icon}
+                  description={treeMap["scene"].description}
+                >
+                  {treeMap["scene"].label}
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -124,20 +201,8 @@ export const ElementView = () => {
               startContent={<BiSearch size={18} />}
               type="search"
             />
-            <div className="p-2 text-default-500 h-full flex items-center">
-              <BiFilterAlt size={18} />
-            </div>
           </div>
-          <div className="flex flex-col">
-            <div className="flex items-center hover:bg-gray-200 w-full px-2">
-              <span className="flex items-center p-1">
-                <Chip startContent={<BiBox size={18} />} variant="light">
-                  场景集合
-                </Chip>
-              </span>
-            </div>
-            <Tree data={treeData} />
-          </div>
+          <div className="flex flex-col">{treeView()}</div>
         </div>
       )}
     </>

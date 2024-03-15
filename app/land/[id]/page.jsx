@@ -11,12 +11,12 @@ export default async function land({ params }) {
   const supabase = createServerComponentClient({ cookies });
 
   let data = {};
-  const { data: lands } = await supabase
+  const { data: landInfo } = await supabase
     .from("land_info")
     .select()
     .eq("id", params.id);
 
-  data = lands[0];
+  data = landInfo[0];
   const { data: models } = await supabase
     .from("block_models")
     .select()
@@ -25,7 +25,7 @@ export default async function land({ params }) {
 
   return (
     <section className="flex flex-col items-center justify-center">
-      <Navbar title={data?.land_name} />
+      <Navbar landInfo={landInfo[0]} />
       <LandWorld info={data} />
       <ToolView />
       <InfoView />
