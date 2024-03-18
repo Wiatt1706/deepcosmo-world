@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Likes from "./likes";
-import { useEffect, experimental_useOptimistic as useOptimistic } from "react";
+import { useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import { Button, Card, CardFooter, CardHeader, Image } from "@nextui-org/react";

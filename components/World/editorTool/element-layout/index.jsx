@@ -28,7 +28,7 @@ import {
 import {
   EyeBtn,
   LoacationBtn,
-} from "@/components/World/editorTool/element-util";
+} from "@/components/World/editorTool/element-layout/element-util";
 
 function convertSceneListToTreeNode(object) {
   const { name, type, children } = object;

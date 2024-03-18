@@ -1,9 +1,20 @@
 import React, { useState } from "react";
 import MeshComponent from "@/components/World/element/MeshComponent";
+import { useTexture } from "@react-three/drei";
 
 function DynamicGeometry({ data, onChange }) {
   const [color, setColor] = useState(data.material_color);
 
+  const [colorMap, displacementMap, normalMap, roughnessMap, aoMap] =
+    useTexture(
+      [
+        data.material_map ? data.material_map : null,
+        null,
+        data.material_normal_map ? data.material_normal_map : null,
+        null,
+        null,
+      ].filter(Boolean)
+    );
   // Define geometry based on type
   let geometry;
   switch (data.type) {
@@ -35,18 +46,13 @@ function DynamicGeometry({ data, onChange }) {
       material = (
         <meshStandardMaterial
           color={color}
-          map={data.material_map ? data.material_map : null}
-          normalMap={data.material_normal_map ? data.material_normal_map : null}
+          map={colorMap}
+          normalMap={normalMap}
         />
       );
       break;
     case "MeshBasicMaterial":
-      material = (
-        <meshBasicMaterial
-          color={color}
-          map={data.material_map ? data.material_map : null}
-        />
-      );
+      material = <meshBasicMaterial color={color} map={colorMap} />;
       break;
     // Add more material types here if needed
     default:

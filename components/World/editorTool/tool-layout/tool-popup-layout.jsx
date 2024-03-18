@@ -175,7 +175,7 @@ const GeometryMenu = () => {
       }
       setModelList([
         ...(modelList ?? []),
-        { ...newItem, isSelect: true, id: uuid(), isNew: true },
+        { ...newItem, isSelect: true, id: uuid() },
       ]);
       setOpenPopup(false);
     }

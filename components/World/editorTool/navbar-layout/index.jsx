@@ -1,7 +1,6 @@
 "use client";
+import style from "./index.css";
 import {
-  Avatar,
-  AvatarGroup,
   BreadcrumbItem,
   Breadcrumbs,
   Button,
@@ -16,8 +15,8 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import React, { useState } from "react";
-import { ChevronDownIcon, LogoSvg, PlaySvg } from "../../utils/icons";
+import React from "react";
+import { ChevronDownIcon, LogoSvg, PlaySvg } from "@/components/utils/icons";
 import { useElementStore } from "@/components/SocketManager";
 import { HiOutlineQueueList } from "react-icons/hi2";
 import { TbGrid3X3, TbGridScan } from "react-icons/tb";
@@ -44,12 +43,12 @@ export const Navbar = ({ landInfo }) => {
     setPerspective(!isPerspective);
   };
 
-  const fetchData = async (modelList) => {
+  const fetchData = async (models) => {
     try {
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...landInfo, modelList }), // 传入一个对象
+        body: JSON.stringify({ ...landInfo, models }), // 传入一个对象
       };
 
       const res = await fetch("/api/land", requestOptions);
@@ -69,15 +68,19 @@ export const Navbar = ({ landInfo }) => {
             (modelItem) => modelItem.id === userData.primaryId
           );
           if (matchingModel) {
-            // 更新匹配的modelList元素的数据
-            matchingModel.position = position;
-            matchingModel.rotation = rotation;
-            matchingModel.scale = scale;
+            // 将 position、rotation 和 scale 转换为数组格式，记录其 xyz 值
+            const newPosition = [position.x, position.y, position.z];
+            const newRotation = [rotation._x, rotation._y, rotation._z];
+            const newScale = [scale.x, scale.y, scale.z];
+
+            // 更新匹配的 modelList 元素的数据
+            matchingModel.position = newPosition;
+            matchingModel.rotation = newRotation;
+            matchingModel.scale = newScale;
           }
         }
       });
 
-    
       await fetchData(modelList);
     } catch (error) {
       console.error("Save error:", error);

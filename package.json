@@ -55,5 +55,8 @@
     "typescript": "5.0.4",
     "uuidv4": "^6.2.13",
     "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "supabase": "^1.148.6"
   }
 }

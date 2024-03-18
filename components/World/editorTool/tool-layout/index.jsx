@@ -1,7 +1,8 @@
 "use client";
+import style from "./index.css";
 import React, { useEffect, useRef } from "react";
 import { useAtom } from "jotai";
-import { HandToolSvg, SelectToolSvg } from "../../icons";
+import { HandToolSvg, SelectToolSvg } from "../../../icons";
 import { StoreSvg } from "@/components/utils/icons";
 import { TbBrandAirtable } from "react-icons/tb";
 import { FaCode } from "react-icons/fa6";
@@ -13,7 +14,7 @@ import {
   useBottomToolStore,
 } from "@/components/SocketManager";
 import { HiMiniPlus } from "react-icons/hi2";
-import { ToolPopupView } from "@/components/World/editorTool/tool-popup-layout";
+import { ToolPopupView } from "@/components/World/editorTool/tool-layout/tool-popup-layout";
 import { Image } from "@nextui-org/react";
 
 export const ToolView = () => {
