@@ -94,7 +94,10 @@ function convertModelListToTreeNode(object, target) {
   if (target?.id === id) {
     treeData.isSelect = true;
   }
-  treeData.toolList = [<EyeBtn id={id} />, <LoacationBtn id={id} />];
+  treeData.toolList = [
+    <EyeBtn key={`eye_${id}`} id={id} />,
+    <LoacationBtn key={`location_${id}`} id={id} />,
+  ];
   return treeData;
 }
 
