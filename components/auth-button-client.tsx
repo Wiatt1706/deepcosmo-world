@@ -12,6 +12,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Link,
   User,
 } from "@nextui-org/react";
 export default function AuthButtonClient({
@@ -21,15 +22,6 @@ export default function AuthButtonClient({
 }) {
   const supabase = createClientComponentClient();
   const router = useRouter();
-
-  const handleSignIn = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "github",
-      options: {
-        redirectTo: "http://localhost:3000/auth/callback",
-      },
-    });
-  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -43,7 +35,6 @@ export default function AuthButtonClient({
           <User
             as="button"
             avatarProps={{
-              
               size: "sm",
               src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
             }}
@@ -69,13 +60,14 @@ export default function AuthButtonClient({
       </Dropdown>
     </div>
   ) : (
-    <Button
-      onClick={handleSignIn}
-      className="bg-primary text-white border border-conditionalborder-transparent mx-2"
-      size="sm"
-      radius="none"
-    >
-      Login
-    </Button>
+    <Link href="/login">
+      <Button
+        className="bg-primary text-white border border-conditionalborder-transparent mx-2"
+        size="sm"
+        radius="none"
+      >
+        Login
+      </Button>
+    </Link>
   );
 }

@@ -1,11 +1,9 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import Lands from "@/components/land/land-info";
-import NewLand from "@/components/land/new-land";
 import { Navbar } from "@/components/navbar";
 import Footer from "@/components/layout/footer";
-import { Chip, Image } from "@nextui-org/react";
-import Link from "next/link";
+import { Chip } from "@nextui-org/react";
 
 export default async function Home() {
   const supabase = createServerComponentClient<Database>({ cookies });
@@ -32,7 +30,6 @@ export default async function Home() {
     <>
       <Navbar />
       <section className="flex flex-col items-center justify-center">
-        {/* <NewLand /> */}
         <div className="flex flex-col items-center justify-center mt-[100px] w-full max-w-[1500px] mx-auto px-8">
           <h1 className="text-4xl font-bold text-center mb-10">
             Welcome to DeepCosmo Lands
