@@ -8,6 +8,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -110,7 +111,7 @@ export const Navbar = ({ landInfo }) => {
     <div onWheel={handleWheel} className="toolbar_view">
       <div className="flex items-center">
         <div className="border-r border-conditionalborder-transparent  h-[48px] flex items-center px-3">
-          <LogoSvg width={25} height={25} />
+         <Link href="/"><LogoSvg width={25} height={25} /></Link>
         </div>
 
         <div

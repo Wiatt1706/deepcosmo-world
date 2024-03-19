@@ -71,11 +71,18 @@ export default function Lands({ lands }: { lands: LandWithAuthor[] }) {
               <p className="text-black ">Get notified.</p>
             </div>
 
-            <Link href={`/land/${land.id}`}>
-              <Button color="primary" radius="full" size="sm">
-                GO
-              </Button>
-            </Link>
+            <div>
+              <Link href={`edit/${land.id}`}>
+                <Button radius="full" size="sm" className="mr-2">
+                  Edit
+                </Button>
+              </Link>
+              <Link href={`/${land.id}`}>
+                <Button color="primary" radius="full" size="sm">
+                  GO
+                </Button>
+              </Link>
+            </div>
           </CardFooter>
         </Card>
       ))}
