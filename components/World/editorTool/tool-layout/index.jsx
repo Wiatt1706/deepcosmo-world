@@ -88,13 +88,15 @@ export const ToolView = () => {
             <HandToolSvg />
           </div>
         </div>
-        <div className="flex items-center px-2">
-          <div className="bottom-tool-box">
-            <TbBrandAirtable size={25} />
-          </div>
+        <div className="flex items-center px-2 ">
+          <div className=" hidden md:flex">
+            <div className="bottom-tool-box">
+              <TbBrandAirtable size={25} />
+            </div>
 
-          <div className="bottom-tool-box">
-            <FaCode size={25} />
+            <div className="bottom-tool-box">
+              <FaCode size={25} />
+            </div>
           </div>
 
           <div className="bottom-tool-box">

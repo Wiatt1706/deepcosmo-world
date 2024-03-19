@@ -79,3 +79,19 @@
     right: 0;
     overflow-y: auto;
 }
+
+
+@media screen and (max-width: 568px) {
+    .bottom-tool {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        border-radius: 0;
+        border: rgba(0, 0, 0, 0.1) 1px solid;
+        z-index: 9;
+    }
+}

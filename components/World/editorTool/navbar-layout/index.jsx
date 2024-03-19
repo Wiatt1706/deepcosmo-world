@@ -135,9 +135,9 @@ export const Navbar = ({ landInfo }) => {
             separator: "px-2",
           }}
         >
-          <BreadcrumbItem>
+          {/* <BreadcrumbItem>
             <span className="text-default-500">Drafts</span>
-          </BreadcrumbItem>
+          </BreadcrumbItem> */}
           <BreadcrumbItem>
             <Dropdown>
               <DropdownTrigger>
@@ -161,30 +161,33 @@ export const Navbar = ({ landInfo }) => {
         </Breadcrumbs>
       </div>
       <div className="flex items-center">
-        <div className="navbar_item">
-          <Dropdown>
-            <DropdownTrigger>
-              <Button
-                radius="none"
-                className="bg-white text-black border border-conditionalborder-transparent "
-                size="sm"
-              >
-                New file
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Dynamic Actions" items={items}>
-              {(item) => (
-                <DropdownItem
-                  key={item.key}
-                  color={item.key === "delete" ? "danger" : "default"}
-                  className={item.key === "delete" ? "text-danger" : ""}
+        <div className="flex items-center hidden sm:flex">
+          <div className="navbar_item">
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  radius="none"
+                  className="bg-white text-black border border-conditionalborder-transparent "
+                  size="sm"
                 >
-                  {item.label}
-                </DropdownItem>
-              )}
-            </DropdownMenu>
-          </Dropdown>
+                  New file
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Dynamic Actions" items={items}>
+                {(item) => (
+                  <DropdownItem
+                    key={item.key}
+                    color={item.key === "delete" ? "danger" : "default"}
+                    className={item.key === "delete" ? "text-danger" : ""}
+                  >
+                    {item.label}
+                  </DropdownItem>
+                )}
+              </DropdownMenu>
+            </Dropdown>
+          </div>
         </div>
+
         <Button
           className="bg-primary text-white border border-conditionalborder-transparent mx-2"
           size="sm"
@@ -194,8 +197,10 @@ export const Navbar = ({ landInfo }) => {
         >
           Save
         </Button>
-        <div className="navbar_box_item border-l border-conditionalborder-transparent h-[48px] flex items-center px-3">
-          <PlaySvg width={20} height={20} />
+        <div className="flex items-center hidden sm:flex">
+          <div className="navbar_box_item border-l border-conditionalborder-transparent h-[48px] flex items-center px-3">
+            <PlaySvg width={20} height={20} />
+          </div>
         </div>
       </div>
 
