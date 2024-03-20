@@ -1,4 +1,4 @@
-npx supabase gen types typescript --project-id mazrpbjakqosxybtccqi --schema public > lib\database.types.ts
+npx supabase gen types typescript --project-id mazrpbjakqosxybtccqi --schema public > types\database.types.ts
 
 
 # Next.js & NextUI Template

@@ -32,7 +32,7 @@
 }
 
 .bottom-tool-box {
-    margin: 0 5px;
+    margin: 5px;
     display: flex;
     align-items: center;
     justify-content: center;

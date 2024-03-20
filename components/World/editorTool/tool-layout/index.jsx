@@ -65,7 +65,7 @@ export const ToolView = () => {
 
   return (
     <>
-      <div className="bottom-tool">
+      <div className="bottom-tool user-select-none">
         <div className="bottom-tool-left-box">
           <div
             onClick={() => handleCheckStage(0)}
@@ -116,7 +116,7 @@ export const ToolView = () => {
             <StoreSvg width={55} height={55} />
           </div>
           <div className="shadow rounded p-2 transform translate-y-[calc(20px)] rotate-[40deg] w-[65px] h-[60px] z-10 hover:scale-110 focus:scale-110 transition-transform duration-300">
-            <Image className="z-0 w-full" src="/images/Geometry.png" />
+            <Image className="z-0 w-full user-select-none" src="/images/Geometry.png" />
           </div>
           <div
             onClick={handleAddBtn}
