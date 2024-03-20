@@ -1,11 +1,15 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { useElementStore } from "@/components/SocketManager";
+import {
+  useBottomToolStore,
+  useElementStore,
+} from "@/components/SocketManager";
 import { ImportModelSvg } from "@/components/utils/icons";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import ImportInput from "@/components/utils/ImportInput";
 import ModelViewerWithControls from "@/components/utils/ModelViewerWithControls";
 import { HiTrash } from "react-icons/hi2";
+import { uuid } from "uuidv4";
 
 export const ImportMenu = () => {
   const importInputRef = useRef(null);
@@ -14,6 +18,7 @@ export const ImportMenu = () => {
     state.modelList,
     state.setModelList,
   ]);
+  const setOpenPopup = useBottomToolStore((state) => state.setOpenPopup);
 
   const handleFileSelect = (selectedFiles) => {
     setSelectedFile(selectedFiles[0]); // 假设仅支持单文件选择
@@ -24,6 +29,14 @@ export const ImportMenu = () => {
   };
 
   const handleImport = () => {
+    const newItem = {
+      text: selectedFile.name,
+      type: "ImportGeometry",
+      position: [0, 0, 0],
+      rotation: [0, 0, 0],
+      scale: [1, 1, 1],
+      model_url: URL.createObjectURL(selectedFile),
+    };
     if (newItem) {
       // 检查 modelList 中是否已存在具有相同文本的项目
       const isDuplicate = modelList.some(

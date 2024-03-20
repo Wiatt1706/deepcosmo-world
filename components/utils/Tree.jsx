@@ -34,7 +34,7 @@ const TreeNode = ({ node }) => {
           </span>
         </div>
         <div
-          className={`opacity-0 group-hover:opacity-100 transition-opacity pl-2 flex items-center ${
+          className={` bg-gray-100 sticky right-0  opacity-0 group-hover:opacity-100 group-hover:bg-gray-200  pl-2 flex items-center ${
             node.isSelect && "opacity-100"
           }`}
         >

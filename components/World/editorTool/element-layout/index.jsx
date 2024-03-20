@@ -134,7 +134,7 @@ export const ElementView = () => {
       treeMap[selectedOption.values().next().value];
 
     return (
-      <>
+      <div  className="w-full h-full overflow-y-auto">
         <div className="flex items-center hover:bg-gray-200 w-full px-2">
           <span className="flex items-center p-1">
             <Chip startContent={<BiBox size={18} />} variant="light">
@@ -143,7 +143,7 @@ export const ElementView = () => {
           </span>
         </div>
         <Tree data={data.map((item) => convertFunction(item, target))} />
-      </>
+      </div>
     );
   };
 
