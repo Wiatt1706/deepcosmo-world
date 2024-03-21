@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useStore } from "@/components/SocketManager";
+import { useStore, useExportStore } from "@/components/SocketManager";
 import { useCursor } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 

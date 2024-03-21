@@ -28,6 +28,7 @@ import {
 import {
   EyeBtn,
   LoacationBtn,
+  ExportBtn,
 } from "@/components/World/editorTool/element-layout/element-util";
 
 function convertSceneListToTreeNode(object) {
@@ -96,6 +97,7 @@ function convertModelListToTreeNode(object, target) {
   }
   treeData.toolList = [
     <EyeBtn key={`eye_${id}`} id={id} />,
+    <ExportBtn key={`export_${id}`} mesh={target?.object} />,
     <LoacationBtn key={`location_${id}`} id={id} />,
   ];
   return treeData;

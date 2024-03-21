@@ -7,6 +7,11 @@ export const useStore = create((set) => ({
   setTarget: (target) => set({ target }),
 }));
 
+export const useExportStore = create((set) => ({
+  target: false,
+  setTarget: (target) => set({ target }),
+}));
+
 export const useElementStore = create((set) => ({
   isOpen: false,
   isPerspective: false,

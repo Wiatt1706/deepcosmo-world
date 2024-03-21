@@ -9,11 +9,13 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { useElementStore } from "@/components/SocketManager";
+import { useElementStore, useExportStore } from "@/components/SocketManager";
 export const SaveButton = ({ landInfo }) => {
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { modelList, sceneList } = useElementStore();
+  const { target, setTarget } = useExportStore();
+
   const fetchData = async (models) => {
     try {
       const requestOptions = {
@@ -32,32 +34,33 @@ export const SaveButton = ({ landInfo }) => {
   };
 
   const handleSave = async () => {
-    try {
-      setLoading(true);
-      sceneList.forEach((sceneItem) => {
-        const { userData, position, rotation, scale } = sceneItem;
-        if (userData && userData.primaryId) {
-          const matchingModel = modelList.find(
-            (modelItem) => modelItem.id === userData.primaryId
-          );
-          if (matchingModel) {
-            // 将 position、rotation 和 scale 转换为数组格式，记录其 xyz 值
-            const newPosition = [position.x, position.y, position.z];
-            const newRotation = [rotation._x, rotation._y, rotation._z];
-            const newScale = [scale.x, scale.y, scale.z];
+    setTarget(!target);
+    // try {
+    //   setLoading(true);
+    //   sceneList.forEach((sceneItem) => {
+    //     const { userData, position, rotation, scale } = sceneItem;
+    //     if (userData && userData.primaryId) {
+    //       const matchingModel = modelList.find(
+    //         (modelItem) => modelItem.id === userData.primaryId
+    //       );
+    //       if (matchingModel) {
+    //         // 将 position、rotation 和 scale 转换为数组格式，记录其 xyz 值
+    //         const newPosition = [position.x, position.y, position.z];
+    //         const newRotation = [rotation._x, rotation._y, rotation._z];
+    //         const newScale = [scale.x, scale.y, scale.z];
 
-            // 更新匹配的 modelList 元素的数据
-            matchingModel.position = newPosition;
-            matchingModel.rotation = newRotation;
-            matchingModel.scale = newScale;
-          }
-        }
-      });
+    //         // 更新匹配的 modelList 元素的数据
+    //         matchingModel.position = newPosition;
+    //         matchingModel.rotation = newRotation;
+    //         matchingModel.scale = newScale;
+    //       }
+    //     }
+    //   });
 
-      await fetchData(modelList);
-    } catch (error) {
-      console.error("Save error:", error);
-    }
+    //   await fetchData(modelList);
+    // } catch (error) {
+    //   console.error("Save error:", error);
+    // }
   };
 
   return (
