@@ -73,14 +73,14 @@ export const ImportMenu = () => {
           className="bottom-tool-box h-[325px] text-default-400 flex flex-col items-center cursor-pointer"
         >
           <ImportModelSvg width={60} height={60} />
-          <span className="text-default-300 pt-2">仅支持.glb格式</span>
+          <span className="text-default-300 pt-2">仅支持.glb .gltf格式</span>
         </div>
       )}
 
       <ImportInput
         ref={importInputRef}
         handleSelect={handleFileSelect}
-        accept=".glb"
+        accept=".glb,.gltf"
       />
       <div className="w-full absolute bottom-0 p-2">
         <ButtonGroup className="w-full">

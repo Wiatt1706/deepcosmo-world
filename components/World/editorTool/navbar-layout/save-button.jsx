@@ -10,11 +10,16 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useElementStore, useExportStore } from "@/components/SocketManager";
+
+const PUBLIC_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public/model/";
+
 export const SaveButton = ({ landInfo }) => {
   const [loading, setLoading] = useState(false);
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { modelList, sceneList } = useElementStore();
-  const { target, setTarget } = useExportStore();
+  const { saveTarget, setSaveTarget } = useExportStore();
 
   const fetchData = async (models) => {
     try {
@@ -33,34 +38,55 @@ export const SaveButton = ({ landInfo }) => {
     setLoading(false);
   };
 
+  function updateModelData(modelList, sceneItem) {
+    const { userData, position, rotation, scale, children } = sceneItem;
+
+    if (userData && userData.primaryId) {
+      const matchingModel = modelList.find(
+        (modelItem) => modelItem.id === userData.primaryId
+      );
+
+      if (matchingModel) {
+        // 将 position、rotation 和 scale 转换为数组格式，记录其 xyz 值
+        const newPosition = [position.x, position.y, position.z];
+        const newRotation = [rotation._x, rotation._y, rotation._z];
+        const newScale = [scale.x, scale.y, scale.z];
+
+        // 更新匹配的 modelList 元素的数据
+        matchingModel.position = newPosition;
+        matchingModel.rotation = newRotation;
+        matchingModel.scale = newScale;
+        if (matchingModel.type === "ImportGeometry") {
+          const filePath = `public/model/${matchingModel.id}.gltf`;
+          matchingModel.model_url = PUBLIC_URL + filePath;
+        }
+      }
+    }
+
+    // 递归遍历子模型
+    if (children && children.length > 0) {
+      children.forEach((child) => {
+        updateModelData(modelList, child);
+      });
+    }
+  }
+
   const handleSave = async () => {
-    setTarget(!target);
-    // try {
-    //   setLoading(true);
-    //   sceneList.forEach((sceneItem) => {
-    //     const { userData, position, rotation, scale } = sceneItem;
-    //     if (userData && userData.primaryId) {
-    //       const matchingModel = modelList.find(
-    //         (modelItem) => modelItem.id === userData.primaryId
-    //       );
-    //       if (matchingModel) {
-    //         // 将 position、rotation 和 scale 转换为数组格式，记录其 xyz 值
-    //         const newPosition = [position.x, position.y, position.z];
-    //         const newRotation = [rotation._x, rotation._y, rotation._z];
-    //         const newScale = [scale.x, scale.y, scale.z];
+    try {
+      setLoading(true);
 
-    //         // 更新匹配的 modelList 元素的数据
-    //         matchingModel.position = newPosition;
-    //         matchingModel.rotation = newRotation;
-    //         matchingModel.scale = newScale;
-    //       }
-    //     }
-    //   });
+      console.log("sceneList:", sceneList);
+      // 在上传时调用 updateModelData 函数，对场景中所有模型及其子模型进行更新
+      setSaveTarget(true);
+      sceneList.forEach((sceneItem) => {
+        updateModelData(modelList, sceneItem);
+      });
 
-    //   await fetchData(modelList);
-    // } catch (error) {
-    //   console.error("Save error:", error);
-    // }
+      console.log("modelList:", modelList);
+      await fetchData(modelList);
+    } catch (error) {
+      console.error("Save error:", error);
+    }
   };
 
   return (

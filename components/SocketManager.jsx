@@ -9,7 +9,9 @@ export const useStore = create((set) => ({
 
 export const useExportStore = create((set) => ({
   target: false,
+  saveTarget: false,
   setTarget: (target) => set({ target }),
+  setSaveTarget: (saveTarget) => set({ saveTarget }),
 }));
 
 export const useElementStore = create((set) => ({

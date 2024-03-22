@@ -24,6 +24,7 @@ import {
   TbSquare,
   TbPackageImport,
   TbListDetails,
+  TbVectorTriangle,
 } from "react-icons/tb";
 import {
   EyeBtn,
@@ -40,7 +41,7 @@ function convertSceneListToTreeNode(object) {
 
   switch (type) {
     case "Mesh":
-      treeData.startContent = <BiCube size={16} />;
+      treeData.startContent = <TbVectorTriangle size={16} />;
       treeData.isEye = true;
       break;
     case "Group":
@@ -136,7 +137,7 @@ export const ElementView = () => {
       treeMap[selectedOption.values().next().value];
 
     return (
-      <div  className="w-full h-full overflow-y-auto">
+      <div className="w-full h-full overflow-y-auto">
         <div className="flex items-center hover:bg-gray-200 w-full px-2">
           <span className="flex items-center p-1">
             <Chip startContent={<BiBox size={18} />} variant="light">

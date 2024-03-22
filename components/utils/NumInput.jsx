@@ -23,7 +23,6 @@ const NumInput = ({
   const [editing, setEditing] = useState(false);
 
   const handleWheel = (event) => {
-    event.preventDefault();
     const direction = event.deltaY > 0 ? 1 : -1;
     updateValue(direction * step);
   };
@@ -144,7 +143,6 @@ export const DegreeNumInput = ({ value, onUpdate, prefix, suffix, step }) => {
   const handleChange = (value) => {
     const newValue = parseFloat(value);
     setInputValue(newValue);
-    console.log("newValue", newValue);
     onUpdate(newValue * (Math.PI / 180)); // 将度转换为弧度并更新值
   };
 

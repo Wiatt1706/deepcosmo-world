@@ -63,6 +63,7 @@ function DynamicGeometry({ data, onChange }) {
     <MeshComponent
       id={data.id}
       name={data.text}
+      type={data.type}
       position={data.position}
       rotation={data.rotation}
       scale={data.scale}
