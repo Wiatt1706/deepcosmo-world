@@ -8,17 +8,41 @@ import {
 import { useEffect, useRef } from "react";
 import { useAtom } from "jotai";
 import {
+  useMyStore,
   controlStatusAtom,
-  mouseStageAtom,
-  useStore,
+  useElementStore,
 } from "@/components/SocketManager";
 import { useThree } from "@react-three/fiber";
+import CameraModel from "@/components/World/land/CameraControls";
 export default function Controls({ size, ...props }) {
   const controls = useRef();
   const { scene } = useThree();
-  const { target, setTarget } = useStore();
-  const [mouseStage] = useAtom(mouseStageAtom);
-  const [{ isDragging }] = useAtom(controlStatusAtom);
+  const [target, setTarget] = useElementStore((state) => [
+    state.target,
+    state.setTarget,
+  ]);
+  const [{ isDragging, mouseStage }] = useAtom(controlStatusAtom);
+  const [modelList, setModelList] = useMyStore((state) => [
+    state.modelList,
+    state.setModelList,
+  ]);
+
+  const handleTransformEnd = () => {
+    if (target && target.id && target.object) {
+      const updatedModelList = modelList.map((model) => {
+        if (model.id === target.id) {
+          return {
+            ...model,
+            position: target.object.position.toArray(),
+            rotation: target.object.rotation.toArray(),
+            scale: target.object.scale.toArray(),
+          };
+        }
+        return model;
+      });
+      setModelList(updatedModelList);
+    }
+  };
 
   useEffect(() => {
     if (target && target.id) {
@@ -51,7 +75,7 @@ export default function Controls({ size, ...props }) {
 
       {target && (
         <TransformControls
-          // onMouseUp={() => handleTransformEnd()}
+          onMouseUp={handleTransformEnd}
           object={target.object}
           mode={"translate"}
         />

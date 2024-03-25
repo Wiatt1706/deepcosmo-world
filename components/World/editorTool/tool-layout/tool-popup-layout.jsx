@@ -3,14 +3,14 @@ import React from "react";
 import { Input, Tab, Tabs } from "@nextui-org/react";
 import { BiSearch } from "react-icons/bi";
 import { HiXMark } from "react-icons/hi2";
-import { useBottomToolStore } from "@/components/SocketManager";
+import { useToolStore } from "@/components/SocketManager";
 import { TbTablePlus } from "react-icons/tb";
 import { useKeyboardEvent } from "@/components/utils/GeneralEvent";
 import { GeometryMenu } from "./popup-geometry-menu";
 import { ImportMenu } from "./popup-import-menu";
 
 export const ToolPopupView = () => {
-  const { isOpenPopup, setOpenPopup } = useBottomToolStore();
+  const { isOpenPopup, setOpenPopup } = useToolStore();
 
   useKeyboardEvent("Escape", () => {
     setOpenPopup(false);

@@ -4,19 +4,18 @@ import { Canvas } from "@react-three/fiber";
 import GridBox from "../element/Grid";
 import { useControlListeners } from "../../hook/useControlListeners";
 import { ListModels } from "@/components/World/land/ListModels";
-import { Environment } from "@react-three/drei";
-import { useEffect, useState } from "react";
+import { Environment, Html, useProgress } from "@react-three/drei";
+import { Suspense, useEffect, useState } from "react";
 import Controls from "@/components/World/land/Controls";
-import { useElementStore } from "@/components/SocketManager";
-
+import { useMyStore } from "@/components/SocketManager";
 export default function LandWorld({ info }) {
   // 绑定操作控制器
   const { elementRef } = useControlListeners();
 
-  const setModelList = useElementStore((state) => state.setModelList);
+  const setModelList = useMyStore((state) => state.setModelList);
 
   useEffect(() => {
-    setModelList(info.models);
+    setModelList(info.models, false);
   }, [info.models]);
 
   return (
@@ -39,10 +38,17 @@ export default function LandWorld({ info }) {
 
         <GridBox size={info?.size} />
 
-        <ListModels />
+        <Suspense fallback={<Loader />}>
+          <ListModels />
+        </Suspense>
 
         <Controls />
       </Canvas>
     </div>
   );
+}
+
+function Loader() {
+  const { progress } = useProgress();
+  return <Html center>{progress} % loaded</Html>;
 }

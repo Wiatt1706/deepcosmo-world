@@ -1,19 +1,16 @@
 "use client";
 import React from "react";
 import { Listbox, ListboxItem } from "@nextui-org/react";
-import {
-  useBottomToolStore,
-  useElementStore,
-} from "@/components/SocketManager";
+import { useToolStore, useMyStore } from "@/components/SocketManager";
 import { TbSphere, TbCylinder, TbCone, TbCube, TbSquare } from "react-icons/tb";
 import { uuid } from "uuidv4";
 
 export const GeometryMenu = () => {
-  const [modelList, setModelList] = useElementStore((state) => [
+  const [modelList, setModelList] = useMyStore((state) => [
     state.modelList,
     state.setModelList,
   ]);
-  const setOpenPopup = useBottomToolStore((state) => state.setOpenPopup);
+  const setOpenPopup = useToolStore((state) => state.setOpenPopup);
 
   const itemDataMap = {
     plane: {

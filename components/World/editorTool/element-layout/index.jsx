@@ -1,7 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import style from "./index.css";
-import { useStore, useElementStore } from "@/components/SocketManager";
+import {
+  useMyStore,
+  useElementStore,
+  useToolStore,
+} from "@/components/SocketManager";
 import Tree from "@/components/utils/Tree";
 import {
   Button,
@@ -12,7 +16,7 @@ import {
   DropdownTrigger,
   Input,
 } from "@nextui-org/react";
-import { BiCube, BiBox, BiSearch, BiChevronDown } from "react-icons/bi";
+import { BiBox, BiSearch, BiChevronDown } from "react-icons/bi";
 import { GrTree } from "react-icons/gr";
 import { MdOutlineLightbulb } from "react-icons/md";
 import { PiCompassTool } from "react-icons/pi";
@@ -105,14 +109,12 @@ function convertModelListToTreeNode(object, target) {
 }
 
 export const ElementView = () => {
-  const target = useStore((state) => state.target);
-  const [isOpen, setOpen, sceneList, modelList] = useElementStore((state) => [
-    state.isOpen,
-    state.setOpen,
+  const modelList = useMyStore((state) => state.modelList);
+  const [target, sceneList] = useElementStore((state) => [
+    state.target,
     state.sceneList,
-    state.modelList,
   ]);
-
+  const isOpenElement = useToolStore((state) => state.isOpenElement);
   const [selectedOption, setSelectedOption] = useState(new Set(["asset"]));
 
   const treeMap = {
@@ -152,7 +154,7 @@ export const ElementView = () => {
 
   return (
     <>
-      {isOpen && (
+      {isOpenElement && (
         <div className="left-tool">
           <div className="flex items-center bg-default-100/10">
             <Dropdown placement="bottom-end">

@@ -39,6 +39,7 @@
     "eslint": "8.48.0",
     "eslint-config-next": "14.0.2",
     "framer-motion": "^10.16.4",
+    "immer": "^10.0.4",
     "intl-messageformat": "^10.5.0",
     "jotai": "^2.7.0",
     "leva": "^0.9.35",
@@ -54,6 +55,7 @@
     "three": "^0.161.0",
     "typescript": "5.0.4",
     "uuidv4": "^6.2.13",
+    "zundo": "^2.1.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

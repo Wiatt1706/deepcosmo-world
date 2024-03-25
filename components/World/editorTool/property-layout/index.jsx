@@ -1,7 +1,7 @@
 "use client";
 import style from "./index.css";
 import React from "react";
-import { useStore, useElementStore } from "@/components/SocketManager";
+import { useMyStore, useElementStore } from "@/components/SocketManager";
 import { useKeyboardEvent } from "@/components/utils/GeneralEvent";
 import { Position } from "./input-position";
 import { Scale } from "./input-scale";
@@ -12,17 +12,19 @@ import { useState } from "react";
 
 export const InfoView = () => {
   // 鼠标可操作阶段
-  const { target, setTarget } = useStore();
   const [color, setColor] = useState("#000000");
 
-  // 获取颜色值对象
-  const colorValue = target?.object?.material.color;
-
-  const [modelList, setModelList] = useElementStore((state) => [
+  const [modelList, setModelList] = useMyStore((state) => [
     state.modelList,
     state.setModelList,
   ]);
-
+  
+  const [target, setTarget] = useElementStore((state) => [
+    state.target,
+    state.setTarget,
+  ]);
+  // 获取颜色值对象
+  const colorValue = target?.object?.material.color;
   const handleColorChange = (e) => {
     const newColor = e.target.value;
     setColor(newColor);

@@ -4,14 +4,13 @@ import React, { useEffect, useRef } from "react";
 import { useAtom } from "jotai";
 import { HandToolSvg, SelectToolSvg } from "../../../icons";
 import { StoreSvg } from "@/components/utils/icons";
-import { TbBrandAirtable } from "react-icons/tb";
-import { FaCode } from "react-icons/fa6";
+import { TbArrowForwardUp, TbArrowBackUp } from "react-icons/tb";
 import { BsMagic } from "react-icons/bs";
 import { LuTableProperties } from "react-icons/lu";
 import {
   controlStatusAtom,
-  mouseStageAtom,
-  useBottomToolStore,
+  useToolStore,
+  useTemporalStore,
 } from "@/components/SocketManager";
 import { HiMiniPlus } from "react-icons/hi2";
 import { ToolPopupView } from "@/components/World/editorTool/tool-layout/tool-popup-layout";
@@ -21,29 +20,44 @@ export const ToolView = () => {
   const popupRef = useRef(null);
 
   // 鼠标可操作阶段
-  const [mouseStage, setMouseStage] = useAtom(mouseStageAtom);
   const [controlStatus, setControlStatus] = useAtom(controlStatusAtom);
 
-  const { isOpenPopup, setOpenPopup } = useBottomToolStore();
+  const { isOpenPopup, setOpenPopup } = useToolStore();
+  const { undo, redo } = useTemporalStore((state) => ({
+    undo: state.undo,
+    redo: state.redo,
+  }));
 
   const handleCheckStage = (stage) => {
-    setMouseStage(stage);
     // 默认选择阶段
-    setControlStatus((prev) => ({ ...prev, defStage: stage }));
+    setControlStatus((prev) => ({
+      ...prev,
+      mouseStage: stage,
+      defStage: stage,
+    }));
   };
 
   const handleAddBtn = () => {};
   useEffect(() => {
     if (controlStatus.isSpaceDown) {
-      setMouseStage(1);
+      setControlStatus((prev) => ({
+        ...prev,
+        mouseStage: 1,
+      }));
     } else {
       if (!controlStatus.isMouseDown) {
-        setMouseStage(controlStatus.defStage);
+        setControlStatus((prev) => ({
+          ...prev,
+          mouseStage: controlStatus.defStage,
+        }));
       }
     }
 
-    if (!controlStatus.isMouseDown && mouseStage == 1) {
-      setMouseStage(controlStatus.defStage);
+    if (!controlStatus.isMouseDown && controlStatus.mouseStage == 1) {
+      setControlStatus((prev) => ({
+        ...prev,
+        mouseStage: controlStatus.defStage,
+      }));
     }
   }, [controlStatus.isSpaceDown, controlStatus.isMouseDown]);
 
@@ -70,7 +84,7 @@ export const ToolView = () => {
           <div
             onClick={() => handleCheckStage(0)}
             className={`${
-              mouseStage == 0
+              controlStatus.mouseStage == 0
                 ? "bottom-tool-left-box-itme-active"
                 : "bottom-tool-left-box-itme"
             } select-tool rounded-tl-[15px]`}
@@ -80,7 +94,7 @@ export const ToolView = () => {
           <div
             onClick={() => handleCheckStage(1)}
             className={`${
-              mouseStage == 1
+              controlStatus.mouseStage == 1
                 ? "bottom-tool-left-box-itme-active"
                 : "bottom-tool-left-box-itme"
             } rounded-bl-[15px]`}
@@ -90,12 +104,12 @@ export const ToolView = () => {
         </div>
         <div className="flex items-center px-2 ">
           <div className=" hidden md:flex">
-            <div className="bottom-tool-box">
-              <TbBrandAirtable size={25} />
+            <div className="bottom-tool-box" onClick={() => undo()}>
+              <TbArrowBackUp size={25} />
             </div>
 
-            <div className="bottom-tool-box">
-              <FaCode size={25} />
+            <div className="bottom-tool-box" onClick={() => redo()}>
+              <TbArrowForwardUp size={25} />
             </div>
           </div>
 
@@ -116,7 +130,10 @@ export const ToolView = () => {
             <StoreSvg width={55} height={55} />
           </div>
           <div className="shadow rounded p-2 transform translate-y-[calc(20px)] rotate-[40deg] w-[65px] h-[60px] z-10 hover:scale-110 focus:scale-110 transition-transform duration-300">
-            <Image className="z-0 w-full user-select-none" src="/images/Geometry.png" />
+            <Image
+              className="z-0 w-full user-select-none"
+              src="/images/Geometry.png"
+            />
           </div>
           <div
             onClick={handleAddBtn}

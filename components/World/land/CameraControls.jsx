@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { useRef } from "react";
 import { useThree } from "@react-three/fiber";
-import { useControls, button, buttonGroup, folder } from "leva";
+import {  button, buttonGroup, folder } from "leva";
 import { CameraControls } from "@react-three/drei";
 
 const { DEG2RAD } = THREE.MathUtils;
@@ -138,6 +138,7 @@ function CameraModel() {
   return (
     <>
       <CameraControls
+        makeDefault
         ref={cameraControlsRef}
         minDistance={minDistance}
         enabled={enabled}

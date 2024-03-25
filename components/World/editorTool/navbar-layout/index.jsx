@@ -12,7 +12,7 @@ import {
   Link,
 } from "@nextui-org/react";
 import { ChevronDownIcon, LogoSvg, PlaySvg } from "@/components/utils/icons";
-import { useElementStore } from "@/components/SocketManager";
+import { useToolStore } from "@/components/SocketManager";
 import { HiOutlineQueueList } from "react-icons/hi2";
 import { TbGrid3X3, TbGridScan } from "react-icons/tb";
 import { SaveButton } from "./save-button";
@@ -22,15 +22,11 @@ export const Navbar = ({ landInfo }) => {
     event.preventDefault();
   };
 
-  const {
-    isOpen: elOpen,
-    setOpen,
-    isPerspective,
-    setPerspective,
-  } = useElementStore();
+  const { isOpenElement, setOpenElement, isPerspective, setPerspective } =
+    useToolStore();
 
   const handleElementView = () => {
-    setOpen(!elOpen);
+    setOpenElement(!isOpenElement);
   };
   const handlePerspective = () => {
     setPerspective(!isPerspective);
@@ -67,7 +63,7 @@ export const Navbar = ({ landInfo }) => {
         <div
           onClick={handleElementView}
           className={`${
-            elOpen ? "navbar_box_item_active" : "navbar_box_item"
+            isOpenElement ? "navbar_box_item_active" : "navbar_box_item"
           } h-[48px] w-[48px] flex items-center px-3 text-[#6B7280]`}
         >
           <HiOutlineQueueList size={20} />

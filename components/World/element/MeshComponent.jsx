@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useStore, useExportStore } from "@/components/SocketManager";
+import { useElementStore, useExportStore } from "@/components/SocketManager";
 import { useCursor } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
@@ -7,7 +7,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 function MeshComponent({ id, type, children, isSelect = false, ...props }) {
   const ref = useRef();
-  const setTarget = useStore((state) => state.setTarget);
+  const setTarget = useElementStore((state) => state.setTarget);
   const { saveTarget, setSaveTarget } = useExportStore();
   const [hovered, setHovered] = useState(false);
   const camera = useThree((state) => state.camera);

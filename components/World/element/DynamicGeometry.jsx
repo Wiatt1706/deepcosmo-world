@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import MeshComponent from "@/components/World/element/MeshComponent";
 import { useTexture } from "@react-three/drei";
 
-function DynamicGeometry({ data, onChange }) {
+function DynamicGeometry({ data }) {
   const [color, setColor] = useState(data.material_color);
 
   const [colorMap, displacementMap, normalMap, roughnessMap, aoMap] =

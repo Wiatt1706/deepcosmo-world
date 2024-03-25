@@ -1,9 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import {
-  useBottomToolStore,
-  useElementStore,
-} from "@/components/SocketManager";
+import { useToolStore, useMyStore } from "@/components/SocketManager";
 import { ImportModelSvg } from "@/components/utils/icons";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import ImportInput from "@/components/utils/ImportInput";
@@ -14,11 +11,11 @@ import { uuid } from "uuidv4";
 export const ImportMenu = () => {
   const importInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [modelList, setModelList] = useElementStore((state) => [
+  const [modelList, setModelList] = useMyStore((state) => [
     state.modelList,
     state.setModelList,
   ]);
-  const setOpenPopup = useBottomToolStore((state) => state.setOpenPopup);
+  const setOpenPopup = useToolStore((state) => state.setOpenPopup);
 
   const handleFileSelect = (selectedFiles) => {
     setSelectedFile(selectedFiles[0]); // 假设仅支持单文件选择
@@ -37,28 +34,25 @@ export const ImportMenu = () => {
       scale: [1, 1, 1],
       model_url: URL.createObjectURL(selectedFile),
     };
-    if (newItem) {
-      // 检查 modelList 中是否已存在具有相同文本的项目
-      const isDuplicate = modelList.some(
-        (model) => model.text === newItem.text
-      );
+    
+    // 检查 modelList 中是否已存在具有相同文本的项目
+    const isDuplicate = modelList.some((model) => model.text === newItem.text);
 
-      if (isDuplicate) {
-        // 如果存在重复项，则进行处理，这里假设您希望在文本后面添加一个唯一的序号
-        let index = 1;
-        let uniqueText = newItem.text + ` (${index})`;
-        while (modelList.some((model) => model.text === uniqueText)) {
-          index++;
-          uniqueText = newItem.text + ` (${index})`;
-        }
-        newItem.text = uniqueText;
+    if (isDuplicate) {
+      // 如果存在重复项，则进行处理，这里假设您希望在文本后面添加一个唯一的序号
+      let index = 1;
+      let uniqueText = newItem.text + ` (${index})`;
+      while (modelList.some((model) => model.text === uniqueText)) {
+        index++;
+        uniqueText = newItem.text + ` (${index})`;
       }
-      setModelList([
-        ...(modelList ?? []),
-        { ...newItem, isSelect: true, id: uuid() },
-      ]);
-      setOpenPopup(false);
+      newItem.text = uniqueText;
     }
+    setModelList([
+      ...(modelList ?? []),
+      { ...newItem, isSelect: true, id: uuid() },
+    ]);
+    setOpenPopup(false);
   };
 
   return (

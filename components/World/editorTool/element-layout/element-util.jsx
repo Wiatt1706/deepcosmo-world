@@ -1,6 +1,6 @@
 import { PiEyeBold } from "react-icons/pi";
 import { BiCurrentLocation, BiDownload } from "react-icons/bi";
-import { useStore, useExportStore } from "@/components/SocketManager";
+import { useElementStore, useExportStore } from "@/components/SocketManager";
 
 export const EyeBtn = ({ id }) => {
   const handlePiEyeClick = () => {};
@@ -17,7 +17,7 @@ export const ExportBtn = ({ mesh }) => {
 };
 
 export const LoacationBtn = ({ id }) => {
-  const setTarget = useStore((state) => state.setTarget);
+  const setTarget = useElementStore((state) => state.setTarget);
   const handleBiCurrentLocationClick = () => {
     setTarget({ id });
   };

@@ -9,7 +9,11 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { useElementStore, useExportStore } from "@/components/SocketManager";
+import {
+  useElementStore,
+  useMyStore,
+  useExportStore,
+} from "@/components/SocketManager";
 
 const PUBLIC_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public/model/";
@@ -18,7 +22,9 @@ export const SaveButton = ({ landInfo }) => {
   const [loading, setLoading] = useState(false);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { modelList, sceneList } = useElementStore();
+  const sceneList = useElementStore((state) => state.sceneList);
+  const modelList = useMyStore((state) => state.modelList);
+
   const { saveTarget, setSaveTarget } = useExportStore();
 
   const fetchData = async (models) => {
@@ -75,14 +81,13 @@ export const SaveButton = ({ landInfo }) => {
     try {
       setLoading(true);
 
-      console.log("sceneList:", sceneList);
-      // 在上传时调用 updateModelData 函数，对场景中所有模型及其子模型进行更新
+      // 出发模型上传
       setSaveTarget(true);
+      // 更新模型数据
       sceneList.forEach((sceneItem) => {
         updateModelData(modelList, sceneItem);
       });
-
-      console.log("modelList:", modelList);
+      // 请求保存
       await fetchData(modelList);
     } catch (error) {
       console.error("Save error:", error);

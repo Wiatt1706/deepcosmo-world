@@ -43,7 +43,7 @@ export default function Lands({ lands }: { lands: LandWithAuthor[] }) {
   }, [supabase, router]);
 
   return (
-    <div className="w-full max-w-[1500px] gap-4 grid grid-cols-12 grid-rows-2">
+    <div className="w-full max-w-[1500px] gap-4 grid grid-cols-12">
       {lands.map((land) => (
         <Card
           key={land.id}

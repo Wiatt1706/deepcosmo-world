@@ -1,11 +1,26 @@
-import { atom, useAtom } from "jotai";
+import { atom } from "jotai";
 
-import create from "zustand";
+import { temporal } from "zundo";
+import { create, useStore } from "zustand";
 
-export const useStore = create((set) => ({
-  target: null,
-  setTarget: (target) => set({ target }),
-}));
+export const useMyStore = create(
+  temporal(
+    (set) => ({
+      modelList: [],
+      setModelList: (modelList, addToHistory = true) => {
+        if (addToHistory) {
+          set({ modelList });
+        } else {
+          set({ modelList }, false); // 禁用历史记录
+        }
+      },
+    }),
+    { limit: 100 }
+  )
+);
+
+export const useTemporalStore = (selector, equality) =>
+  useStore(useMyStore.temporal, selector, equality);
 
 export const useExportStore = create((set) => ({
   target: false,
@@ -15,19 +30,19 @@ export const useExportStore = create((set) => ({
 }));
 
 export const useElementStore = create((set) => ({
-  isOpen: false,
-  isPerspective: false,
+  target: null,
   sceneList: [],
-  modelList: [],
-  setOpen: (isOpen) => set({ isOpen }),
+  setTarget: (target) => set({ target }),
   setSceneList: (sceneList) => set({ sceneList }),
-  setModelList: (modelList) => set({ modelList }),
-  setPerspective: (isPerspective) => set({ isPerspective }),
 }));
 
-export const useBottomToolStore = create((set) => ({
+export const useToolStore = create((set) => ({
+  isPerspective: false,
+  isOpenElement: false,
   isOpenPopup: false,
+  setOpenElement: (isOpenElement) => set({ isOpenElement }),
   setOpenPopup: (isOpenPopup) => set({ isOpenPopup }),
+  setPerspective: (isPerspective) => set({ isPerspective }),
 }));
 
 export const controlStatusAtom = atom({
@@ -35,8 +50,5 @@ export const controlStatusAtom = atom({
   isMouseDown: false,
   isDragging: false,
   defStage: 0,
+  mouseStage: 0,
 });
-
-export const listModelsAtom = atom(null);
-
-export const mouseStageAtom = atom(0);

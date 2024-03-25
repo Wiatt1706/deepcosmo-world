@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
-import { controlStatusAtom } from "@/components/SocketManager";
+import {
+  controlStatusAtom,
+  useTemporalStore,
+} from "@/components/SocketManager";
 
 export const useEventListener = (eventType, callback, element) => {
   const handler = useCallback(callback, []);
@@ -11,7 +14,6 @@ export const useEventListener = (eventType, callback, element) => {
     if (!targetElement.addEventListener) {
       targetElement = document;
     }
-    console.log("targetElement");
     targetElement.addEventListener(eventType, handler);
 
     return () => {
@@ -24,19 +26,29 @@ export const useControlListeners = () => {
   const elementRef = useRef();
 
   const [controlStatus, setControlStatus] = useAtom(controlStatusAtom);
+  const { undo, redo, futureStates, pastStates } = useTemporalStore(
+    (state) => state
+  );
 
   const handleKeyDown = (event) => {
     if (event.code === "Space") {
+      // Space
       setControlStatus((prev) => ({ ...prev, isSpaceDown: true }));
     }
-    // 可以根据需要添加其他按键的处理逻辑
+    if (event.ctrlKey && event.code === "KeyZ") {
+      // Ctrl + Z
+      undo();
+    }
+    if (event.ctrlKey && event.shiftKey && event.code === "KeyZ") {
+      // Ctrl + Shift + Z
+      redo();
+    }
   };
 
   const handleKeyUp = (event) => {
     if (event.code === "Space") {
       setControlStatus((prev) => ({ ...prev, isSpaceDown: false }));
     }
-    // 可以根据需要添加其他按键的处理逻辑
   };
 
   const handleMouseDown = () => {
