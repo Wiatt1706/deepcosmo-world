@@ -13,7 +13,6 @@ import {
   useElementStore,
 } from "@/components/SocketManager";
 import { useThree } from "@react-three/fiber";
-import CameraModel from "@/components/World/land/CameraControls";
 export default function Controls({ size, ...props }) {
   const controls = useRef();
   const { scene } = useThree();

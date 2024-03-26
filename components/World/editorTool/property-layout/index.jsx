@@ -2,7 +2,6 @@
 import style from "./index.css";
 import React from "react";
 import { useMyStore, useElementStore } from "@/components/SocketManager";
-import { useKeyboardEvent } from "@/components/utils/GeneralEvent";
 import { Position } from "./input-position";
 import { Scale } from "./input-scale";
 import { Rotation } from "./input-rotation";
@@ -18,11 +17,8 @@ export const InfoView = () => {
     state.modelList,
     state.setModelList,
   ]);
-  
-  const [target, setTarget] = useElementStore((state) => [
-    state.target,
-    state.setTarget,
-  ]);
+
+  const target = useElementStore((state) => state.target);
   // 获取颜色值对象
   const colorValue = target?.object?.material.color;
   const handleColorChange = (e) => {
@@ -45,17 +41,6 @@ export const InfoView = () => {
       setModelList(updatedModelList);
     }
   };
-
-  useKeyboardEvent("Delete", () => {
-    if (target) {
-      const updatedModelList = modelList.filter(
-        (item) => item.id !== target.id
-      );
-      // 更新状态以反映已删除的数据
-      setModelList(updatedModelList);
-      setTarget(null);
-    }
-  });
 
   return (
     <>

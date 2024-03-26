@@ -8,6 +8,7 @@ import { Environment, Html, useProgress } from "@react-three/drei";
 import { Suspense, useEffect, useState } from "react";
 import Controls from "@/components/World/land/Controls";
 import { useMyStore } from "@/components/SocketManager";
+import KeyListener from "@/components/World/land/KeyHandler";
 export default function LandWorld({ info }) {
   // 绑定操作控制器
   const { elementRef } = useControlListeners();
@@ -27,6 +28,7 @@ export default function LandWorld({ info }) {
         // orthographic
         // camera={{ position: [0, 50, 0], zoom: 50 }}
       >
+        <KeyListener />
         <pointLight position={[100, 100, 100]} intensity={0.8} />
         <hemisphereLight
           color="#ffffff"

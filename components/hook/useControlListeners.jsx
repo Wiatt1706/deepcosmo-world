@@ -35,14 +35,6 @@ export const useControlListeners = () => {
       // Space
       setControlStatus((prev) => ({ ...prev, isSpaceDown: true }));
     }
-    if (event.ctrlKey && event.code === "KeyZ") {
-      // Ctrl + Z
-      undo();
-    }
-    if (event.ctrlKey && event.shiftKey && event.code === "KeyZ") {
-      // Ctrl + Shift + Z
-      redo();
-    }
   };
 
   const handleKeyUp = (event) => {
