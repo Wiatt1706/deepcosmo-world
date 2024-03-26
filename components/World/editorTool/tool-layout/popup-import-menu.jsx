@@ -6,10 +6,10 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import ImportInput from "@/components/utils/ImportInput";
 import ModelViewerWithControls from "@/components/utils/ModelViewerWithControls";
 import { HiTrash } from "react-icons/hi2";
-import { uuid } from "uuidv4";
 
 export const ImportMenu = () => {
   const importInputRef = useRef(null);
+  let modelData;
   const [selectedFile, setSelectedFile] = useState(null);
   const [modelList, setModelList] = useMyStore((state) => [
     state.modelList,
@@ -25,32 +25,31 @@ export const ImportMenu = () => {
     importInputRef.current.clickFileInput();
   };
 
-  const handleImport = () => {
-    const newItem = {
-      text: selectedFile.name,
-      type: "ImportGeometry",
-      position: [0, 0, 0],
-      rotation: [0, 0, 0],
-      scale: [1, 1, 1],
-      model_url: URL.createObjectURL(selectedFile),
-    };
-    
-    // 检查 modelList 中是否已存在具有相同文本的项目
-    const isDuplicate = modelList.some((model) => model.text === newItem.text);
+  const handleModelLoad = (data) => {
+    modelData = data;
+    console.log(modelData);
+  };
 
+  const handleImport = () => {
+    console.log(modelData);
+    modelData.text = selectedFile.name;
+    // 检查 modelList 中是否已存在具有相同文本的项目
+    const isDuplicate = modelList.some(
+      (model) => model.text === modelData.text
+    );
     if (isDuplicate) {
       // 如果存在重复项，则进行处理，这里假设您希望在文本后面添加一个唯一的序号
       let index = 1;
-      let uniqueText = newItem.text + ` (${index})`;
+      let uniqueText = modelData.text + ` (${index})`;
       while (modelList.some((model) => model.text === uniqueText)) {
         index++;
-        uniqueText = newItem.text + ` (${index})`;
+        uniqueText = modelData.text + ` (${index})`;
       }
-      newItem.text = uniqueText;
+      modelData.text = uniqueText;
     }
     setModelList([
       ...(modelList ?? []),
-      { ...newItem, isSelect: true, id: uuid() },
+      { ...modelData, isSelect: true },
     ]);
     setOpenPopup(false);
   };
@@ -59,7 +58,10 @@ export const ImportMenu = () => {
     <div>
       {selectedFile ? (
         <div className="w-full h-[330px]">
-          <ModelViewerWithControls glbUrl={URL.createObjectURL(selectedFile)} />
+          <ModelViewerWithControls
+            glbUrl={URL.createObjectURL(selectedFile)}
+            onModelLoad={handleModelLoad}
+          />
         </div>
       ) : (
         <div

@@ -26,9 +26,7 @@ export const useControlListeners = () => {
   const elementRef = useRef();
 
   const [controlStatus, setControlStatus] = useAtom(controlStatusAtom);
-  const { undo, redo, futureStates, pastStates } = useTemporalStore(
-    (state) => state
-  );
+
 
   const handleKeyDown = (event) => {
     if (event.code === "Space") {

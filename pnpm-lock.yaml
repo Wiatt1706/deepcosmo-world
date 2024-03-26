@@ -143,6 +143,9 @@ dependencies:
   typescript:
     specifier: 5.0.4
     version: 5.0.4
+  uuid:
+    specifier: ^9.0.1
+    version: 9.0.1
   uuidv4:
     specifier: ^6.2.13
     version: 6.2.13
