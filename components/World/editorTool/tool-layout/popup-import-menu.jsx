@@ -31,21 +31,20 @@ export const ImportMenu = () => {
   };
 
   const handleImport = () => {
-    console.log(modelData);
-    modelData.text = selectedFile.name;
+    modelData.name = selectedFile.name;
     // 检查 modelList 中是否已存在具有相同文本的项目
     const isDuplicate = modelList.some(
-      (model) => model.text === modelData.text
+      (model) => model.name === modelData.name
     );
     if (isDuplicate) {
       // 如果存在重复项，则进行处理，这里假设您希望在文本后面添加一个唯一的序号
       let index = 1;
-      let uniqueText = modelData.text + ` (${index})`;
-      while (modelList.some((model) => model.text === uniqueText)) {
+      let uniqueText = modelData.name + ` (${index})`;
+      while (modelList.some((model) => model.name === uniqueText)) {
         index++;
-        uniqueText = modelData.text + ` (${index})`;
+        uniqueText = modelData.name + ` (${index})`;
       }
-      modelData.text = uniqueText;
+      modelData.name = uniqueText;
     }
     setModelList([
       ...(modelList ?? []),

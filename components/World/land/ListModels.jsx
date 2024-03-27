@@ -24,10 +24,15 @@ export function ListModels() {
 
   useEffect(() => {
     if (target) {
-      exporter.parse(target, (result) => {
-        saveString(JSON.stringify(result), "object.gltf");
-        setTarget(null);
-      });
+      exporter.parse(
+        modelsRef.current,
+        (result) => {
+          // 导出二进制格式
+          saveString(JSON.stringify(result), "object.glb");
+          setTarget(null);
+        },
+        { binary: true } // 设置选项对象的 binary 属性为 true
+      );
     }
   }, [target]);
 

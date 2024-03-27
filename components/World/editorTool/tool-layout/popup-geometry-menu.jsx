@@ -14,7 +14,7 @@ export const GeometryMenu = () => {
 
   const itemDataMap = {
     plane: {
-      text: "Plane",
+      name: "Plane",
       type: "PlaneGeometry",
       position: [0, 2, 0],
       rotation: [0, 0, 0],
@@ -24,7 +24,7 @@ export const GeometryMenu = () => {
       material_color: "#0070f0",
     },
     cube: {
-      text: "Cube",
+      name: "Cube",
       type: "BoxGeometry",
       position: [0, 1, 0],
       rotation: [0, 0, 0],
@@ -34,7 +34,7 @@ export const GeometryMenu = () => {
       material_color: "#0070f0",
     },
     sphere: {
-      text: "Sphere",
+      name: "Sphere",
       type: "SphereGeometry",
       position: [0, 1, 0],
       rotation: [0, 0, 0],
@@ -44,7 +44,7 @@ export const GeometryMenu = () => {
       material_color: "#0070f0",
     },
     cylinder: {
-      text: "Cylinder",
+      name: "Cylinder",
       type: "CylinderGeometry",
       position: [0, 1, 0],
       rotation: [0, 0, 0],
@@ -54,7 +54,7 @@ export const GeometryMenu = () => {
       material_color: "#0070f0",
     },
     cone: {
-      text: "Cone",
+      name: "Cone",
       type: "ConeGeometry",
       position: [0, 1, 0],
       rotation: [0, 0, 0],
@@ -70,18 +70,18 @@ export const GeometryMenu = () => {
     if (newItem) {
       // 检查 modelList 中是否已存在具有相同文本的项目
       const isDuplicate = modelList.some(
-        (model) => model.text === newItem.text
+        (model) => model.name === newItem.name
       );
 
       if (isDuplicate) {
         // 如果存在重复项，则进行处理，这里假设您希望在文本后面添加一个唯一的序号
         let index = 1;
-        let uniqueText = newItem.text + ` (${index})`;
-        while (modelList.some((model) => model.text === uniqueText)) {
+        let uniqueText = newItem.name + ` (${index})`;
+        while (modelList.some((model) => model.name === uniqueText)) {
           index++;
-          uniqueText = newItem.text + ` (${index})`;
+          uniqueText = newItem.name + ` (${index})`;
         }
-        newItem.text = uniqueText;
+        newItem.name = uniqueText;
       }
       setModelList([
         ...(modelList ?? []),

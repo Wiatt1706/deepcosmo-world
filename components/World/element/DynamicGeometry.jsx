@@ -62,7 +62,7 @@ function DynamicGeometry({ data }) {
   return (
     <MeshComponent
       id={data.id}
-      name={data.text}
+      name={data.name}
       type={data.type}
       position={data.position}
       rotation={data.rotation}

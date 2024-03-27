@@ -8,7 +8,7 @@ const convertToMyModelFormat = (scene, modelUrl, pid) => {
   const myModel = {
     id,
     pid: pid,
-    text: scene.name, // 这里需要根据具体情况设置文本信息
+    name: scene.name, // 这里需要根据具体情况设置文本信息
     type: "ImportGeometry",
     position: scene.position.toArray(),
     rotation: scene.rotation.toArray(),

@@ -67,10 +67,10 @@ function convertSceneListToTreeNode(object) {
 }
 
 function convertModelListToTreeNode(object, target) {
-  const { text, type, id, children } = object;
+  const { name, type, id, children } = object;
   const treeData = {
     id,
-    label: text || type,
+    label: name || type,
     children: children ? children.map(convertSceneListToTreeNode) : [],
   };
 
