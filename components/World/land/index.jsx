@@ -9,6 +9,7 @@ import { Suspense, useEffect, useState } from "react";
 import Controls from "@/components/World/land/Controls";
 import { useMyStore } from "@/components/SocketManager";
 import KeyListener from "@/components/World/land/KeyHandler";
+import LoadNode from "@/components/World/land/LoadNode";
 export default function LandWorld({ info }) {
   // 绑定操作控制器
   const { elementRef } = useControlListeners();
@@ -41,6 +42,7 @@ export default function LandWorld({ info }) {
         <GridBox size={info?.size} />
 
         <Suspense fallback={<Loader />}>
+          <LoadNode model_url={info?.model_url} />
           <ListModels />
         </Suspense>
 

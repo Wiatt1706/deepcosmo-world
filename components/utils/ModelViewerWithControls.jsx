@@ -9,7 +9,8 @@ const convertToMyModelFormat = (scene, modelUrl, pid) => {
     id,
     pid: pid,
     name: scene.name, // 这里需要根据具体情况设置文本信息
-    type: "ImportGeometry",
+    type: scene.type,
+    model: "ImportGeometry",
     position: scene.position.toArray(),
     rotation: scene.rotation.toArray(),
     scale: scene.scale.toArray(),
@@ -26,8 +27,8 @@ const convertToMyModelFormat = (scene, modelUrl, pid) => {
 
 const ModelViewer = ({ glbUrl, onModelLoad }) => {
   const deferred = useDeferredValue(glbUrl);
-  const { scene } = useGLTF(deferred);
-  console.log(scene);
+  const { scene, nodes } = useGLTF(deferred);
+  console.log(nodes);
   // 遍历场景中的所有对象，设置接收阴影和投射阴影
   scene.traverse((node) => {
     if (node.isMesh) {
@@ -39,7 +40,7 @@ const ModelViewer = ({ glbUrl, onModelLoad }) => {
   // 调用传入的回调函数，并将加载完成后的数据转换成所需格式
   if (onModelLoad) {
     const myModel = convertToMyModelFormat(scene, glbUrl);
-    onModelLoad(myModel);
+    onModelLoad(myModel, nodes);
   }
 
   return <primitive object={scene} />;

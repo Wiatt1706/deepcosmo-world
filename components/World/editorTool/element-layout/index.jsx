@@ -66,37 +66,64 @@ function convertSceneListToTreeNode(object) {
   return treeData;
 }
 
-function convertModelListToTreeNode(object, target) {
-  const { name, type, id, children } = object;
+function convertModelListToTreeNode(object, target, isParent = true) {
+  const { name, type, id, children, model } = object;
   const treeData = {
     id,
     label: name || type,
-    children: children ? children.map(convertSceneListToTreeNode) : [],
+    children: children
+      ? children.map((child) =>
+          convertModelListToTreeNode(child, target, false)
+        )
+      : [],
   };
 
-  switch (type) {
-    case "BoxGeometry":
-      treeData.startContent = <TbCube size={16} />;
-      break;
-    case "SphereGeometry":
-      treeData.startContent = <TbSphere size={16} />;
-      break;
-    case "CylinderGeometry":
-      treeData.startContent = <TbCylinder size={16} />;
-      break;
-    case "PlaneGeometry":
-      treeData.startContent = <TbSquare size={16} />;
-      break;
-    case "ConeGeometry":
-      treeData.startContent = <TbCone size={16} />;
-      break;
-    case "ImportGeometry":
-      treeData.startContent = <TbPackageImport size={16} />;
-      break;
-    // Add more geometry types here if needed
-    default:
-      break;
+  if (isParent) {
+    switch (model) {
+      case "BoxGeometry":
+        treeData.startContent = <TbCube size={16} />;
+        break;
+      case "SphereGeometry":
+        treeData.startContent = <TbSphere size={16} />;
+        break;
+      case "CylinderGeometry":
+        treeData.startContent = <TbCylinder size={16} />;
+        break;
+      case "PlaneGeometry":
+        treeData.startContent = <TbSquare size={16} />;
+        break;
+      case "ConeGeometry":
+        treeData.startContent = <TbCone size={16} />;
+        break;
+      case "ImportGeometry":
+        treeData.startContent = <TbPackageImport size={16} />;
+        break;
+      // Add more geometry types here if needed
+      default:
+        break;
+    }
+  } else {
+    switch (type) {
+      case "Mesh":
+        treeData.startContent = <TbVectorTriangle size={16} />;
+        treeData.isEye = true;
+        break;
+      case "Group":
+        treeData.startContent = <BiBox size={16} />;
+        treeData.isEye = true;
+        break;
+      case "AmbientLight":
+        treeData.startContent = <MdOutlineLightbulb size={16} />;
+        break;
+      case "AxesHelper":
+      case "GridHelper":
+        treeData.startContent = <PiCompassTool size={16} />;
+        break;
+      default:
+        break;
+    }
   }
+
   if (target?.id === id) {
     treeData.isSelect = true;
   }

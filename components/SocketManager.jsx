@@ -32,8 +32,10 @@ export const useExportStore = create((set) => ({
 export const useElementStore = create((set) => ({
   target: null,
   sceneList: [],
+  nodes: {},
   setTarget: (target) => set({ target }),
   setSceneList: (sceneList) => set({ sceneList }),
+  setNodes: (nodes) => set({ nodes }),
 }));
 
 export const useToolStore = create((set) => ({

@@ -44,51 +44,19 @@ export const SaveButton = ({ landInfo }) => {
     setLoading(false);
   };
 
-  function updateModelData(modelList, sceneItem) {
-    const { userData, position, rotation, scale, children } = sceneItem;
-
-    if (userData && userData.primaryId) {
-      const matchingModel = modelList.find(
-        (modelItem) => modelItem.id === userData.primaryId
-      );
-
-      if (matchingModel) {
-        // 将 position、rotation 和 scale 转换为数组格式，记录其 xyz 值
-        const newPosition = [position.x, position.y, position.z];
-        const newRotation = [rotation._x, rotation._y, rotation._z];
-        const newScale = [scale.x, scale.y, scale.z];
-
-        // 更新匹配的 modelList 元素的数据
-        matchingModel.position = newPosition;
-        matchingModel.rotation = newRotation;
-        matchingModel.scale = newScale;
-        if (matchingModel.type === "ImportGeometry") {
-          const filePath = `public/model/${matchingModel.id}.gltf`;
-          matchingModel.model_url = PUBLIC_URL + filePath;
-        }
-      }
-    }
-
-    // 递归遍历子模型
-    if (children && children.length > 0) {
-      children.forEach((child) => {
-        updateModelData(modelList, child);
-      });
-    }
-  }
-
   const handleSave = async () => {
     try {
       setLoading(true);
 
+      console.log("Saving model data:", modelList);
       // 出发模型上传
-      setSaveTarget(true);
-      // 更新模型数据
-      sceneList.forEach((sceneItem) => {
-        updateModelData(modelList, sceneItem);
-      });
-      // 请求保存
-      await fetchData(modelList);
+      // setSaveTarget(true);
+      // // 更新模型数据
+      // sceneList.forEach((sceneItem) => {
+      //   updateModelData(modelList, sceneItem);
+      // });
+      // // 请求保存
+      // await fetchData(modelList);
     } catch (error) {
       console.error("Save error:", error);
     }

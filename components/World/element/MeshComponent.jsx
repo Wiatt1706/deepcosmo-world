@@ -5,7 +5,7 @@ import { useThree } from "@react-three/fiber";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-function MeshComponent({ id, type, children, isSelect = false, ...props }) {
+function MeshComponent({ id, model, children, isSelect = false, ...props }) {
   const ref = useRef();
   const setTarget = useElementStore((state) => state.setTarget);
   const { saveTarget, setSaveTarget } = useExportStore();
@@ -72,7 +72,7 @@ function MeshComponent({ id, type, children, isSelect = false, ...props }) {
   }, [isSelect]);
 
   useEffect(() => {
-    if (saveTarget && type === "ImportGeometry") {
+    if (saveTarget && model === "ImportGeometry") {
       handleSyncSave();
     }
   }, [saveTarget]);

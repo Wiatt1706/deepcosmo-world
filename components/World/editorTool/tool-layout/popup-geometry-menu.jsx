@@ -15,7 +15,8 @@ export const GeometryMenu = () => {
   const itemDataMap = {
     plane: {
       name: "Plane",
-      type: "PlaneGeometry",
+      type: "Mesh",
+      model: "PlaneGeometry",
       position: [0, 2, 0],
       rotation: [0, 0, 0],
       scale: [1, 1, 1],
@@ -25,7 +26,8 @@ export const GeometryMenu = () => {
     },
     cube: {
       name: "Cube",
-      type: "BoxGeometry",
+      type: "Mesh",
+      model: "BoxGeometry",
       position: [0, 1, 0],
       rotation: [0, 0, 0],
       scale: [1, 1, 1],
@@ -35,7 +37,8 @@ export const GeometryMenu = () => {
     },
     sphere: {
       name: "Sphere",
-      type: "SphereGeometry",
+      type: "Mesh",
+      model: "SphereGeometry",
       position: [0, 1, 0],
       rotation: [0, 0, 0],
       scale: [1, 1, 1],
@@ -45,7 +48,8 @@ export const GeometryMenu = () => {
     },
     cylinder: {
       name: "Cylinder",
-      type: "CylinderGeometry",
+      type: "Mesh",
+      model: "CylinderGeometry",
       position: [0, 1, 0],
       rotation: [0, 0, 0],
       scale: [1, 1, 1],
@@ -55,7 +59,8 @@ export const GeometryMenu = () => {
     },
     cone: {
       name: "Cone",
-      type: "ConeGeometry",
+      type: "Mesh",
+      model: "ConeGeometry",
       position: [0, 1, 0],
       rotation: [0, 0, 0],
       scale: [1, 1, 1],

@@ -17,7 +17,7 @@ function DynamicGeometry({ data }) {
     );
   // Define geometry based on type
   let geometry;
-  switch (data.type) {
+  switch (data.model) {
     case "BoxGeometry":
       geometry = <boxGeometry args={data.args} />;
       break;
@@ -63,7 +63,7 @@ function DynamicGeometry({ data }) {
     <MeshComponent
       id={data.id}
       name={data.name}
-      type={data.type}
+      model={data.model}
       position={data.position}
       rotation={data.rotation}
       scale={data.scale}

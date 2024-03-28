@@ -1,6 +1,10 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { useToolStore, useMyStore } from "@/components/SocketManager";
+import {
+  useToolStore,
+  useMyStore,
+  useElementStore,
+} from "@/components/SocketManager";
 import { ImportModelSvg } from "@/components/utils/icons";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import ImportInput from "@/components/utils/ImportInput";
@@ -10,10 +14,15 @@ import { HiTrash } from "react-icons/hi2";
 export const ImportMenu = () => {
   const importInputRef = useRef(null);
   let modelData;
+  let nodeList = [];
   const [selectedFile, setSelectedFile] = useState(null);
   const [modelList, setModelList] = useMyStore((state) => [
     state.modelList,
     state.setModelList,
+  ]);
+  const [nodes, setNodes] = useElementStore((state) => [
+    state.nodes,
+    state.setNodes,
   ]);
   const setOpenPopup = useToolStore((state) => state.setOpenPopup);
 
@@ -25,31 +34,41 @@ export const ImportMenu = () => {
     importInputRef.current.clickFileInput();
   };
 
-  const handleModelLoad = (data) => {
+  const handleModelLoad = (data, newNodes) => {
     modelData = data;
-    console.log(modelData);
+
+    const mergedNodes = { ...nodes };
+
+    Object.keys(newNodes).forEach((nodeName) => {
+      // 如果现有的节点中不包含新节点的名称，则将新节点添加到 mergedNodes 中
+      if (!mergedNodes[nodeName]) {
+        mergedNodes[nodeName] = newNodes[nodeName];
+      }
+    });
+    nodeList = mergedNodes;
+    // 更新节点状态
   };
 
   const handleImport = () => {
-    modelData.name = selectedFile.name;
+    modelData.name = selectedFile.name.split(".")[0];
+    // 将唯一的节点累加到 nodes 中
+    setNodes(nodeList);
+
     // 检查 modelList 中是否已存在具有相同文本的项目
-    const isDuplicate = modelList.some(
-      (model) => model.name === modelData.name
-    );
-    if (isDuplicate) {
-      // 如果存在重复项，则进行处理，这里假设您希望在文本后面添加一个唯一的序号
-      let index = 1;
-      let uniqueText = modelData.name + ` (${index})`;
-      while (modelList.some((model) => model.name === uniqueText)) {
-        index++;
-        uniqueText = modelData.name + ` (${index})`;
-      }
-      modelData.name = uniqueText;
-    }
-    setModelList([
-      ...(modelList ?? []),
-      { ...modelData, isSelect: true },
-    ]);
+    // const isDuplicate = modelList.some(
+    //   (model) => model.name === modelData.name
+    // );
+    // if (isDuplicate) {
+    //   // 如果存在重复项，则进行处理，这里假设您希望在文本后面添加一个唯一的序号
+    //   let index = 1;
+    //   let uniqueText = modelData.name + ` (${index})`;
+    //   while (modelList.some((model) => model.name === uniqueText)) {
+    //     index++;
+    //     uniqueText = modelData.name + ` (${index})`;
+    //   }
+    //   modelData.name = uniqueText;
+    // }
+    setModelList([...(modelList ?? []), { ...modelData, isSelect: true }]);
     setOpenPopup(false);
   };
 

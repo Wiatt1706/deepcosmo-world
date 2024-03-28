@@ -18,14 +18,42 @@ export function ListModels() {
   const exporter = new GLTFExporter();
   const { target, setTarget } = useExportStore();
 
+  // 定义一个辅助函数，用于获取所有子元素的名称
+  function getAllChildrenNames(model) {
+    const names = [model.name];
+    if (model.children && model.children.length > 0) {
+      model.children.forEach((child) => {
+        names.push(...getAllChildrenNames(child));
+      });
+    }
+    return names;
+  }
+
   useEffect(() => {
     setSceneList(scene.children);
   }, [modelList]);
 
   useEffect(() => {
     if (target) {
+      const uniqueModelsRef = modelsRef.current.clone();
+      // 过滤掉重复名称的模型
+      const uniqueModels = uniqueModelsRef.children.filter(
+        (model, index, array) => {
+          // 获取当前模型及其所有子元素的名称
+          const allNames = getAllChildrenNames(model);
+
+          // 检查当前模型之前的所有模型是否有相同的名称
+          const isUnique = !array.slice(0, index).some((otherModel) => {
+            const otherAllNames = getAllChildrenNames(otherModel);
+            return otherAllNames.some((name) => allNames.includes(name));
+          });
+
+          return isUnique;
+        }
+      );
+
       exporter.parse(
-        modelsRef.current,
+        uniqueModels,
         (result) => {
           // 导出二进制格式
           saveString(JSON.stringify(result), "object.glb");
@@ -38,7 +66,7 @@ export function ListModels() {
 
   const modelComponents = useMemo(() => {
     return modelList?.map((modelData) =>
-      modelData.type === "ImportGeometry" ? (
+      modelData.model === "ImportGeometry" ? (
         <ImportGeometry key={modelData.id} data={modelData} />
       ) : (
         <DynamicGeometry key={modelData.id} data={modelData} />

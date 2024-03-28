@@ -1,52 +1,59 @@
-import React, { useDeferredValue, memo } from "react";
+import React, { memo, useCallback, Suspense } from "react";
+import { useGLTF, Html } from "@react-three/drei";
 import MeshComponent from "@/components/World/element/MeshComponent";
-import { useGLTF } from "@react-three/drei";
-
-const importGeometryRecursively = (object, index) => {
-  if (object.type === "Mesh") {
-    return (
-      <MeshComponent
-        key={index}
-        id={object.id}
-        type={object.type}
-        name={object.name}
-        position={object.position}
-        rotation={object.rotation}
-        scale={object.scale}
-        geometry={object.geometry}
-        material={object.material}
-        dispose={null}
-      />
-    );
-  } else if (object.type === "Group" || object.type === "Object3D") {
-    return (
-      <group key={index}>
-        {object.children.map((child, i) => importGeometryRecursively(child, i))}
-      </group>
-    );
-  } else {
-    return <primitive key={index} object={object.clone()} />;
-  }
-};
+import { useElementStore } from "@/components/SocketManager";
 
 const ImportGeometry = memo(({ data }) => {
-  const deferred = useDeferredValue(data.model_url);
-  const { scene } = useGLTF(deferred);
+  // const { nodes } = useGLTF(data.model_url);
+  const nodes = useElementStore((state) => state.nodes);
+  const importGeometryRecursively = useCallback((object, index, nodes) => {
+    if (!object) return null;
+    if (object.type === "Mesh" || object.type === "CustomMesh") {
+      if (nodes[object.name]?.geometry && nodes[object.name]?.material) {
+        return (
+          <MeshComponent
+            key={index}
+            id={object.id}
+            model={object.model}
+            name={object.name}
+            position={object.position}
+            rotation={object.rotation}
+            scale={object.scale}
+            geometry={nodes[object.name].geometry}
+            material={nodes[object.name].material}
+            dispose={null}
+          />
+        );
+      } else {
+        return null; // Handle missing data
+      }
+    } else {
+      return (
+        <React.Fragment key={index}>
+          {object.children.map((child, i) =>
+            importGeometryRecursively(child, i, nodes)
+          )}
+        </React.Fragment>
+      );
+    }
+  }, []);
 
   return (
-    <MeshComponent
-      id={data.id}
-      type={data.type}
-      name={data.text}
-      position={data.position}
-      rotation={data.rotation}
-      scale={data.scale}
-      isSelect={data.isSelect}
-    >
-      {scene.children.map((child, index) =>
-        importGeometryRecursively(child, index)
-      )}
-    </MeshComponent>
+    <Suspense fallback={<Html>Loading...</Html>}>
+      <MeshComponent
+        id={data.id}
+        model={data.model}
+        name={data.name}
+        position={data.position}
+        rotation={data.rotation}
+        scale={data.scale}
+        isSelect={data.isSelect}
+      >
+        {data.children.map((child, index) =>
+          importGeometryRecursively(child, index, nodes)
+        )}
+      </MeshComponent>
+    </Suspense>
   );
 });
 
