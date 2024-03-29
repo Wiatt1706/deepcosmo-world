@@ -1,33 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useElementStore, useExportStore } from "@/components/SocketManager";
+import { useElementStore } from "@/components/SocketManager";
 import { useCursor } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
-import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 function MeshComponent({ id, model, children, isSelect = false, ...props }) {
   const ref = useRef();
   const setTarget = useElementStore((state) => state.setTarget);
-  const { saveTarget, setSaveTarget } = useExportStore();
   const [hovered, setHovered] = useState(false);
   const camera = useThree((state) => state.camera);
 
-  const exporter = new GLTFExporter();
-
-  const supabase = createClientComponentClient();
-
   useCursor(hovered);
-
-  const uploadData = async ({ filePath, file }) => {
-    const { data, error } = await supabase.storage
-      .from("model")
-      .upload(filePath, file);
-    if (data) {
-      console.log(data);
-    } else {
-      console.log(error);
-    }
-  };
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -49,19 +31,6 @@ function MeshComponent({ id, model, children, isSelect = false, ...props }) {
     setHovered(false);
   };
 
-  const handleSyncSave = () => {
-    const filePath = `public/model/${id}.gltf`;
-    exporter.parse(ref.current, (result) => {
-      uploadData({
-        filePath: filePath,
-        file: new Blob([JSON.stringify(result)], {
-          type: "application/octet-stream",
-        }),
-      });
-    });
-    setSaveTarget(false);
-  };
-
   useEffect(() => {
     if (isSelect && ref.current) {
       setTarget({ object: ref.current, id });
@@ -70,12 +39,6 @@ function MeshComponent({ id, model, children, isSelect = false, ...props }) {
       camera.lookAt(x, y, z); // 相机朝向目标Mesh
     }
   }, [isSelect]);
-
-  useEffect(() => {
-    if (saveTarget && model === "ImportGeometry") {
-      handleSyncSave();
-    }
-  }, [saveTarget]);
 
   return (
     <mesh

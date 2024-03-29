@@ -18,14 +18,45 @@ import {
 const PUBLIC_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public/model/";
 
+// 递归函数，用于提取子对象的 children
+function extractChildren(object, result) {
+  if (object.children.length === 0) {
+    return;
+  }
+  for (let child of object.children) {
+    result.push(child);
+    extractChildren(child, result);
+  }
+}
+// 提取所有子对象到一个大集合中，并删除每个对象的 children 字段
+function extractAllChildren(modelList) {
+  let allChildren = [];
+
+  // 加入原始 modelList 中的对象
+  for (let model of modelList) {
+    allChildren.push(model);
+  }
+
+  // 提取子对象并删除 children 字段
+  for (let model of modelList) {
+    extractChildren(model, allChildren);
+  }
+
+  // 删除每个对象的 children 字段
+  for (let obj of allChildren) {
+    delete obj.children;
+  }
+
+  return allChildren;
+}
+
 export const SaveButton = ({ landInfo }) => {
   const [loading, setLoading] = useState(false);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const sceneList = useElementStore((state) => state.sceneList);
   const modelList = useMyStore((state) => state.modelList);
-
-  const { saveTarget, setSaveTarget } = useExportStore();
+  const sceneList = useElementStore((state) => state.sceneList);
+  const setSaveTarget = useExportStore((state) => state.setSaveTarget);
 
   const fetchData = async (models) => {
     try {
@@ -47,20 +78,48 @@ export const SaveButton = ({ landInfo }) => {
   const handleSave = async () => {
     try {
       setLoading(true);
-
-      console.log("Saving model data:", modelList);
+      sceneList.forEach((sceneItem) => {
+        updateModelData(modelList, sceneItem);
+      });
+      let allChildren = extractAllChildren(modelList);
       // 出发模型上传
       // setSaveTarget(true);
-      // // 更新模型数据
-      // sceneList.forEach((sceneItem) => {
-      //   updateModelData(modelList, sceneItem);
-      // });
       // // 请求保存
-      // await fetchData(modelList);
+
+      await fetchData(allChildren);
     } catch (error) {
       console.error("Save error:", error);
     }
   };
+
+  function updateModelData(modelList, sceneItem) {
+    const { userData, position, rotation, scale, children } = sceneItem;
+
+    if (userData && userData.primaryId) {
+      const matchingModel = modelList.find(
+        (modelItem) => modelItem.id === userData.primaryId
+      );
+
+      if (matchingModel) {
+        // 将 position、rotation 和 scale 转换为数组格式，记录其 xyz 值
+        const newPosition = [position.x, position.y, position.z];
+        const newRotation = [rotation._x, rotation._y, rotation._z];
+        const newScale = [scale.x, scale.y, scale.z];
+
+        // 更新匹配的 modelList 元素的数据
+        matchingModel.position = newPosition;
+        matchingModel.rotation = newRotation;
+        matchingModel.scale = newScale;
+      }
+    }
+
+    // 递归遍历子模型
+    if (children && children.length > 0) {
+      children.forEach((child) => {
+        updateModelData(modelList, child);
+      });
+    }
+  }
 
   return (
     <>

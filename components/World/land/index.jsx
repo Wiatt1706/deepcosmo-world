@@ -43,7 +43,7 @@ export default function LandWorld({ info }) {
 
         <Suspense fallback={<Loader />}>
           <LoadNode model_url={info?.model_url} />
-          <ListModels />
+          <ListModels landId={info?.id} />
         </Suspense>
 
         <Controls />

@@ -49,7 +49,7 @@ const ImportGeometry = memo(({ data }) => {
         scale={data.scale}
         isSelect={data.isSelect}
       >
-        {data.children.map((child, index) =>
+        {data?.children?.map((child, index) =>
           importGeometryRecursively(child, index, nodes)
         )}
       </MeshComponent>

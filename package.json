@@ -36,6 +36,7 @@
     "@use-gesture/react": "^10.3.0",
     "autoprefixer": "10.4.16",
     "clsx": "^2.0.0",
+    "date-fns": "^3.6.0",
     "eslint": "8.48.0",
     "eslint-config-next": "14.0.2",
     "framer-motion": "^10.16.4",

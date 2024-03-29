@@ -10,13 +10,19 @@ import DynamicGeometry from "@/components/World/element/DynamicGeometry";
 import ImportGeometry from "@/components/World/element/ImportGeometry";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import { saveString } from "@/components/utils/DownUrl";
-export function ListModels() {
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
+export function ListModels({ landId }) {
   const modelsRef = useRef();
   const scene = useThree((state) => state.scene);
   const modelList = useMyStore((state) => state.modelList);
   const setSceneList = useElementStore((state) => state.setSceneList);
   const exporter = new GLTFExporter();
-  const { target, setTarget } = useExportStore();
+  const [saveTarget, setSaveTarget] = useExportStore((state) => [
+    state.saveTarget,
+    state.setSaveTarget,
+  ]);
+  const supabase = createClientComponentClient();
 
   // 定义一个辅助函数，用于获取所有子元素的名称
   function getAllChildrenNames(model) {
@@ -29,12 +35,36 @@ export function ListModels() {
     return names;
   }
 
+  const uploadData = async ({ filePath, file }) => {
+    const { data, error } = await supabase.storage
+      .from("model")
+      .upload(filePath, file);
+    if (data) {
+      console.log(data);
+    } else {
+      console.log(error);
+    }
+  };
+
+  const handleSyncSave = (uniqueModels) => {
+    const filePath = `public/${landId}/scene.gltf`;
+    exporter.parse(uniqueModels, (result) => {
+      uploadData({
+        filePath: filePath,
+        file: new Blob([JSON.stringify(result)], {
+          type: "application/octet-stream",
+        }),
+      });
+    });
+    setSaveTarget(false);
+  };
+
   useEffect(() => {
     setSceneList(scene.children);
   }, [modelList]);
 
   useEffect(() => {
-    if (target) {
+    if (saveTarget) {
       const uniqueModelsRef = modelsRef.current.clone();
       // 过滤掉重复名称的模型
       const uniqueModels = uniqueModelsRef.children.filter(
@@ -52,17 +82,9 @@ export function ListModels() {
         }
       );
 
-      exporter.parse(
-        uniqueModels,
-        (result) => {
-          // 导出二进制格式
-          saveString(JSON.stringify(result), "object.glb");
-          setTarget(null);
-        },
-        { binary: true } // 设置选项对象的 binary 属性为 true
-      );
+      handleSyncSave(uniqueModels);
     }
-  }, [target]);
+  }, [saveTarget]);
 
   const modelComponents = useMemo(() => {
     return modelList?.map((modelData) =>

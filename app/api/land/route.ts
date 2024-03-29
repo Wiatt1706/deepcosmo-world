@@ -41,7 +41,9 @@ export async function POST(request: Request) {
             .select();
 
         if (insertError) {
-            throw new Error("Failed to insert block_models into the database.");
+            console.log("transformedModels", transformedModels);
+
+            throw new Error("Failed to insert block_models into the database.: " + insertError.message);
         }
 
 

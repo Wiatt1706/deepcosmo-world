@@ -10,6 +10,7 @@ import { Button, ButtonGroup } from "@nextui-org/button";
 import ImportInput from "@/components/utils/ImportInput";
 import ModelViewerWithControls from "@/components/utils/ModelViewerWithControls";
 import { HiTrash } from "react-icons/hi2";
+import { useNotification } from "@/components/utils/NotificationBar";
 
 export const ImportMenu = () => {
   const importInputRef = useRef(null);
@@ -25,6 +26,7 @@ export const ImportMenu = () => {
     state.setNodes,
   ]);
   const setOpenPopup = useToolStore((state) => state.setOpenPopup);
+  const addNotification = useNotification((state) => state.addNotification);
 
   const handleFileSelect = (selectedFiles) => {
     setSelectedFile(selectedFiles[0]); // 假设仅支持单文件选择
@@ -35,6 +37,15 @@ export const ImportMenu = () => {
   };
 
   const handleModelLoad = (data, newNodes) => {
+    if (!data) {
+      setSelectedFile(null);
+      addNotification(
+        "Failed to load model file, please check your model file format",
+        "error",
+        "Model Load Error"
+      );
+      return;
+    }
     modelData = data;
 
     const mergedNodes = { ...nodes };
