@@ -21,6 +21,8 @@ import {
 import Link from "next/link";
 import { GithubSvg, GoogleSvg } from "@/components/utils/icons";
 
+type Provider = "github" | "google";
+
 export default function AuthButtonClient({
   session,
 }: {
@@ -68,13 +70,13 @@ const LoginBtn = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const supabase = createClientComponentClient<Database>();
 
-  const handleSignIn = (provider: string) => {
+  const handleSignIn = (provider: Provider) => {
     setLoading(true);
     setClickedBtn(provider);
     handleAuth(provider);
   };
 
-  const handleAuth = async (provider: string) => {
+  const handleAuth = async (provider: Provider) => {
     await supabase.auth.signInWithOAuth({
       provider,
       options: {

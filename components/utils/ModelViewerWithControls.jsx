@@ -27,16 +27,8 @@ const convertToMyModelFormat = (scene, modelUrl, pid) => {
 
 const ModelViewer = ({ glbUrl, onModelLoad }) => {
   const deferred = useDeferredValue(glbUrl);
-  let scene = null;
-  let nodes = {};
-  console.log("ModelViewer");
 
-  console.log("deferred", deferred);
-  if (!deferred) {
-    return null; // 返回一个占位符，以避免报错
-  }
-
-  ({ scene, nodes } = useGLTF(deferred));
+  const { scene, nodes } = useGLTF(deferred);
 
   // 遍历场景中的所有对象，设置接收阴影和投射阴影
   scene?.traverse((node) => {

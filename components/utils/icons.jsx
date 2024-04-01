@@ -14,7 +14,13 @@ export const ChevronDownIcon = () => (
   </svg>
 );
 
-export const ChevronDown = ({ fill, size, height, width, ...props }) => {
+export const ChevronDown = ({
+  fill = "currentColor",
+  size = 24,
+  height = 24,
+  width = 24,
+  ...props
+}) => {
   return (
     <svg
       fill="none"
@@ -36,7 +42,13 @@ export const ChevronDown = ({ fill, size, height, width, ...props }) => {
   );
 };
 
-export const Lock = ({ fill, size, height, width, ...props }) => {
+export const Lock = ({
+  fill = "currentColor",
+  size = 24,
+  height = 24,
+  width = 24,
+  ...props
+}) => {
   const color = fill;
 
   return (
@@ -83,7 +95,13 @@ export const Lock = ({ fill, size, height, width, ...props }) => {
   );
 };
 
-export const Activity = ({ fill, size, height, width, ...props }) => {
+export const Activity = ({
+  fill = "currentColor",
+  size = 24,
+  height = 24,
+  width = 24,
+  ...props
+}) => {
   return (
     <svg
       height={size || height || 24}
@@ -110,9 +128,9 @@ export const Activity = ({ fill, size, height, width, ...props }) => {
 
 export const Flash = ({
   fill = "currentColor",
-  size,
-  height,
-  width,
+  size = 24,
+  height = 24,
+  width = 24,
   ...props
 }) => {
   return (
@@ -138,9 +156,9 @@ export const Flash = ({
 
 export const Server = ({
   fill = "currentColor",
-  size,
-  height,
-  width,
+  size = 24,
+  height = 24,
+  width = 24,
   ...props
 }) => {
   return (
@@ -165,9 +183,9 @@ export const Server = ({
 
 export const TagUser = ({
   fill = "currentColor",
-  size,
-  height,
-  width,
+  size = 24,
+  height = 24,
+  width = 24,
   ...props
 }) => {
   return (
@@ -200,9 +218,9 @@ export const TagUser = ({
 
 export const Scale = ({
   fill = "currentColor",
-  size,
-  height,
-  width,
+  size = 24,
+  height = 24,
+  width = 24,
   ...props
 }) => {
   return (
@@ -234,9 +252,9 @@ export const Scale = ({
 
 export const LogoSvg = ({
   fill = "currentColor",
-  size,
-  height,
-  width,
+  size = 24,
+  height = 24,
+  width = 24,
   ...props
 }) => {
   return (
@@ -306,9 +324,9 @@ export const LogoSvg = ({
 };
 export const PlaySvg = ({
   fill = "currentColor",
-  size,
-  height,
-  width,
+  size = 24,
+  height = 24,
+  width = 24,
   ...props
 }) => {
   return (
@@ -333,9 +351,9 @@ export const PlaySvg = ({
 
 export const ImportModelSvg = ({
   fill = "currentColor",
-  size,
-  height,
-  width,
+  size = 24,
+  height = 24,
+  width = 24,
   ...props
 }) => {
   return (
@@ -402,9 +420,9 @@ export const ImportModelSvg = ({
 
 export const StoreSvg = ({
   fill = "currentColor",
-  size,
-  height,
-  width,
+  size = 24,
+  height = 24,
+  width = 24,
   ...props
 }) => {
   return (
@@ -518,9 +536,9 @@ export const StoreSvg = ({
 
 export const GithubSvg = ({
   fill = "currentColor",
-  size,
-  height,
-  width,
+  size = 24,
+  height = 24,
+  width = 24,
   ...props
 }) => {
   return (
@@ -541,9 +559,9 @@ export const GithubSvg = ({
 };
 export const GoogleSvg = ({
   fill = "currentColor",
-  size,
-  height,
-  width,
+  size = 24,
+  height = 24,
+  width = 24,
   ...props
 }) => {
   return (

@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useGLTF } from "@react-three/drei";
 import ImportGeometry from "@/components/World/element/ImportGeometry";
 import DynamicGeometry from "@/components/World/element/DynamicGeometry";
 import {
@@ -10,20 +9,18 @@ import {
   useElementStore,
   useExportStore,
 } from "@/components/SocketManager";
+import { useNotification } from "@/components/utils/NotificationBar";
 
-export function ListModels({ landId, model_url }) {
+export function ListModels({ landId }) {
   const modelsRef = useRef();
   const scene = useThree((state) => state.scene);
   const modelList = useMyStore((state) => state.modelList);
-  const [setNodes, setSceneList] = useElementStore((state) => [
-    state.setNodes,
-    state.setSceneList,
-  ]);
+  const setSceneList = useElementStore((state) => state.setSceneList);
   const [saveTarget, setSaveTarget] = useExportStore((state) => [
     state.saveTarget,
     state.setSaveTarget,
   ]);
-  const { nodes } = model_url ? useGLTF(model_url) : { nodes: null };
+  const addNotification = useNotification((state) => state.addNotification);
 
   const supabase = createClientComponentClient();
   const exporter = useMemo(() => new GLTFExporter(), []);
@@ -31,10 +28,6 @@ export function ListModels({ landId, model_url }) {
   useEffect(() => {
     setSceneList(scene.children);
   }, [modelList]);
-
-  useEffect(() => {
-    setNodes(nodes);
-  }, [model_url]);
 
   const uploadData = async ({ filePath, file }) => {
     try {
@@ -49,7 +42,7 @@ export function ListModels({ landId, model_url }) {
         console.log(error);
       }
     } catch (error) {
-      console.error("Error uploading data:", error);
+      addNotification("上传场景失败：" + error, "error", "Model Upload Error");
     }
   };
 

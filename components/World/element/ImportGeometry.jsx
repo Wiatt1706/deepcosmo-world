@@ -63,4 +63,5 @@ const ImportGeometry = memo(({ data }) => {
   );
 });
 
+ImportGeometry.displayName = "ImportGeometry";
 export default ImportGeometry;

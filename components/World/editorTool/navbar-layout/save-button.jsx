@@ -14,9 +14,7 @@ import {
   useMyStore,
   useExportStore,
 } from "@/components/SocketManager";
-
-const PUBLIC_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public/model/";
+import { useNotification } from "@/components/utils/NotificationBar";
 
 // 递归函数，用于提取子对象的 children
 function extractChildren(object, result) {
@@ -52,6 +50,7 @@ function extractAllChildren(modelList) {
 
 export const SaveButton = ({ landInfo }) => {
   const [loading, setLoading] = useState(false);
+  const addNotification = useNotification((state) => state.addNotification);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const modelList = useMyStore((state) => state.modelList);
@@ -69,6 +68,11 @@ export const SaveButton = ({ landInfo }) => {
       const res = await fetch("/api/land", requestOptions);
       const data = await res.json();
       console.log("Fetch data:", data);
+      addNotification(
+        "Model saved successfully",
+        "success",
+        "Model Save Success"
+      );
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -89,6 +93,11 @@ export const SaveButton = ({ landInfo }) => {
       await fetchData(allChildren);
     } catch (error) {
       console.error("Save error:", error);
+      addNotification(
+        "Save failed, please check your model file format",
+        "error",
+        "Model Save Error"
+      );
       setLoading(false);
     }
   };

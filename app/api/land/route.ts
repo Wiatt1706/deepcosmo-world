@@ -1,5 +1,9 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
+
+const PUBLIC_URL =
+    process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public/model/";
+
 export async function POST(request: Request) {
     const requestBody = await request.json();
     const supabase = createRouteHandlerClient<Database>({ cookies });
@@ -17,7 +21,7 @@ export async function POST(request: Request) {
 
         const { error: updateError } = await supabase
             .from('land_info')
-            .update({ operate_status: 1 })
+            .update({ operate_status: 1, model_url: PUBLIC_URL + `public/${requestBody.id}/scene.glb` })
             .eq('id', requestBody.id)
             .select()
 

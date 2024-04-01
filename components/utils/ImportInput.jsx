@@ -73,4 +73,5 @@ const ImportInput = React.forwardRef(
   }
 );
 
+ImportInput.displayName = "ImportInput";
 export default ImportInput;

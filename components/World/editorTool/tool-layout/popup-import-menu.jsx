@@ -64,21 +64,6 @@ export const ImportMenu = () => {
     modelData.name = selectedFile.name.split(".")[0];
     // 将唯一的节点累加到 nodes 中
     setNodes(nodeList);
-
-    // 检查 modelList 中是否已存在具有相同文本的项目
-    // const isDuplicate = modelList.some(
-    //   (model) => model.name === modelData.name
-    // );
-    // if (isDuplicate) {
-    //   // 如果存在重复项，则进行处理，这里假设您希望在文本后面添加一个唯一的序号
-    //   let index = 1;
-    //   let uniqueText = modelData.name + ` (${index})`;
-    //   while (modelList.some((model) => model.name === uniqueText)) {
-    //     index++;
-    //     uniqueText = modelData.name + ` (${index})`;
-    //   }
-    //   modelData.name = uniqueText;
-    // }
     setModelList([...(modelList ?? []), { ...modelData, isSelect: true }]);
     setOpenPopup(false);
   };
