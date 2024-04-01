@@ -20,7 +20,7 @@ const PUBLIC_URL =
 
 // 递归函数，用于提取子对象的 children
 function extractChildren(object, result) {
-  if (object.children.length === 0) {
+  if (!object.children || object.children.length === 0) {
     return;
   }
   for (let child of object.children) {
@@ -83,12 +83,13 @@ export const SaveButton = ({ landInfo }) => {
       });
       let allChildren = extractAllChildren(modelList);
       // 出发模型上传
-      // setSaveTarget(true);
+      setSaveTarget(true);
       // // 请求保存
 
       await fetchData(allChildren);
     } catch (error) {
       console.error("Save error:", error);
+      setLoading(false);
     }
   };
 

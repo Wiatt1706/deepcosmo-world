@@ -4,7 +4,7 @@ import React from "react";
 import { useElementStore } from "@/components/SocketManager";
 import { DegreeNumInput } from "@/components/utils/NumInput";
 
-export const Rotation = () => {
+export const Rotation = ({ handleUpdate }) => {
   // 鼠标可操作阶段
   const [target, setTarget] = useElementStore((state) => [
     state.target,
@@ -16,27 +16,21 @@ export const Rotation = () => {
       <div className="inputGroup">
         <DegreeNumInput
           value={target.object.rotation.x}
-          onUpdate={(value) => {
-            target.object.rotation.x = value;
-          }}
+          onUpdate={(value) => handleUpdate(value, "rotation", "x")}
           prefix="X"
           suffix="&deg;"
           step={1}
         />
         <DegreeNumInput
           value={target.object.rotation.y}
-          onUpdate={(value) => {
-            target.object.rotation.y = value;
-          }}
+          onUpdate={(value) => handleUpdate(value, "rotation", "y")}
           prefix="Y"
           suffix="&deg;"
           step={1}
         />
         <DegreeNumInput
           value={target.object.rotation.z}
-          onUpdate={(value) => {
-            target.object.rotation.z = value;
-          }}
+          onUpdate={(value) => handleUpdate(value, "rotation", "z")}
           prefix="Z"
           suffix="&deg;"
           step={1}

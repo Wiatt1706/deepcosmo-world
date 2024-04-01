@@ -5,11 +5,10 @@ import GridBox from "../element/Grid";
 import { useControlListeners } from "../../hook/useControlListeners";
 import { ListModels } from "@/components/World/land/ListModels";
 import { Environment, Html, useProgress } from "@react-three/drei";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import Controls from "@/components/World/land/Controls";
 import { useMyStore } from "@/components/SocketManager";
 import KeyListener from "@/components/World/land/KeyHandler";
-import LoadNode from "@/components/World/land/LoadNode";
 export default function LandWorld({ info }) {
   // 绑定操作控制器
   const { elementRef } = useControlListeners();
@@ -42,8 +41,7 @@ export default function LandWorld({ info }) {
         <GridBox size={info?.size} />
 
         <Suspense fallback={<Loader />}>
-          <LoadNode model_url={info?.model_url} />
-          <ListModels landId={info?.id} />
+          <ListModels landId={info?.id} model_url={info?.model_url} />
         </Suspense>
 
         <Controls />

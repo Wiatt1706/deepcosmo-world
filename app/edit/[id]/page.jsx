@@ -25,8 +25,28 @@ export default async function land({ params }) {
     .from("block_models")
     .select()
     .eq("land_id", params.id);
-  data.models = models;
 
+  // 根据 pid 将子元素添加到父元素的 children 字段中
+  const modelsWithChildren = models
+    .map((model) => {
+      if (model.pid) {
+        const parentIndex = models.findIndex(
+          (parent) => parent.id === model.pid
+        );
+        if (parentIndex !== -1) {
+          if (!models[parentIndex].children) {
+            models[parentIndex].children = [];
+          }
+          models[parentIndex].children.push(model);
+          return null; // 设置为 null，后续过滤掉
+        }
+      }
+      return model;
+    })
+    .filter(Boolean);
+
+  // 将父元素添加到 data 中
+  data.models = modelsWithChildren;
   return (
     <section className="flex flex-col items-center justify-center">
       <Navbar landInfo={landInfo[0]} />
@@ -37,12 +57,15 @@ export default async function land({ params }) {
     </section>
   );
 }
+
 function PageNotFound() {
   return (
     <div className="w-full p-4 text-center flex flex-col items-center justify-center">
       <h1>Page Not Found</h1>
       <p>The page you requested could not be found.</p>
-      <Link href="/" className="text-blue-500">Back to Home</Link>
+      <Link href="/" className="text-blue-500">
+        Back to Home
+      </Link>
     </div>
   );
 }

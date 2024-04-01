@@ -4,7 +4,7 @@ import React from "react";
 import { useElementStore } from "@/components/SocketManager";
 import NumInput from "@/components/utils/NumInput";
 
-export const Scale = () => {
+export const Scale = ({ handleUpdate }) => {
   // 鼠标可操作阶段
   const [target, setTarget] = useElementStore((state) => [
     state.target,
@@ -16,27 +16,21 @@ export const Scale = () => {
       <div className="inputGroup">
         <NumInput
           value={target.object.scale.x}
-          onUpdate={(value) => {
-            target.object.scale.x = value;
-          }}
+          onUpdate={(value) => handleUpdate(value, "scale", "x")}
           prefix="X"
           suffix="m"
           step={0.1}
         />
         <NumInput
           value={target.object.scale.y}
-          onUpdate={(value) => {
-            target.object.scale.y = value;
-          }}
+          onUpdate={(value) => handleUpdate(value, "scale", "y")}
           prefix="Y"
           suffix="m"
           step={0.1}
         />
         <NumInput
           value={target.object.scale.z}
-          onUpdate={(value) => {
-            target.object.scale.z = value;
-          }}
+          onUpdate={(value) => handleUpdate(value, "scale", "z")}
           prefix="Z"
           suffix="m"
           step={0.1}

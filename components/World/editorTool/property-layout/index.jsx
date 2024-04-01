@@ -17,7 +17,7 @@ export const InfoView = () => {
     state.modelList,
     state.setModelList,
   ]);
-
+  let updateTimeout = null;
   const target = useElementStore((state) => state.target);
   // 获取颜色值对象
   const colorValue = target?.object?.material.color;
@@ -42,13 +42,76 @@ export const InfoView = () => {
     }
   };
 
+  const handleUpdate = (value, type, axis) => {
+    switch (type) {
+      case "position":
+        target.object.position[axis] = parseFloat(value.toFixed(2));
+        break;
+      case "rotation":
+        target.object.rotation[axis] = parseFloat(value.toFixed(2));
+        break;
+      case "scale":
+        target.object.scale[axis] = parseFloat(value.toFixed(2));
+        break;
+      default:
+        break;
+    }
+    // 清除之前的计时器
+    if (updateTimeout) {
+      clearTimeout(updateTimeout);
+    }
+    // 设置新的计时器
+    const timeoutId = setTimeout(() => {
+      // 更新模型列表
+      const updatedModelList = updateModelListRecursively(
+        modelList,
+        target.id,
+        {
+          position: target.object.position.toArray(),
+          rotation: target.object.rotation.toArray(),
+          scale: target.object.scale.toArray(),
+        }
+      );
+      setModelList(updatedModelList);
+    }, 600); // 2秒内的更新只以最后一次为准
+
+    updateTimeout = timeoutId;
+  };
+
+  const updateModelListRecursively = (
+    modelList,
+    targetId,
+    updatedProperties
+  ) => {
+    return modelList.map((model) => {
+      if (model.id === targetId) {
+        // 更新目标模型的属性
+        return {
+          ...model,
+          ...updatedProperties,
+        };
+      } else if (model.children && model.children.length > 0) {
+        // 如果模型具有子节点，则递归更新子节点
+        return {
+          ...model,
+          children: updateModelListRecursively(
+            model.children,
+            targetId,
+            updatedProperties
+          ),
+        };
+      }
+      return model;
+    });
+  };
+
   return (
     <>
       {target && target.object && (
         <div className="right-tool">
-          <Position />
-          <Rotation />
-          <Scale />
+          <Position handleUpdate={handleUpdate} />
+          <Rotation handleUpdate={handleUpdate} />
+          <Scale handleUpdate={handleUpdate} />
 
           <label className="text-xs">Color</label>
           <div>
