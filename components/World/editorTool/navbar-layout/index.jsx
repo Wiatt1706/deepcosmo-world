@@ -13,43 +13,34 @@ import {
 } from "@nextui-org/react";
 import { ChevronDownIcon, LogoSvg, PlaySvg } from "@/components/utils/icons";
 import { useToolStore } from "@/components/SocketManager";
-import { HiOutlineQueueList } from "react-icons/hi2";
+import { HiOutlineQueueList, HiAdjustmentsHorizontal } from "react-icons/hi2";
 import { TbGrid3X3, TbGridScan } from "react-icons/tb";
 import { SaveButton } from "./save-button";
+import { SystemView } from "@/components/World/editorTool/system-layout";
 export const Navbar = ({ landInfo }) => {
   const handleWheel = (event) => {
     // 阻止鼠标滚轮事件的默认行为
     event.preventDefault();
   };
 
-  const { isOpenElement, setOpenElement, isPerspective, setPerspective } =
-    useToolStore();
+  const {
+    isOpenElement,
+    setOpenElement,
+    isPerspective,
+    setPerspective,
+    isOpenSystemSet,
+    setSystemSet,
+  } = useToolStore();
 
   const handleElementView = () => {
     setOpenElement(!isOpenElement);
   };
+  const handleSystemView = () => {
+    setSystemSet(!isOpenSystemSet);
+  };
   const handlePerspective = () => {
     setPerspective(!isPerspective);
   };
-
-  const items = [
-    {
-      key: "new",
-      label: "New file",
-    },
-    {
-      key: "copy",
-      label: "Copy link",
-    },
-    {
-      key: "edit",
-      label: "Edit file",
-    },
-    {
-      key: "delete",
-      label: "Delete file",
-    },
-  ];
 
   return (
     <div onWheel={handleWheel} className="toolbar_view">
@@ -74,6 +65,13 @@ export const Navbar = ({ landInfo }) => {
         >
           {isPerspective ? <TbGrid3X3 size={20} /> : <TbGridScan size={20} />}
         </div>
+        <div
+          onClick={handleSystemView}
+          className={`navbar_box_item h-[48px] w-[48px] flex items-center px-3 text-[#6B7280]`}
+        >
+          <HiAdjustmentsHorizontal size={20} />
+        </div>
+        {isOpenSystemSet && <SystemView />}
       </div>
       <div>
         <Breadcrumbs
@@ -105,33 +103,6 @@ export const Navbar = ({ landInfo }) => {
         </Breadcrumbs>
       </div>
       <div className="flex items-center">
-        <div className="flex items-center hidden sm:flex">
-          <div className="navbar_item">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button
-                  radius="none"
-                  className="bg-white text-black border border-conditionalborder-transparent "
-                  size="sm"
-                >
-                  New file
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu aria-label="Dynamic Actions" items={items}>
-                {(item) => (
-                  <DropdownItem
-                    key={item.key}
-                    color={item.key === "delete" ? "danger" : "default"}
-                    className={item.key === "delete" ? "text-danger" : ""}
-                  >
-                    {item.label}
-                  </DropdownItem>
-                )}
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        </div>
-
         <SaveButton landInfo={landInfo} />
         <div className="flex items-center hidden sm:flex">
           <div className="navbar_box_item border-l border-conditionalborder-transparent h-[48px] flex items-center px-3">

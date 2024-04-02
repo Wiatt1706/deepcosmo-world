@@ -420,7 +420,7 @@ export const ImportModelSvg = ({
 
 export const StoreSvg = ({
   fill = "currentColor",
-  size = 24,
+  size = null,
   height = 24,
   width = 24,
   ...props

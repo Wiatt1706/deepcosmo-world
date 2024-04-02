@@ -7,6 +7,13 @@ export const useMyStore = create(
   temporal(
     (set) => ({
       modelList: [],
+      systemInfo: {
+        sceneColor: "#ffffff",
+        sceneEvn: "city",
+        sceneFogColor: "#ffffff",
+        sceneFog: false,
+        openGrid: true,
+      },
       setModelList: (modelList, addToHistory = true) => {
         if (addToHistory) {
           set({ modelList });
@@ -14,6 +21,13 @@ export const useMyStore = create(
           set({ modelList }, false); // 禁用历史记录
         }
       },
+      setSystemInfo: (key, value) =>
+        set((state) => ({
+          systemInfo: {
+            ...state.systemInfo,
+            [key]: value,
+          },
+        })),
     }),
     { limit: 100 }
   )
@@ -42,9 +56,11 @@ export const useToolStore = create((set) => ({
   isPerspective: false,
   isOpenElement: false,
   isOpenPopup: false,
+  isOpenSystemSet: false,
   setOpenElement: (isOpenElement) => set({ isOpenElement }),
   setOpenPopup: (isOpenPopup) => set({ isOpenPopup }),
   setPerspective: (isPerspective) => set({ isPerspective }),
+  setSystemSet: (isOpenSystemSet) => set({ isOpenSystemSet }),
 }));
 
 export const controlStatusAtom = atom({

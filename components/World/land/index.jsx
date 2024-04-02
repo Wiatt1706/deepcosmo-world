@@ -14,7 +14,10 @@ export default function LandWorld({ info }) {
   // 绑定操作控制器
   const { elementRef } = useControlListeners();
 
-  const setModelList = useMyStore((state) => state.setModelList);
+  const [systemInfo, setModelList] = useMyStore((state) => [
+    state.systemInfo,
+    state.setModelList,
+  ]);
 
   useEffect(() => {
     setModelList(info.models, false);
@@ -37,9 +40,10 @@ export default function LandWorld({ info }) {
           position={[-7, 25, 13]}
           intensity={0.85}
         />
-        <Environment preset="city" />
+        <color attach="background" args={[systemInfo.sceneColor]} />
+        <Environment preset={systemInfo.sceneEvn} background blur={0.78} />
 
-        <GridBox size={info?.size} />
+        {systemInfo.openGrid && <GridBox size={info?.size} />}
 
         <Suspense fallback={<Loader />}>
           {info?.model_url && <LoadScene model_url={info?.model_url} />}
