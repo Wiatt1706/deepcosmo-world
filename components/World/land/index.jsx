@@ -4,12 +4,21 @@ import { Canvas } from "@react-three/fiber";
 import GridBox from "../element/Grid";
 import { useControlListeners } from "../../hook/useControlListeners";
 import { ListModels } from "@/components/World/land/ListModels";
-import { Environment, Html, useProgress } from "@react-three/drei";
+import {
+  Cloud,
+  Clouds,
+  Environment,
+  Html,
+  Sky,
+  useProgress,
+} from "@react-three/drei";
 import { Suspense, useEffect } from "react";
 import Controls from "@/components/World/land/Controls";
 import { useMyStore } from "@/components/SocketManager";
 import KeyListener from "@/components/World/land/KeyHandler";
 import LoadScene from "@/components/World/land/LoadScene";
+import { Physics, RigidBody } from "@react-three/rapier";
+import * as THREE from "three";
 export default function LandWorld({ info }) {
   // 绑定操作控制器
   const { elementRef } = useControlListeners();
@@ -44,10 +53,17 @@ export default function LandWorld({ info }) {
         <Environment preset={systemInfo.sceneEvn} background blur={0.78} />
 
         {systemInfo.openGrid && <GridBox size={info?.size} />}
+        {systemInfo.openSky && <Sky sunPosition={[100, 20, 100]} />}
 
         <Suspense fallback={<Loader />}>
+          <Physics debug={true} paused={systemInfo.openSky} colliders={false}>
+            <ListModels landId={info?.id} />
+          </Physics>
+
+          <Clouds material={THREE.MeshBasicMaterial}>
+            <Cloud seed={10} bounds={20} volume={30} position={[0, 50, 0]} />
+          </Clouds>
           {info?.model_url && <LoadScene model_url={info?.model_url} />}
-          <ListModels landId={info?.id} />
         </Suspense>
 
         <Controls />

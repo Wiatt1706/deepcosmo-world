@@ -22,6 +22,7 @@ const ImportGeometry = memo(({ data }) => {
             scale={object.scale}
             geometry={geometry}
             material={material}
+            isRigid={object.is_rigid}
             dispose={null}
           />
         );
@@ -55,6 +56,8 @@ const ImportGeometry = memo(({ data }) => {
       rotation={data.rotation}
       scale={data.scale}
       isSelect={data.isSelect}
+      isRigid={data.is_rigid}
+      dispose={null}
     >
       {data?.children?.map((child, index) =>
         importGeometryRecursively(child, index)

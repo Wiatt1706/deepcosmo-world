@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import MeshComponent from "@/components/World/element/MeshComponent";
 import { useTexture } from "@react-three/drei";
-
 function DynamicGeometry({ data }) {
   const [color, setColor] = useState(data.material_color);
 
@@ -67,6 +66,7 @@ function DynamicGeometry({ data }) {
       position={data.position}
       rotation={data.rotation}
       scale={data.scale}
+      isRigid={data.is_rigid}
       isSelect={data.isSelect}
     >
       {geometry}

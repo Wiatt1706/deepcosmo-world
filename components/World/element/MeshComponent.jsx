@@ -2,8 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { useElementStore } from "@/components/SocketManager";
 import { useCursor } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
+import { RigidBody } from "@react-three/rapier";
 
-function MeshComponent({ id, model, children, isSelect = false, ...props }) {
+function MeshComponent({
+  id,
+  model,
+  children,
+  isRigid = false,
+  isSelect = false,
+  ...props
+}) {
   const ref = useRef();
   const setTarget = useElementStore((state) => state.setTarget);
   const [hovered, setHovered] = useState(false);
@@ -41,17 +49,35 @@ function MeshComponent({ id, model, children, isSelect = false, ...props }) {
   }, [isSelect]);
 
   return (
-    <mesh
-      {...props}
-      ref={ref}
-      userData={{ primaryId: id }}
-      onClick={handleClick}
-      onPointerMissed={handlePointerMissed}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-    >
-      {children}
-    </mesh>
+    <>
+      {isRigid ? (
+        <RigidBody colliders="trimesh" restitution={0.7} type="fixed">
+          <mesh
+            {...props}
+            ref={ref}
+            userData={{ primaryId: id }}
+            onClick={handleClick}
+            onPointerMissed={handlePointerMissed}
+            onPointerOver={handlePointerOver}
+            onPointerOut={handlePointerOut}
+          >
+            {children}
+          </mesh>
+        </RigidBody>
+      ) : (
+        <mesh
+          {...props}
+          ref={ref}
+          userData={{ primaryId: id }}
+          onClick={handleClick}
+          onPointerMissed={handlePointerMissed}
+          onPointerOver={handlePointerOver}
+          onPointerOut={handlePointerOut}
+        >
+          {children}
+        </mesh>
+      )}
+    </>
   );
 }
 

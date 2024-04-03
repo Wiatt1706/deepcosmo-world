@@ -160,9 +160,9 @@ export const SystemView = () => {
           <div className="w-full py-2 flex justify-between">
             <div>
               <SwitchBtn
-                title={"开启迷雾效果"}
-                value={systemInfo.sceneFog}
-                onChange={(value) => setSystemInfo("sceneFog", value)}
+                title={"开启天空效果"}
+                value={systemInfo.openSky}
+                onChange={(value) => setSystemInfo("openSky", value)}
                 icon={<TbBrandDenodo size={18} />}
               />
             </div>

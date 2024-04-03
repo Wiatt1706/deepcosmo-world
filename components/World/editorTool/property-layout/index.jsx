@@ -8,11 +8,10 @@ import { Rotation } from "./input-rotation";
 import { Input } from "@nextui-org/react";
 import { Color } from "three";
 import { useState } from "react";
+import { SwitchBtn } from "../system-layout/SwitchBtn";
+import { TbBrightnessUp } from "react-icons/tb";
 
 export const InfoView = () => {
-  // 鼠标可操作阶段
-  const [color, setColor] = useState("#000000");
-
   const [modelList, setModelList] = useMyStore((state) => [
     state.modelList,
     state.setModelList,
@@ -21,39 +20,28 @@ export const InfoView = () => {
   const target = useElementStore((state) => state.target);
   // 获取颜色值对象
   const colorValue = target?.object?.material.color;
-  const handleColorChange = (e) => {
-    const newColor = e.target.value;
-    setColor(newColor);
-
-    // 更新 target 对象的颜色
-    if (target && target.object) {
-      target.object.material.color = new Color(newColor);
-    }
-
-    // 更新 modelList 中目标对象的 material_color 属性
-    if (target && target.id) {
-      const updatedModelList = modelList.map((item) => {
-        if (item.id === target.id) {
-          item.material_color = newColor;
-        }
-        return item;
-      });
-      setModelList(updatedModelList);
-    }
-  };
 
   const handleUpdate = (value, type, axis) => {
+    const updatedData = {};
     switch (type) {
       case "position":
         target.object.position[axis] = parseFloat(value.toFixed(2));
+        updatedData.position = target.object.position.toArray();
         break;
       case "rotation":
         target.object.rotation[axis] = parseFloat(value.toFixed(2));
+        updatedData.rotation = target.object.rotation.toArray();
         break;
       case "scale":
         target.object.scale[axis] = parseFloat(value.toFixed(2));
+        updatedData.scale = target.object.scale.toArray();
+        break;
+      case "color":
+        target.object.material.color = new Color(value);
+        updatedData.material_color = value;
         break;
       default:
+        updatedData[type] = value;
         break;
     }
     // 清除之前的计时器
@@ -66,11 +54,7 @@ export const InfoView = () => {
       const updatedModelList = updateModelListRecursively(
         modelList,
         target.id,
-        {
-          position: target.object.position.toArray(),
-          rotation: target.object.rotation.toArray(),
-          scale: target.object.scale.toArray(),
-        }
+        updatedData
       );
       setModelList(updatedModelList);
     }, 600); // 2秒内的更新只以最后一次为准
@@ -125,7 +109,16 @@ export const InfoView = () => {
                   colorValue.b
                 ).getHexString()
               }
-              onChange={handleColorChange}
+              onChange={(e) => handleUpdate(e.target.value, "color")}
+            />
+          </div>
+
+          <div className="w-full py-2">
+            <SwitchBtn
+              title={"开启物理效果"}
+              value={false}
+              onChange={(value) => handleUpdate(value, "is_rigid")}
+              icon={<TbBrightnessUp size={18} />}
             />
           </div>
         </div>

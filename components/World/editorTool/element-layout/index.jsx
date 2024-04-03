@@ -129,7 +129,7 @@ function convertModelListToTreeNode(object, target, isParent = true) {
   }
   treeData.toolList = [
     <EyeBtn key={`eye_${id}`} id={id} />,
-    <ExportBtn key={`export_${id}`} mesh={target?.object} />,
+    <ExportBtn key={`export_${id}`} mesh={id} />,
     <LoacationBtn key={`location_${id}`} id={id} />,
   ];
   return treeData;

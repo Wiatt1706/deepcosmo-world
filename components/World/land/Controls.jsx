@@ -26,7 +26,6 @@ export default function Controls({ size, ...props }) {
     state.setModelList,
   ]);
 
-
   const updateModelListRecursively = (
     modelList,
     targetId,
@@ -71,8 +70,9 @@ export default function Controls({ size, ...props }) {
   };
 
   useEffect(() => {
-    if (target && target.id) {
+    if (target && !target.object) {
       let targetMesh = null;
+      console.log("target-update");
       scene.traverse((node) => {
         if (node.isMesh && node.userData["primaryId"] === target.id) {
           targetMesh = node;
@@ -96,7 +96,7 @@ export default function Controls({ size, ...props }) {
         dampingFactor={1}
         mouseButtons={{ LEFT: 2, MIDDLE: 1, RIGHT: 0 }}
         minPolarAngle={0}
-        maxPolarAngle={Math.PI / 1.75}
+        maxPolarAngle={Math.PI / 1.9}
       />
 
       {target && (
