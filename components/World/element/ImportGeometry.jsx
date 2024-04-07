@@ -5,7 +5,14 @@ import MeshComponent from "@/components/World/element/MeshComponent";
 const ImportGeometry = memo(({ data }) => {
   const nodes = useElementStore((state) => state.nodes);
 
+  if (!nodes) {
+    // 处理未定义的情况，这里可以返回一个加载中状态或其他适当的反馈
+    return null;
+  }
+
   const importGeometryRecursively = (object, index) => {
+    console.log("ImportGometry", nodes[object.name]);
+
     if (!object) return null;
     if (object.type === "Mesh" || object.type === "CustomMesh") {
       const { geometry, material } =
@@ -47,22 +54,29 @@ const ImportGeometry = memo(({ data }) => {
     }
   };
 
+  const { geometry, material } =
+    nodes && nodes[data.name] ? nodes[data.name] : {};
+
+  console.log(geometry);
   return (
-    <MeshComponent
-      id={data.id}
-      model={data.model}
-      name={data.name}
-      position={data.position}
-      rotation={data.rotation}
-      scale={data.scale}
-      isSelect={data.isSelect}
-      isRigid={data.is_rigid}
-      dispose={null}
-    >
+    <>
       {data?.children?.map((child, index) =>
         importGeometryRecursively(child, index)
+      ) || (
+        <MeshComponent
+          id={data.id}
+          model={data.model}
+          name={data.name}
+          position={data.position}
+          rotation={data.rotation}
+          scale={data.scale}
+          geometry={geometry}
+          material={material}
+          isRigid={data.is_rigid}
+          dispose={null}
+        />
       )}
-    </MeshComponent>
+    </>
   );
 });
 

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
-
+import styles from "@/styles/NumInput.model.css";
 const NumInput = ({
   minValue = -Infinity,
   maxValue = Infinity,

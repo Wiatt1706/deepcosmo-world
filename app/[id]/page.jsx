@@ -1,5 +1,5 @@
 import React from "react";
-import LandWorld from "@/components/World/land";
+import PlayWorld from "@/components/World/land/playWorld";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 export default async function land({ params }) {
@@ -20,7 +20,7 @@ export default async function land({ params }) {
 
   return (
     <section className="flex flex-col items-center justify-center">
-      <LandWorld info={data} />
+      <PlayWorld info={data} />
     </section>
   );
 }

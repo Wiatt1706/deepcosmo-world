@@ -38,65 +38,6 @@
     border-radius: 5px;
 }
 
-.numInput {
-    height: 20px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    user-select: none;
-    border-top: 1px solid transparent;
-}
-
-.numInput:not(:first-child) {
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    /* 除了第一个以外的设置实际颜色的上边框 */
-}
-
-.numInput:hover .btn {
-    opacity: 1;
-    /* 在:hover状态下设置不透明 */
-}
-
-.numInput .text {
-    height: 20px;
-    width: calc(100% - 28px);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 13px;
-    cursor: ew-resize;
-    padding: 0 2px;
-}
-
-.numInput .btn {
-    height: 20px;
-    width: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    /* 默认情况下设置透明 */
-    transition: opacity 0.3s ease;
-    /* 添加过渡效果 */
-}
-
-.numInput .btn:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.numInput .text:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.numInput input {
-    all: unset;
-    border: none;
-    /* 移除边框 */
-    font-size: 12px;
-    width: 100%;
-    /* 设置字体大小 */
-}
-
 .navbar_item {
     display: flex;
     align-items: center;

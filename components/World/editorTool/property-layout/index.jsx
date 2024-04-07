@@ -1,6 +1,6 @@
 "use client";
 import style from "./index.css";
-import React from "react";
+import React, { useEffect } from "react";
 import { useMyStore, useElementStore } from "@/components/SocketManager";
 import { Position } from "./input-position";
 import { Scale } from "./input-scale";
@@ -20,6 +20,36 @@ export const InfoView = () => {
   const target = useElementStore((state) => state.target);
   // 获取颜色值对象
   const colorValue = target?.object?.material.color;
+
+  const [modelInfo, setModelInfo] = useState({});
+
+  const findModelById = (id, models) => {
+    for (const model of models) {
+      if (model.id === id) {
+        return model;
+      } else if (model.children && model.children.length > 0) {
+        const childModel = findModelById(id, model.children);
+        if (childModel) {
+          return childModel;
+        }
+      }
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    if (target && target.id && modelList && modelList.length > 0) {
+      const foundModel = findModelById(target.id, modelList);
+      if (foundModel) {
+        setModelInfo(foundModel);
+      } else {
+        setModelInfo({});
+      }
+    } else {
+      // 如果 target 为空或者 modelList 为空，将模型信息重置为空对象
+      setModelInfo({});
+    }
+  }, [modelList, target]);
 
   const handleUpdate = (value, type, axis) => {
     const updatedData = {};
@@ -116,9 +146,8 @@ export const InfoView = () => {
           <div className="w-full py-2">
             <SwitchBtn
               title={"开启物理效果"}
-              value={false}
+              value={modelInfo.is_rigid}
               onChange={(value) => handleUpdate(value, "is_rigid")}
-              icon={<TbBrightnessUp size={18} />}
             />
           </div>
         </div>

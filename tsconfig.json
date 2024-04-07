@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/comment-editor/index.jsx", "app/[id]/page.jsx", "components/utils/icons.jsx", "components/navbar.jsx", "types/database.types.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/comment-editor/index.jsx", "app/[id]/page.jsx", "components/utils/icons.jsx", "components/navbar.jsx", "types/database.types.ts", "components/World/environment/Lights.jsx"],
   "exclude": ["node_modules"]
 }
