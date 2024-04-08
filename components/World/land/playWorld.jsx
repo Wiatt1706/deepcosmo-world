@@ -49,16 +49,16 @@ export default function PlayWorld({ info }) {
         {enabled && <SoftShadows {...config} />}
         {/* <Environment preset={systemInfo.sceneEvn} background blur={0.78} /> */}
         {info?.model_url && <LoadScene model_url={info?.model_url} />}
-
+        {info?.system_data?.openSky && <Sky sunPosition={[100, 100, 100]} />}
         <Suspense fallback={<Loader />}>
-          <Physics debug={true} colliders={false}>
+          <Physics colliders={false}>
             <Ground />
             <Player />
             <ListModels landId={info?.id} />
           </Physics>
 
           <Clouds material={THREE.MeshBasicMaterial}>
-            <Cloud seed={10} bounds={20} volume={30} position={[0, 50, 0]} />
+            <Cloud seed={10} bounds={20} volume={30} position={[0, 40, 0]} />
           </Clouds>
         </Suspense>
       </Canvas>

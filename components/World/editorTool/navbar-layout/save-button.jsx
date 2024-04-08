@@ -53,7 +53,10 @@ export const SaveButton = ({ landInfo }) => {
   const addNotification = useNotification((state) => state.addNotification);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const modelList = useMyStore((state) => state.modelList);
+  const [modelList, systemInfo] = useMyStore((state) => [
+    state.modelList,
+    state.systemInfo,
+  ]);
   const sceneList = useElementStore((state) => state.sceneList);
   const setSaveTarget = useExportStore((state) => state.setSaveTarget);
 
@@ -62,7 +65,7 @@ export const SaveButton = ({ landInfo }) => {
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...landInfo, models }), // 传入一个对象
+        body: JSON.stringify({ ...landInfo, models, systemInfo }), // 传入一个对象
       };
 
       const res = await fetch("/api/land", requestOptions);

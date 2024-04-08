@@ -19,9 +19,10 @@ export async function POST(request: Request) {
             };
         });
 
+        // 更新 land_info 表
         const { error: updateError } = await supabase
             .from('land_info')
-            .update({ operate_status: 1, model_url: PUBLIC_URL + `public/${requestBody.id}/scene.glb` })
+            .update({ system_data: requestBody.systemInfo, operate_status: 1, model_url: PUBLIC_URL + `public/${requestBody.id}/scene.glb` })
             .eq('id', requestBody.id)
             .select()
 

@@ -6,7 +6,6 @@ const LoadScene = ({ model_url }) => {
   const setNodes = useElementStore((state) => state.setNodes);
   const { nodes } = useGLTF(model_url);
 
-  console.log("LoadScene", nodes);
   useEffect(() => {
     setNodes(nodes);
   }, [model_url]);

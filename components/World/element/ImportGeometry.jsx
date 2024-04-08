@@ -11,8 +11,6 @@ const ImportGeometry = memo(({ data }) => {
   }
 
   const importGeometryRecursively = (object, index) => {
-    console.log("ImportGometry", nodes[object.name]);
-
     if (!object) return null;
     if (object.type === "Mesh" || object.type === "CustomMesh") {
       const { geometry, material } =
@@ -57,7 +55,6 @@ const ImportGeometry = memo(({ data }) => {
   const { geometry, material } =
     nodes && nodes[data.name] ? nodes[data.name] : {};
 
-  console.log(geometry);
   return (
     <>
       {data?.children?.map((child, index) =>
