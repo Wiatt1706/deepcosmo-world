@@ -39,7 +39,11 @@ export function ListModels({ landId }) {
       if (data) {
         console.log(data);
       } else {
-        console.log(error);
+        addNotification(
+          "上传场景失败：" + error,
+          "error",
+          "Model Upload Error"
+        );
       }
     } catch (error) {
       addNotification("上传场景失败：" + error, "error", "Model Upload Error");
