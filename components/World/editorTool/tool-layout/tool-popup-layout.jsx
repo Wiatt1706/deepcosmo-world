@@ -4,6 +4,7 @@ import { Input, Tab, Tabs } from "@nextui-org/react";
 import { BiSearch } from "react-icons/bi";
 import { HiXMark } from "react-icons/hi2";
 import { useToolStore } from "@/components/SocketManager";
+import TextTo3DComponent from "@/components/Ai/TextTo3DComponent";
 import { TbTablePlus } from "react-icons/tb";
 import { GeometryMenu } from "./popup-geometry-menu";
 import { ImportMenu } from "./popup-import-menu";
@@ -69,6 +70,11 @@ export const ToolPopupView = () => {
           <Tab key="import" title="Import" className="p-0">
             <div className="w-full h-[390px] overflow-auto text-left">
               <ImportMenu />
+            </div>
+          </Tab>
+          <Tab key="aiModel" title="AiModel" className="p-0">
+            <div className="w-full h-[390px] overflow-auto text-left">
+              <TextTo3DComponent />
             </div>
           </Tab>
         </Tabs>

@@ -36,6 +36,7 @@
     "@types/react-dom": "18.2.7",
     "@use-gesture/react": "^10.3.0",
     "autoprefixer": "10.4.16",
+    "axios": "^1.6.8",
     "clsx": "^2.0.0",
     "date-fns": "^3.6.0",
     "eslint": "8.48.0",
