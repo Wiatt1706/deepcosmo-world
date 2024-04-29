@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Hexagon } from "./Hexagon";
+import Hexagon from "./Hexagon";
 
 export const HEX_X_SPACING = 2.25;
 export const HEX_Z_SPACING = 1.95;

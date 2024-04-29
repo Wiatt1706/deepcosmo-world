@@ -5,7 +5,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { Color } from "three";
 import { MathUtils, randFloat } from "three/src/math/MathUtils.js";
 
-export const Hexagon = React.memo(({ color, onHit, hit, ...props }) => {
+const Hexagon = React.memo(({ color, onHit, hit, ...props }) => {
   const { nodes, materials } = useGLTF("/models/hexagon.glb", "draco/gltf/");
   const hexagonMaterial = useRef();
 
@@ -56,3 +56,6 @@ export const Hexagon = React.memo(({ color, onHit, hit, ...props }) => {
 });
 
 useGLTF.preload("/models/hexagon.glb", "draco/gltf/");
+Hexagon.displayName = "Hexagon";
+
+export default Hexagon;
