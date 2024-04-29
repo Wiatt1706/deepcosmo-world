@@ -11,7 +11,7 @@ const initialValue = {
 export const useInput = () => {
     const [input, setInput] = useState(initialValue);
 
-    const keys = {
+    const keys: Record<string, string> = {
         KeyW: 'forward',
         KeyS: 'backward',
         KeyA: 'left',
@@ -20,14 +20,20 @@ export const useInput = () => {
         Space: 'jump',
     }
 
-    const findKey = (key: string) => keys[key];
+    const findKey = (key: keyof typeof keys): string | undefined => keys[key];
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            setInput(prev => ({ ...prev, [findKey(e.code)]: true }))
+            const key = findKey(e.code);
+            if (key !== undefined) {
+                setInput(prev => ({ ...prev, [key]: true }));
+            }
         }
         const handleKeyUp = (e: KeyboardEvent) => {
-            setInput(prev => ({ ...prev, [findKey(e.code)]: false }))
+            const key = findKey(e.code);
+            if (key !== undefined) {
+                setInput(prev => ({ ...prev, [key]: false }));
+            }
         }
         document.addEventListener('keydown', handleKeyDown)
         document.addEventListener('keyup', handleKeyUp)
