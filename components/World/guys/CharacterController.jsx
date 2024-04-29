@@ -1,17 +1,10 @@
 import { useKeyboardControls } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
-import {
-  CapsuleCollider,
-  RigidBody,
-  euler,
-  quat,
-  vec3,
-} from "@react-three/rapier";
+import { useFrame } from "@react-three/fiber";
+import { CapsuleCollider, RigidBody, euler, quat } from "@react-three/rapier";
 import { useRef, useState } from "react";
 import { Vector3 } from "three";
 import { Controls } from "./index";
 import { Character } from "./Character";
-import { FLOORS, FLOOR_HEIGHT } from "./GameArena";
 import { useStageStore } from "./Experience";
 
 const MOVEMENT_SPEED = 4.2;
@@ -26,12 +19,12 @@ export const CharacterController = ({
 }) => {
   const [animation, setAnimation] = useState("idle");
   const stage = useStageStore((state) => state.stage);
-  const { camera } = useThree();
 
   const [, get] = useKeyboardControls();
   const rb = useRef();
   const inTheAir = useRef(true);
   const landed = useRef(false);
+  const cameraPosition = useRef();
 
   useFrame(({ camera }) => {
     if (stage === "lobby" || !rb.current || stage !== "game") {
@@ -81,10 +74,6 @@ export const CharacterController = ({
     }
     rb.current.setLinvel(vel);
 
-    // Update camera position
-    camera.position.copy(rb.current.position);
-    camera.position.y += 1.5; // Adjust the height of the camera
-
     // ANIMATION
     const movement = Math.abs(vel.x) + Math.abs(vel.z);
     if (inTheAir.current && vel.y > 2) {
@@ -119,6 +108,7 @@ export const CharacterController = ({
       gravityScale={stage === "game" ? 2.5 : 0}
       name={player ? "player" : "other"}
     >
+      <group ref={cameraPosition} position={[0, 8, -16]}></group>
       <Character
         scale={0.42}
         color={player ? "blue" : "red"}
