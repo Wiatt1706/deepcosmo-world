@@ -43,12 +43,7 @@ export default function LandWorld({ info }) {
       >
         <KeyListener />
         <pointLight position={[100, 100, 100]} intensity={0.8} />
-        <hemisphereLight
-          color="#ffffff"
-          groundColor="#b9b9b9"
-          position={[-7, 25, 13]}
-          intensity={0.85}
-        />
+       
         <color attach="background" args={[systemInfo.sceneColor]} />
         <Environment preset={systemInfo.sceneEvn} background blur={0.78} />
 

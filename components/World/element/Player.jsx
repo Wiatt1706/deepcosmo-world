@@ -10,7 +10,7 @@ let rotateAngle = new THREE.Vector3(0, 1, 0);
 let rotateQuarternion = new THREE.Quaternion();
 let cameraTarget = new THREE.Vector3();
 
-const directionOffset = ({ forward, backward, left, right }: any) => {
+const directionOffset = ({ forward, backward, left, right }) => {
   var directionOffset = 0; // w
 
   if (forward) {
@@ -39,8 +39,7 @@ const directionOffset = ({ forward, backward, left, right }: any) => {
 
 const Player = () => {
   const [autoRotate, setAutoRotate] = useState(true);
-  const [directionLight, setDirectionLight] =
-    useState<THREE.DirectionalLight>();
+  const [directionLight, setDirectionLight] = useState();
 
   const model = useGLTF("./models/player.glb");
 
@@ -50,18 +49,18 @@ const Player = () => {
   const currentAction = useRef("");
   const group = useRef(null);
   const rigidBody = useRef(null);
-  const controlsRef = useRef<typeof OrbitControls>();
+  const controlsRef = useRef();
   const camera = useThree((state) => state.camera);
 
   const { scene } = useThree();
 
-  const updateLightTarget = (moveX: number, moveZ: number) => {
+  const updateLightTarget = (moveX, moveZ) => {
     if (directionLight) {
       directionLight.position.x += moveX;
       directionLight.position.z += moveZ;
     }
   };
-  const updateCameraTarget = (moveX: number, moveZ: number) => {
+  const updateCameraTarget = (moveX, moveZ) => {
     // 移动相机
     camera.position.x += moveX;
     camera.position.z += moveZ;

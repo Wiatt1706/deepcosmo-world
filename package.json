@@ -64,6 +64,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@types/three": "^0.164.0",
     "supabase": "^1.148.6"
   }
 }
