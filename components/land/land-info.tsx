@@ -1,22 +1,10 @@
 "use client";
 import Link from "next/link";
-import Likes from "./likes";
 import { useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import { Button, Card, CardFooter, CardHeader, Image } from "@nextui-org/react";
 export default function Lands({ lands }: { lands: LandWithAuthor[] }) {
-  // const [optimisticLands, addOptimisticLand] = useOptimistic<
-  //   LandWithAuthor[],
-  //   LandWithAuthor
-  // >(lands, (currentOptimisticLands, newLand) => {
-  //   const newOptimisticLands = [...currentOptimisticLands];
-  //   const index = newOptimisticLands.findIndex(
-  //     (land) => land.id === newLand.id
-  //   );
-  //   newOptimisticLands[index] = newLand;
-  //   return newOptimisticLands;
-  // });
 
   const supabase = createClientComponentClient<Database>();
   const router = useRouter();

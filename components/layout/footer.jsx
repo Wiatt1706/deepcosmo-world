@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import styles from './footer.module.css';
 
-import { TbBrandBilibili, TbBrandZhihu, TbArrowRight } from "react-icons/tb";
+import { TbBrandBilibili, TbBrandZhihu } from "react-icons/tb";
 
 export default function Footer() {
     return (
