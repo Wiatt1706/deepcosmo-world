@@ -4,7 +4,7 @@ export const Navbar = () => {
   return (
     <div className="toolbar_view">
       <div className="flex items-center">
-        <NavLeftClient />
+        {/* <NavLeftClient /> */}
       </div>
       <div></div>
 

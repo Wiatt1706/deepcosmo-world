@@ -51,8 +51,9 @@ export default function AuthButtonClient({
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="flat">
-          <DropdownItem key="analytics">Analytics</DropdownItem>
-          <DropdownItem key="configurations">Configurations</DropdownItem>
+          <DropdownItem key="analytics" href="/home">
+            Home
+          </DropdownItem>
           <DropdownItem key="logout" color="danger" onClick={handleSignOut}>
             Log Out
           </DropdownItem>

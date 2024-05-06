@@ -1,0 +1,45 @@
+.menuLeft {
+    width: 250px;
+    height: 100vh;
+    background-color: #f1f1f1;
+    font-size: small;
+    font-family: Instrument Sans;
+}
+
+.menuItem {
+    cursor: pointer;
+    color: #838383;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: Instrument Sans;
+    width: 100%;
+    text-align: left;
+    padding: 13px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.menuItemActive {
+    cursor: pointer;
+    color: black;
+    background-color: white;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: Instrument Sans;
+    width: 100%;
+    text-align: left;
+    padding: 13px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.menuItem:hover {
+    color: black;
+    background-color: white;
+}
+
+.menuChevronsRight {
+    z-index: 999;
+}

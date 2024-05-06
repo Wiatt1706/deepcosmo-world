@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/comment-editor/index.jsx", "app/[id]/page.jsx", "components/utils/icons.jsx", "components/navbar.jsx", "types/database.types.ts", "components/World/environment/Lights.jsx", "components/World/element/Player.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/comment-editor/index.jsx", "app/[id]/page.jsx", "components/utils/icons.jsx", "components/navbar.jsx", "types/database.types.ts", "components/World/environment/Lights.jsx", "components/World/element/Player.jsx", "components/land/home-land.jsx"],
   "exclude": ["node_modules"]
 }
