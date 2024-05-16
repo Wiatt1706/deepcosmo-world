@@ -1,0 +1,70 @@
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import ProductInfo from "@/components/products/product-item";
+import ProductKeyword from "./product-keyword";
+import ProductPagination from "./product-pagination";
+import ProductBtnGroup from "./product-btnGroup";
+
+export default async function ProductsService({
+  searchParams,
+  paramsKeywords,
+}: any) {
+  const { page = 1, pageSize = 12, sort = "featured" } = searchParams; // 默认页码为 1，每页显示数量为 12
+  const startRow = (page - 1) * pageSize;
+  const endRow = startRow + pageSize - 1;
+  // 定义不同排序方式对应的字段
+  const orderByMap: { [key: string]: string } = {
+    featured: "score_num", // 默认排序方式，按照 "score_num" 字段排序
+    popular: "hot_num", // 当 sort 为 "popular" 时，按照 "hot_num" 字段排序
+    new: "created_at", // 当 sort 为 "new" 时，按照 "created_at" 字段排序
+  };
+
+  const supabase = createServerComponentClient<Database>({ cookies });
+
+  // 查询总行数
+  const { count } = await supabase
+    .from("ProductsInfo")
+    .select("count", { count: "exact" })
+    .contains("keywords", paramsKeywords || []);
+  // 使用 "exact" 选项确保返回的是确切的总行数
+  const calculatedTotalPages = Math.ceil((count || 0) / pageSize);
+
+  const { data: products } = await supabase
+    .from("ProductsInfo")
+    .select("*")
+    .contains("keywords", paramsKeywords || [])
+    .range(startRow, endRow)
+    .order(orderByMap[sort] || orderByMap.featured, {
+      ascending: false,
+      nullsFirst: false,
+    });
+
+  const { data: keywords } = await supabase
+    .from("Keyword")
+    .select("*")
+    .eq("label_type", "0");
+
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <div className="text-[17px] w-full sticky top-[48px] z-20 bg-white bg-opacity-80 backdrop-blur-md">
+        <div className="flex py-2 justify-between items-center w-full max-w-[1500px] mx-auto px-8">
+          <ProductKeyword keywords={keywords} activeKeys={paramsKeywords} />
+          <div className="flex justify-end">
+            <ProductBtnGroup sort={sort} />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center justify-center w-full max-w-[1500px] p-8">
+        <div className="w-full max-w-[1500px] gap-6 grid grid-cols-12">
+          {products?.map((product: Product) => (
+            <ProductInfo key={product.id} product={product} />
+          ))}
+        </div>
+      </div>
+      <div className="w-full mb-8 flex justify-center items-center">
+        <ProductPagination inintPage={page} total={calculatedTotalPages} />
+      </div>
+    </div>
+  );
+}

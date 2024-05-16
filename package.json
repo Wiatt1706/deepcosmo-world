@@ -65,6 +65,6 @@
   },
   "devDependencies": {
     "@types/three": "^0.164.0",
-    "supabase": "^1.148.6"
+    "supabase": "^1.165.0"
   }
 }
