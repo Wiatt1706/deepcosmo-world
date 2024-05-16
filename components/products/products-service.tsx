@@ -9,7 +9,7 @@ export default async function ProductsService({
   searchParams,
   paramsKeywords,
 }: any) {
-  const { page = 1, pageSize = 12, sort = "featured" } = searchParams; // 默认页码为 1，每页显示数量为 12
+  const { page = 1, pageSize = 12, sort = "featured", search } = searchParams; // 默认页码为 1，每页显示数量为 12
   const startRow = (page - 1) * pageSize;
   const endRow = startRow + pageSize - 1;
   // 定义不同排序方式对应的字段
@@ -22,16 +22,22 @@ export default async function ProductsService({
   const supabase = createServerComponentClient<Database>({ cookies });
 
   // 查询总行数
-  const { count } = await supabase
+  let countQuery = supabase
     .from("ProductsInfo")
-    .select("count", { count: "exact" })
-    .contains("keywords", paramsKeywords || []);
+    .select("count", { count: "exact" });
+  if (search) {
+    countQuery = countQuery.ilike("name", "%" + search + "%");
+  }
+  const { count } = await countQuery.contains("keywords", paramsKeywords || []);
+
   // 使用 "exact" 选项确保返回的是确切的总行数
   const calculatedTotalPages = Math.ceil((count || 0) / pageSize);
 
-  const { data: products } = await supabase
-    .from("ProductsInfo")
-    .select("*")
+  let productsQuery = supabase.from("ProductsInfo").select("*");
+  if (search) {
+    productsQuery = productsQuery.ilike("name", "%" + search + "%");
+  }
+  const { data: products } = await productsQuery
     .contains("keywords", paramsKeywords || [])
     .range(startRow, endRow)
     .order(orderByMap[sort] || orderByMap.featured, {
