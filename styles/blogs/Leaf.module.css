@@ -1,0 +1,17 @@
+.leaf {
+  /* 添加你的 Leaf 组件的通用样式 */
+  font-size: 15px;
+}
+
+.leaf-bold {
+  font-weight: bold;
+  color: #000;
+}
+
+.leaf-italic {
+  font-style: italic;
+}
+
+.leaf-underline {
+  text-decoration: underline;
+}

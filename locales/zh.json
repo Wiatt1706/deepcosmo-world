@@ -1,0 +1,21 @@
+{
+  "home": "Home",
+  "goBack": "返回",
+  "commentsTitle_replies": "{count} 条回复",
+  "addComments": "添加评论",
+  "author": "作者",
+  "collapse_hint": "Collapse ( {count} more )",
+  "register": "Register",
+  "logout": "Logout",
+  "commentsTitle": "Top comments {count}",
+  "btn_group_top": "Top",
+  "btn_group_latest": "Latest",
+  "upvotes": "赞同",
+  "load_mode": "load mode",
+  "reply": "Reply",
+  "comment": " comments",
+  "submit": "Submit",
+  "english": "English",
+  "chinese": "Chinese",
+  "btn_addPost": " New Post"
+}

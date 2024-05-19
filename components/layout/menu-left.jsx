@@ -3,6 +3,7 @@ import styles from "./menu-left.module.css";
 import { LogoSvg } from "../utils/icons";
 import { TbChevronsLeft, TbChevronsRight } from "react-icons/tb";
 import { useState } from "react";
+import { Link } from "@nextui-org/link";
 
 export default function MenuLeft() {
   const [menuVisible, setMenuVisible] = useState(true);
@@ -32,14 +33,18 @@ export default function MenuLeft() {
           </div>
           <hr />
           <div className="px-3 pt-2">
-            <div className={styles.menuItem}>
+            <Link href="/ai" color="foreground" className={styles.menuItem}>
+              <div className="px-2">✨</div>
+              Gemini人工智能
+            </Link>
+            {/* <div className={styles.menuItem}>
               <div className="px-2">🌲</div>
               My Land
             </div>
             <div className={styles.menuItem}>
               <div className="px-2">💎</div>
               Resource
-            </div>
+            </div> */}
           </div>
         </div>
       ) : (

@@ -609,3 +609,57 @@ export const SecuritySvg = ({
     </svg>
   );
 };
+
+export const GeminiSVG = ({
+  fill = "currentColor",
+  size = 24,
+  height = 24,
+  width = 24,
+  ...props
+}) => {
+  return (
+    <svg
+      {...props}
+      width={width}
+      height={height}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 468 468"
+    >
+      <path
+        d="M410.606 210.128C300.476 216.914 212.347 306.938 205.705 419.436H204.901C198.258 306.938 110.13 216.914 0 210.128V209.307C110.13 202.522 198.258 112.498 204.901 0H205.705C212.347 112.498 300.476 202.522 410.606 209.307V210.128Z"
+        fill="url(#paint0_radial_0_1)"
+      />
+      <path
+        d="M468.001 384.594C423.171 387.298 387.297 423.173 384.593 468.003H384.266C381.562 423.173 345.688 387.298 300.859 384.594V384.267C345.688 381.563 381.562 345.689 384.266 300.858H384.593C387.297 345.689 423.171 381.563 468.001 384.267V384.594Z"
+        fill="url(#paint1_radial_0_1)"
+      />
+      <defs>
+        <radialGradient
+          id="paint0_radial_0_1"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(-126 209.192) scale(444 3619.89)"
+        >
+          <stop offset="0.385135" stop-color="#9E72BA" />
+          <stop offset="0.734299" stop-color="#D65C67" />
+          <stop offset="0.931035" stop-color="#D6635C" />
+        </radialGradient>
+        <radialGradient
+          id="paint1_radial_0_1"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(249.569 384.221) scale(180.736 1442.52)"
+        >
+          <stop offset="0.385135" stop-color="#9E72BA" />
+          <stop offset="0.734299" stop-color="#D65C67" />
+          <stop offset="0.931035" stop-color="#D6635C" />
+        </radialGradient>
+      </defs>
+    </svg>
+  );
+};

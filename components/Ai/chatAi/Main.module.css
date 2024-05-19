@@ -1,0 +1,105 @@
+.list {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.list .item {
+  position: relative;
+  background-color: whitesmoke;
+  display: flex;
+
+}
+
+.list .item:hover {
+  transition: all ease-in 0.2s;
+  display: flex;
+}
+
+.list .item:hover ul {
+  transition: all ease-in 0.2s;
+  opacity: calc(1);
+  /* 在父元素:hover时显示子元素 */
+}
+
+.item_tool {
+  z-index: 99;
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+}
+
+.item_tool ul {
+  opacity: calc(0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  min-height: 30px;
+  color: #272727;
+}
+
+.commentAvatar {
+  padding: 20px;
+}
+
+
+.itme_avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #4caf50, #2196f3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ai_avatar {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.itme_loading {
+  padding: 20px;
+  justify-content: center;
+  display: flex;
+  width: 100%;
+  text-align: center;
+}
+
+@keyframes loadingAnimation {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.5);
+  }
+}
+
+.loadLable {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background-color: #D1DBE6;
+  /* 三个点的颜色 */
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: loadingAnimation 1.5s infinite alternate;
+  /* 动画定义，你可以根据需要调整 */
+}
+
+.loadLable:nth-child(2) {
+  animation-delay: 0.5s;
+  /* 第二个点延迟0.5秒开始动画 */
+}
+
+.loadLable:nth-child(3) {
+  animation-delay: 1s;
+  /* 第三个点延迟1秒开始动画 */
+}

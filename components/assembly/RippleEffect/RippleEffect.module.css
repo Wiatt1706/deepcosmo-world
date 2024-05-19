@@ -1,0 +1,14 @@
+/* RippleEffect.module.css */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: rippleAnimation 1s linear;
+}
+
+@keyframes rippleAnimation {
+    to {
+        transform: scale(2);
+        opacity: 0;
+    }
+}

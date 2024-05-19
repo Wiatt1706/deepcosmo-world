@@ -15,9 +15,9 @@
     width: 100%;
     text-align: left;
     padding: 13px;
-    border-radius: 5px;
     display: flex;
     align-items: center;
+    transition: all 0.2s ease-in-out;
 }
 
 .menuItemActive {
@@ -38,6 +38,7 @@
 .menuItem:hover {
     color: black;
     background-color: white;
+    transition: all 0.2s ease-in-out;
 }
 
 .menuChevronsRight {

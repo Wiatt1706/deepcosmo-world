@@ -1,0 +1,275 @@
+.readEditor {
+  background-color: #1f364d;
+  border-radius: 3px;
+  max-width: 750px;
+  margin: auto;
+  padding-bottom: 20px;
+  border: 1px solid #1f364d;
+}
+
+.readEditorContent {
+  font-size: 16px;
+  padding-top: 20px;
+  margin: 0 50px;
+  margin-bottom: 50px;
+}
+
+.bannerTitle {
+  padding: 32px 50px 0;
+  font-family: -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol';
+}
+
+.title {
+  max-width: 400px;
+  color: #fff;
+  font-size: 2.5rem;
+  text-align: center;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.05rem;
+  width: 80%;
+  padding: 100px 0 20px 0;
+  margin: auto;
+}
+
+.title p {
+  color: #63809c;
+  font-size: 1.2rem;
+  margin-top: 20px;
+}
+
+.title a {
+  cursor: pointer;
+  font-size: medium;
+  word-wrap: break-word;
+  border-bottom: 2px solid #63809c;
+  transition: all .38s;
+}
+
+.title a:hover {
+  border-bottom: 2px solid #B81E37;
+  transition: all .38s;
+}
+
+.tagList {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0 50px;
+  color: #e2e3e3;
+}
+
+.selectedTags {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px 10px 10px 0;
+
+}
+
+.tag {
+  font-size: medium;
+  padding: 0.35rem 1.5rem;
+  margin-right: 0.35rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+}
+
+.bannerImgUrl {
+  margin: auto;
+  overflow: hidden;
+}
+
+.bannerImgUrl img {
+  margin: auto;
+  height: 100%;
+  max-height: 500px;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (max-width: 800px) {
+  .readEditor {
+    width: 100%;
+  }
+
+  .tagList {
+    padding: 0 10px;
+  }
+
+  .bannerTitle {
+    padding: 32px 10px 0;
+  }
+
+  .readEditorContent {
+    margin: 0 10px;
+  }
+
+  .button-text {
+    display: none;
+  }
+
+  .button {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    line-height: 32px;
+    background-color: rgba(10, 12, 12, 0.2);
+    color: #43D5ff;
+    padding: 0px 8px;
+    margin-right: 8px;
+    border-radius: 5px;
+  }
+
+}
+
+.storyAvatarLink {
+  margin-right: 10px;
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  display: flex;
+  grid-area: avatar;
+  overflow: hidden;
+}
+
+.avatarShow {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.bannerTitle h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fafafa;
+  display: block;
+  line-height: 1.3;
+}
+
+.avatarInfo {
+  line-height: 1.2;
+  font-size: 12px;
+}
+
+.storyTextLink {
+  font-size: large;
+  font-weight: bold;
+  color: #d4d4d4;
+}
+
+.endorseLabelVo {
+  padding: 8px 0;
+}
+
+.endorseLabelVo span {
+  font-size: 20px;
+  margin-right: 20px;
+}
+
+.endorseLabelVo font {
+  font-size: medium;
+  color: #fff;
+}
+
+.bannerTag {
+  font-size: 16px;
+  margin-right: 10px;
+  padding: 0.35rem 15px;
+  margin-bottom: 10px;
+  color: #d4d4d4;
+  border: #63809c solid 1px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.bannerTag:hover {
+  border: #fff solid 1px;
+}
+
+.content {
+  position: relative;
+  max-width: 750px;
+  margin: auto;
+}
+
+.content_actions {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  color: #646464;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 10px 20px;
+  background-color: #1f364d;
+  box-shadow: 0 0 0 1px #0c2032;
+}
+
+.fixed_actions {
+  z-index: 999;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  animation: floatUpAnimation 0.3s ease;
+  /* 添加动画效果 */
+}
+
+.button {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  line-height: 32px;
+  padding: 0px 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 5px;
+  color: #D1DBE6;
+}
+
+.VoteButton {
+  background-color: rgba(10, 12, 12, 0.2);
+  color: #43D5ff;
+  padding: 0px 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 5px;
+}
+
+.button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.button-number {
+  margin-right: 5px;
+}
+
+.button-text {
+  padding: 0 5px;
+}
+
+@keyframes floatUpAnimation {
+  0% {
+    transform: translateY(100%);
+    /* 初始位置在底部 */
+  }
+
+  100% {
+    transform: translateY(0);
+    /* 最终位置在顶部 */
+  }
+}

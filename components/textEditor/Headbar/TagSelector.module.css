@@ -1,0 +1,89 @@
+.tagSelector {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    color: #e2e3e3;
+}
+
+.tags-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #1f364d;
+    border-radius: 0.3rem;
+    border: 2px solid #9ca3af;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    /* 修改了 box-shadow */
+    z-index: 999;
+}
+
+.tags-panel-title {
+    border-bottom: 2px solid #9ca3af;
+    padding: 0.25rem 1rem;
+    font-size: large;
+}
+
+.tag {
+    font-size: medium;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+}
+
+.tag-remove {
+    padding-left: 5px;
+    font-size: 18px;
+}
+
+.tag-remove:hover {
+    color: white;
+    cursor: pointer;
+}
+
+.selectedTags {
+    display: flex;
+    margin: 5px 5px 5px 0;
+}
+
+.tags-list {
+    overflow-x: hidden;
+    max-height: 350px;
+}
+
+.tags-item {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-size: medium;
+}
+
+.tags-item:hover {
+    background-color: rgba(20, 20, 20, 0.3);
+    cursor: pointer;
+}
+
+.tags-item-title {
+    display: flex;
+    align-items: center;
+    color: #007cf2;
+    font-weight: 800;
+    font-size: 18px;
+}
+
+.tags-item-title label {
+    display: flex;
+    align-items: center;
+    color: #e2e3e3;
+    font-weight: 500;
+    font-size: large;
+    margin: 0 5px;
+}
+
+.tag-limit-message {
+    padding: 0.25rem 1rem;
+    font-size: medium;
+}

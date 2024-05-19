@@ -1,0 +1,25 @@
+.gallery-photo {
+    width: auto;
+    height: auto;
+    margin: auto;
+
+}
+
+.gallery-div {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.col-nextArrow {
+    position: relative;
+    right: 0;
+    background-color: burlywood;
+}
+
+.col-prevArrow {
+    position: relative;
+    background-color: burlywood;
+    left: 1;
+}

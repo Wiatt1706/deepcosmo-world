@@ -1,0 +1,46 @@
+/* RippleEffect.module.css */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: rippleAnimation 1s linear;
+}
+
+@keyframes rippleAnimation {
+    to {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.tooltip-icon-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tooltip-icon-button svg {
+    width: 20px;
+    height: 20px;
+
+}
+
+.tooltip-icon-button:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.btnRotate svg {
+    animation: rotate 2s linear infinite;
+    /* 旋转动画名称、持续时间、线性动画以及无限循环 */
+}

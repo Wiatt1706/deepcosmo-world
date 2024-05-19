@@ -1,0 +1,115 @@
+.review_writing {
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    width: 100%;
+}
+
+.commentAvatar {
+    margin-right: 10px;
+}
+
+@media (max-width: 500px) {
+    .commentAvatar {
+        display: none;
+    }
+}
+
+.noAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.516rem;
+}
+
+.commentEditor {
+    width: 100%;
+}
+
+.review_input {
+    width: 100%;
+    border-radius: 0.216rem;
+}
+
+.review_input:focus-within {
+    box-shadow: 0 0 0 2px #0f688c;
+}
+
+.review_textarea {
+    max-height: 500px;
+    min-height: 33px;
+    background: transparent;
+    border: none;
+    padding: 8px 10px 0;
+    margin: 0;
+    outline: none;
+    width: 100%;
+    box-shadow: none;
+    resize: none;
+    transition: none;
+}
+
+.review-preview {
+    display: flex;
+    box-sizing: border-box;
+    min-width: 0px;
+    position: relative;
+}
+
+.img-preview {
+    width: 150px;
+    box-sizing: border-box;
+    margin-left: 8px;
+    min-width: 0px;
+    position: relative;
+}
+
+
+.clear-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.format-toolbar {
+    position: relative;
+    color: rgba(133, 144, 166, 0.8);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.emojiContainer {
+    z-index: 999;
+}
+
+.em-emoji-picker {
+    height: 200px;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.btnRotate svg {
+    animation: rotate 2s linear infinite;
+    /* 旋转动画名称、持续时间、线性动画以及无限循环 */
+}
+
+.button_set_submit {
+    padding: 0.2rem 0.8rem;
+    border-radius: 0.216rem;
+    margin-right: 5px;
+    background-color: #0070f0;
+    color: #fff;
+}
+
+button.button_set_submit[disabled] {
+    background-color: rgba(27, 45, 64, 0.2);
+    cursor: not-allowed;
+}

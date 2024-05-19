@@ -1,0 +1,80 @@
+.hovering-link {
+    cursor: pointer;
+    font-size: 15px;
+    color: gray;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hovering-link svg {
+    height: 15px;
+}
+
+.hovering-link:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.hovering-link:active {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.hovering-link-active {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+.toolbar-shade {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    z-index: 4;
+}
+
+.toolbar-link-form {
+    width: 260px;
+    background-color: #0d2236;
+    border-radius: 4px;
+    padding: 8px;
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column
+}
+
+.toolbar-link-form input {
+    width: 100%;
+    outline: 0;
+    background-color: #0b1d2d;
+    padding: 10px;
+    border-radius: 4px;
+    color: #9ca3af;
+}
+
+.toolbar-link-list {
+    height: 40px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.toolbar-link-item {
+    display: flex;
+    font-size: small;
+    color: #9ca3af;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.toolbar-link-item:hover {
+    background-color: #1f364d;
+    cursor: pointer;
+}
+
+.toolbar-link-item svg {
+    margin-right: 10px;
+}

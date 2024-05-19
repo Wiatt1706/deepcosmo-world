@@ -1,0 +1,21 @@
+{
+    "home": "Home",
+    "goBack": "Go back",
+    "commentsTitle_replies": "{count} replies",
+    "addComments": "Add Comments",
+    "author": "Author",
+    "collapse_hint": "Collapse ( {count} more )",
+    "register": "Register",
+    "logout": "Logout",
+    "commentsTitle": "Top comments {count}",
+    "btn_group_top": "Top",
+    "btn_group_latest": "Latest",
+    "upvotes": "upvotes",
+    "load_mode": "load mode",
+    "reply": "Reply",
+    "comment": " comments",
+    "submit": "Submit",
+    "english": "English",
+    "chinese": "Chinese",
+    "btn_addPost": " New Post"
+}

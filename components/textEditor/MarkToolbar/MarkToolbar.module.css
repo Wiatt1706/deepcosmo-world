@@ -1,0 +1,16 @@
+.hovering-toolbar {
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    font-size: 15px;
+}
+
+.tooltip-icon-button-active {
+    padding: 10px;
+    color: white;
+}
+
+.tooltip-icon-button {
+    padding: 10px;
+    color: gray;
+}

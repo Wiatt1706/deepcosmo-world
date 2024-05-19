@@ -7,14 +7,12 @@ export const Navbar = () => {
   return (
     <div className={styles.toolbar_view}>
       <div className="flex items-center"></div>
-      <div>
-        <SearchNav />
-      </div>
+      <SearchNav />
 
       <div className="flex items-center">
-        <div className={styles.navbar_box_item}>
+        {/* <div className={styles.navbar_box_item}>
           <TbBell size={20} />
-        </div>
+        </div> */}
         <AuthButtonServer />
       </div>
     </div>

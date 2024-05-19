@@ -1,0 +1,87 @@
+.image-container {
+    position: relative;
+    width: 175px;
+    height: 116px;
+    /* 调整为所需的高度 */
+    overflow: hidden;
+    cursor: move;
+}
+
+.selected-photo {
+    position: absolute;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.image-placeholder {
+    position: relative;
+    display: inline-block;
+    padding: 0.25rem 1rem;
+    border-radius: 0.375rem;
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    overflow-wrap: normal;
+    border: 1px solid;
+    color: #9ca3af;
+    font-size: medium;
+}
+
+
+.image-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.image-canvas {
+    border-radius: 4px;
+    border: 1px rgba(20, 20, 20, 0.8) dashed;
+}
+
+.image-form-btnList {
+    width: calc(100% - 95px);
+    margin-left: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    margin: 5px 0 5px 10px;
+    padding: 5px 15px;
+    color: #fff;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px rgba(20, 20, 20, 0.8) solid;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.change-btn {
+    background-color: #3d658b;
+}
+
+.change-btn:hover {
+    background-color: #2c5070;
+}
+
+.change-btn:active {
+    background-color: #1d364d;
+}
+
+.remove-btn {
+    background-color: #6c849a;
+}
+
+.remove-btn:hover {
+    background-color: #52657a;
+}
+
+.remove-btn:active {
+    background-color: #3a4c5f;
+}

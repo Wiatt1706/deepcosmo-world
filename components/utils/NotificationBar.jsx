@@ -20,6 +20,7 @@ import {
 import DateComponent from "@/components/utils/DateComponent";
 import { getShortenedMessage } from "@/components/utils/TextUtil";
 import { v4 as uuidv4 } from "uuid";
+import { TbBell } from "react-icons/tb";
 
 // 创建一个状态管理器来存储通知状态
 export const useNotification = create((set) => ({
@@ -151,9 +152,9 @@ export const NotificationInfo = () => {
       ) : (
         <div
           onClick={() => setOpenPopup(true)}
-          className="w-[25px]  h-[25px] bg-primary text-white flex justify-center items-center"
+          className="w-[25px]  h-[25px] text-[#6B7280] flex justify-center items-center"
         >
-          <HiBell size={12} />
+          <TbBell size={18} />
         </div>
       )}
 

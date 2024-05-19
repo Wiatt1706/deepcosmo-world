@@ -51,7 +51,7 @@ export default function SearchNav() {
   }, [searchValue, keywords]);
 
   return (
-    <div className="relative flex items-center w-[500px]">
+    <div className="relative flex items-center w-full max-w-[500px]">
       <Input
         classNames={{
           base: "max-w-full sm:max-w-[50rem] h-10",
@@ -90,7 +90,7 @@ export default function SearchNav() {
             onClick={() => querySearchValue(searchValue)}
           >
             <HiMagnifyingGlass size={20} className="m-4" />
-            Search for "{searchValue}"
+            Search for &quot;{searchValue}&quot;
           </div>
         </div>
       )}

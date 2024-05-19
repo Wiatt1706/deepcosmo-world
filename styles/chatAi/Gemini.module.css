@@ -1,0 +1,57 @@
+.container {
+  border-radius: 6px;
+  padding: 10px;
+  text-align: left;
+}
+
+.container p a {
+  font-size: small;
+  line-height: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  word-wrap: break-word;
+  border-bottom: 2px solid #B81E37;
+}
+
+.container .editor {
+  background-color: #f1f1f1;
+  position: sticky;
+  bottom: 0;
+}
+
+.container .title {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.container h1 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+}
+
+.commentAvatar {
+  margin-right: 20px;
+}
+
+.container p {
+  font-size: 16px;
+  font-family: system-ui, sans-serif;
+}
+
+.box {
+  padding-top: 20px;
+  max-width: 750px;
+  margin: auto;
+}
+
+.ideasText {
+  padding-right: 10px;
+  background: linear-gradient(45deg, #4caf50, #2196f3);
+  -webkit-background-clip: text;
+  color: transparent;
+}

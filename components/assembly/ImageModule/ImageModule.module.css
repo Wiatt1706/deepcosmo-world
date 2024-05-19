@@ -1,0 +1,16 @@
+.col-imgbox {
+    border: 4px #343434 dotted;
+    width: 100%;
+    height: 100px;
+    background-color: var(--input-color);
+    margin: 10px 5px;
+    border-radius: 5px;
+    color: #7F7F7F
+}
+.col-imgbox label {
+    color: #aaaaaa;
+}
+.col-imgbox svg {
+    font-size: 22px;
+    margin-bottom: 5px;
+}
