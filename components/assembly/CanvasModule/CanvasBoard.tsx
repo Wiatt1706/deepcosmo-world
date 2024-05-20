@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { observer } from "mobx-react";
 import { useStores } from "./stores/stores";
 import styles from "./CanvasModule.module.css";
-import { useEvent, useKeyboardEvent } from "../../system/GeneralEvent";
+import { useEvent, useKeyboardEvent } from "@/components/utils/GeneralEvent";
 import { CanvasModuleProps, CssSize } from "./interface/CanvasTypes";
-import _ from "./../../pixelArt/helpers";
+import _ from "@/components/utils/helpers";
 
 const CanvasBoard: React.FC<CanvasModuleProps> = observer((props) => {
   const { canvasStore } = useStores();
@@ -12,6 +12,7 @@ const CanvasBoard: React.FC<CanvasModuleProps> = observer((props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null); // 主画布引用
   const maskRef = useRef<HTMLCanvasElement | null>(null); // 遮罩画布引用
+  
   const bufferRef = useRef<HTMLCanvasElement | null>(null); // 缓冲画布引用
 
   let isDragging: boolean = false; // 是否被拖拽
