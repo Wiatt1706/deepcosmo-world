@@ -23,17 +23,16 @@ export default function ProductInfo({ product }: { product: Product }) {
   const [keyswordList, setKeyswordList] = useState<Keyword[]>([]); // 设置初始值为关键词数组
 
   useEffect(() => {
-    // 只有当 product.keywords 不为空时才进行过滤操作
     if (
+      product &&
       product.keywords &&
       product.keywords.length > 0 &&
-      keywords &&
-      keywords.length > 0
+      keywords?.length > 0
     ) {
       const matchingKeywords = keywords.filter((k: Keyword) =>
-        product.keywords.includes(k.id)
+        product.keywords?.includes(k.id)
       );
-      setKeyswordList(matchingKeywords); // 更新关键词列表
+      setKeyswordList(matchingKeywords);
     }
   }, [keywords, product]);
 
