@@ -41,7 +41,7 @@ export default function ProductKeyword({
             key={keyword.id}
             style={{
               color: activeKeys?.includes(String(keyword.id))
-                ? keyword.color
+                ? keyword.color ?? undefined // Use the nullish coalescing operator to ensure color is undefined if it's null
                 : undefined,
             }}
             className="cursor-pointer hover:bg-gray-200"
