@@ -208,6 +208,9 @@ dependencies:
     version: 4.5.2(@types/react@18.2.21)(immer@10.0.4)(react@18.2.0)
 
 devDependencies:
+  '@types/prismjs':
+    specifier: ^1.26.4
+    version: 1.26.4
   '@types/three':
     specifier: ^0.164.0
     version: 0.164.0
@@ -3607,6 +3610,10 @@ packages:
   /@types/phoenix@1.6.4:
     resolution: {integrity: sha512-B34A7uot1Cv0XtaHRYDATltAdKx0BvVKNgYNqE4WjtPUa4VQJM7kxeXcVKaH+KS+kCmZ+6w+QaUdcljiheiBJA==, tarball: https://registry.npmmirror.com/@types/phoenix/-/phoenix-1.6.4.tgz}
     dev: false
+
+  /@types/prismjs@1.26.4:
+    resolution: {integrity: sha512-rlAnzkW2sZOjbqZ743IHUhFcvzaGbqijwOu8QZnZCjfQzBqFE3s4lOTJEsxikImav9uzz/42I+O7YUs1mWgMlg==, tarball: https://registry.npmmirror.com/@types/prismjs/-/prismjs-1.26.4.tgz}
+    dev: true
 
   /@types/prop-types@15.7.11:
     resolution: {integrity: sha512-ga8y9v9uyeiLdpKddhxYQkxNDrfvuPrlFb0N1qnZZByvcElJaXthF1UhvCh9TLWJBEHeNtdnbysW7Y6Uq8CVng==, tarball: https://registry.npmmirror.com/@types/prop-types/-/prop-types-15.7.11.tgz}
