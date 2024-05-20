@@ -1,19 +1,19 @@
+"use client";
 import React, { useState, useEffect, useRef } from "react";
+import { BiTransfer } from "react-icons/bi";
 import Link from "next/link";
 import styles from "@/styles/chatAi/Gemini.module.css";
-import { CommentEditor } from "../../components/comment-editor";
-import { GeminiSVG } from "../../util/SvgImgMpdel";
-import ChatList from "../../components/chatAi/ChatList";
-import { ChatMessage } from "../../components/chatAi/ChatTypes";
-import CustomHead from "../../components/layout/CustomHead";
-import { nodeApi, post } from "../../api";
-import { BiTransfer } from "react-icons/bi";
+import { CommentEditor } from "@/components/assembly/comment-editor/index";
+import { post } from "@/utils/api";
+import { GeminiSVG } from "@/components/utils/icons";
+import { ChatMessage } from "@/components/Ai/chatAi/ChatTypes";
+import ChatList from "@/components/Ai/chatAi/ChatList";
 
 export default function PostPage() {
   const [chatList, setChatList] = useState<ChatMessage[]>([]);
   const [initPrompt, setInitPrompt] = useState<ChatMessage>({
     role: "user",
-    parts: "",
+    parts: [{ text: "" }],
   });
   const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -23,7 +23,11 @@ export default function PostPage() {
       ...chatList,
       {
         role: "user",
-        parts: prompt,
+        parts: [
+          {
+            text: prompt,
+          },
+        ],
       },
     ];
     setChatList(newChatList);
@@ -32,7 +36,11 @@ export default function PostPage() {
       ...prev,
       {
         role: "model",
-        parts: responseText,
+        parts: [
+          {
+            text: responseText,
+          },
+        ],
       },
     ]);
     setLoading(false);
@@ -47,17 +55,17 @@ export default function PostPage() {
         const data = await response.text();
 
         console.log(data);
-        
+
         setInitPrompt({
           role: "user",
-          parts: data,
+          parts: [{ text: data }],
         });
 
         setLoading(true);
         const newChatList = [
           {
             role: "user",
-            parts: data,
+            parts: [{ text: data }],
           },
         ];
         const responseText = await getGenerate(newChatList);
@@ -83,7 +91,7 @@ export default function PostPage() {
 
   const getGenerate = async (messages: ChatMessage[]) => {
     try {
-      const response = await post(nodeApi, `/ai/generateChat`, { messages });
+      const response = await post(`/ai/generateChat`, { messages });
 
       if (response.status !== 200) {
         throw new Error(response.data.message);
@@ -107,11 +115,6 @@ export default function PostPage() {
 
   return (
     <div className={styles.container}>
-      <CustomHead
-        title="DeepCosmo Pro Chat - ProfSynapse"
-        description="欢迎来到 DeepCosmo 专家聊天页面，与 Gemini模型 AI 进行交互。"
-        keywords="AI, 聊天, 专家聊天, Gemini"
-      />
       <div className={styles.box}>
         <div className={styles.title}>
           <GeminiSVG width={45} height={45} />
