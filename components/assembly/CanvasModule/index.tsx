@@ -2,9 +2,9 @@ import React, { useEffect, useRef } from "react";
 import { observer } from "mobx-react";
 import { useStores } from "./stores/stores";
 import styles from "./CanvasModule.module.css";
-import { useEvent } from "../../system/GeneralEvent";
+import { useEvent } from "@/components/utils/GeneralEvent";
 import { CanvasModuleProps, CssSize } from "./interface/CanvasTypes";
-import _ from "./../../pixelArt/helpers";
+import _ from "@/components/utils/helpers";
 
 const CanvasBoard: React.FC<CanvasModuleProps> = observer((props) => {
   const { canvasStore } = useStores();
