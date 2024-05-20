@@ -86,7 +86,7 @@
   display: inline-block;
   width: 5px;
   height: 5px;
-  background-color: #D1DBE6;
+  background-color: gray;
   /* 三个点的颜色 */
   border-radius: 50%;
   margin-right: 6px;

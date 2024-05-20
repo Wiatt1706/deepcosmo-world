@@ -43,7 +43,7 @@ const ChatListItem = ({
       onMouseEnter={resetCopyStatus}
     >
       <div className={styles.item_tool}>
-        <ul onClick={() => copyHandle(item.parts)}>
+        <ul onClick={() => copyHandle(item.parts[0].text)}>
           {isCopied ? <TbCheck width={15} /> : <TbClipboardText width={15} />}
         </ul>
       </div>
@@ -60,8 +60,7 @@ const ChatListItem = ({
       <div className={styles.itme_gruop}>
         <div className={styles.itme_content}>
           <div className={styles.itme_text}>
-            {/* <ReadEditor content={slateText(item.parts)} /> */}
-            {item.parts}
+            <ReadEditor content={slateText(item.parts[0].text)} />
           </div>
         </div>
       </div>

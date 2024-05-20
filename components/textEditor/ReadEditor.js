@@ -16,7 +16,7 @@ const ReadEditor = ({ content }) => {
 
   return (
     <div className={styles['container']}>
-      <Slate editor={editor} value={content}>
+      <Slate editor={editor} initialValue={content}>
         <div ref={editableRef}>
           <SetNodeToDecorations />
           <Editable

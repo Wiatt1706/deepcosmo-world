@@ -1,6 +1,9 @@
+type Message = {
+    text: string;
+};
 
 type ChatMessage = {
-    parts: string;
+    parts: Message[];
     role: string;
 };
 
