@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { BiTransfer } from "react-icons/bi";
 import Link from "next/link";
 import styles from "@/styles/chatAi/Gemini.module.css";
