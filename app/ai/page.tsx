@@ -18,11 +18,7 @@ export default function PostPage() {
       ...chatList,
       {
         role: "user",
-        parts: [
-          {
-            text: prompt,
-          },
-        ],
+        parts: prompt,
       },
     ];
     setChatList(newChatList);
@@ -31,11 +27,7 @@ export default function PostPage() {
       ...prev,
       {
         role: "model",
-        parts: [
-          {
-            text: responseText,
-          },
-        ],
+        parts: responseText,
       },
     ]);
     setLoading(false);

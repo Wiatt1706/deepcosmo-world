@@ -13,7 +13,7 @@ export default function PostPage() {
   const [chatList, setChatList] = useState<ChatMessage[]>([]);
   const [initPrompt, setInitPrompt] = useState<ChatMessage>({
     role: "user",
-    parts: [{ text: "" }],
+    parts: "",
   });
   const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -23,11 +23,7 @@ export default function PostPage() {
       ...chatList,
       {
         role: "user",
-        parts: [
-          {
-            text: prompt,
-          },
-        ],
+        parts: prompt,
       },
     ];
     setChatList(newChatList);
@@ -36,11 +32,7 @@ export default function PostPage() {
       ...prev,
       {
         role: "model",
-        parts: [
-          {
-            text: responseText,
-          },
-        ],
+        parts: responseText,
       },
     ]);
     setLoading(false);
@@ -58,14 +50,14 @@ export default function PostPage() {
 
         setInitPrompt({
           role: "user",
-          parts: [{ text: data }],
+          parts: data,
         });
 
         setLoading(true);
         const newChatList = [
           {
             role: "user",
-            parts: [{ text: data }],
+            parts: data,
           },
         ];
         const responseText = await getGenerate(newChatList);

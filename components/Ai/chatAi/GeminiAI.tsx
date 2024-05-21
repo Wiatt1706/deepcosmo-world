@@ -12,7 +12,6 @@ export async function getGenerateChat(
   history: ChatMessage[],
   newMessage: string
 ) {
-  console.log("chat::True");
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
@@ -50,11 +49,9 @@ export async function getGenerateChat(
     generationConfig,
     safetySettings,
   });
-    
+
   const result = await chat.sendMessage(newMessage);
-  console.log("chat:result:", result);
   const response = await result.response;
-  console.log("chat:response:", response);
   return response.text();
 }
 
@@ -97,7 +94,6 @@ export async function getGenerate(prompt: string) {
   });
 
   const response = result.response;
-
   return response.text();
 }
 
