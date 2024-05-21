@@ -3,7 +3,7 @@ type Message = {
 };
 
 type ChatMessage = {
-    parts: string;
+    parts: Message[];
     role: string;
 };
 

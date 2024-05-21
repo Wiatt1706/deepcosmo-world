@@ -13,9 +13,16 @@ export default function PostPage() {
   const [chatList, setChatList] = useState<ChatMessage[]>([]);
   const [initPrompt, setInitPrompt] = useState<ChatMessage>({
     role: "user",
-    parts: "",
+    parts: [{ text: "" }],
   });
   const [isLoading, setLoading] = useState<boolean>(false);
+
+  const addItem = (role: string, text: string) => {
+    setChatList((prev: ChatMessage[]) => [
+      ...prev,
+      { role, parts: [{ text }] },
+    ]);
+  };
 
   const handleCallback = async (prompt: string, file: any) => {
     setLoading(true);
@@ -23,18 +30,12 @@ export default function PostPage() {
       ...chatList,
       {
         role: "user",
-        parts: prompt,
+        parts: [{ text: prompt }],
       },
     ];
-    setChatList(newChatList);
+    addItem("user", prompt);
     const responseText = await getGenerate([initPrompt, ...newChatList]);
-    setChatList((prev: ChatMessage[]) => [
-      ...prev,
-      {
-        role: "model",
-        parts: responseText,
-      },
-    ]);
+    addItem("model", responseText);
     setLoading(false);
   };
 
@@ -46,28 +47,20 @@ export default function PostPage() {
         );
         const data = await response.text();
 
-        console.log(data);
-
         setInitPrompt({
           role: "user",
-          parts: data,
+          parts: [{ text: data }],
         });
 
         setLoading(true);
         const newChatList = [
           {
             role: "user",
-            parts: data,
+            parts: [{ text: data }],
           },
         ];
         const responseText = await getGenerate(newChatList);
-        setChatList((prev: ChatMessage[]) => [
-          ...prev,
-          {
-            role: "model",
-            parts: responseText,
-          },
-        ]);
+        addItem("model", responseText);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching text data:", error);
