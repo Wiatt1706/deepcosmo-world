@@ -6,7 +6,6 @@ import { Providers } from "./providers";
 import clsx from "clsx";
 import MenuLeft from "@/components/layout/menu-left";
 import { Navbar } from "@/components/layout/navbar";
-import RouteLoader from "@/components/assembly/route-loader";
 
 export const metadata: Metadata = {
   title: {
