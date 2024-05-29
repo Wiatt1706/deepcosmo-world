@@ -33,6 +33,10 @@ export default function MenuLeft() {
           </div>
           <hr />
           <div className="px-3 pt-2">
+            <Link href="/community" color="foreground" className={styles.menuItem}>
+              <div className="px-2">🌲</div>
+              社区
+            </Link>
             <Link href="/ai" color="foreground" className={styles.menuItem}>
               <div className="px-2">✨</div>
               Gemini人工智能

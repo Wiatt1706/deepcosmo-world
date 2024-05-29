@@ -1,0 +1,37 @@
+.comment_actions {
+    background-color: #1f364d;
+}
+
+.content_actions {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    color: #646464;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    background-color: #1f364d;
+    border-top: 1px solid #0c2032;
+}
+
+.fixed_actions {
+    z-index: 99;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    animation: floatUpAnimation 0.3s ease;
+    /* 添加动画效果 */
+}
+
+@keyframes floatUpAnimation {
+    0% {
+        transform: translateY(100%);
+        /* 初始位置在底部 */
+    }
+
+    100% {
+        transform: translateY(0);
+        /* 最终位置在顶部 */
+    }
+}

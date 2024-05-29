@@ -1,0 +1,346 @@
+.topItems {
+  text-align: left;
+  width: 100%;
+  max-width: 950px;
+  user-select: none;
+}
+
+.storyItem {
+  width: 100%;
+  animation: floatIn 0.5s ease-out;
+}
+
+
+
+.topItems .storyItem:not(:last-child) {
+  border-bottom: var(--def-border-color) 1px solid !important;
+}
+
+.feedItem {
+  align-items: start;
+  border-top: none;
+  margin-top: 0 !important;
+  display: grid;
+
+}
+
+.feedItemPro {
+  padding: 18px;
+}
+
+.feedItemPro:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.feedItemNormal {
+  row-gap: 10px;
+  border-top: none;
+  display: grid;
+  background-color: #1f364d;
+  padding: 0.6rem 1rem !important;
+  margin: 0.5rem 0 0 0;
+  border-radius: 5px;
+}
+
+.storyLabel {
+  margin-bottom: 10px;
+  color: #4799eb;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.storyTextLink {
+  justify-self: start;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  grid-area: text;
+  /* 添加自动换行样式 */
+}
+
+.storyTextLink h3 {
+  font-size: 22px;
+  color: var(--main-color);
+  font-weight: inherit;
+}
+
+.storyTextLink h4 {
+  font-size: 16px;
+  color: var(--main-color);
+  font-weight: inherit;
+}
+
+.storyTextLink p {
+  overflow: hidden;
+  font-size: 16px;
+  margin: 8px 0;
+  line-height: 1.3em;
+}
+
+.storyUserLink {
+  height: 30px;
+  max-height: 30px;
+  display: flex;
+  align-items: center;
+  color: var(--label-sub-color);
+  font-size: 14px;
+  font-weight: 600;
+  grid-area: byline;
+  position: relative;
+}
+
+.storyUserLinkLink {
+  align-items: center;
+  display: flex;
+}
+
+.storyUserLinkName {
+  display: inline-flex;
+  margin-left: 0;
+}
+
+.storyUserLinkName::before {
+  content: "@";
+}
+
+@media (max-width: 500px) {
+
+  .feedItemNormal {
+    grid-template-areas:
+      "byline ."
+      "text avatar"
+      "metadata avatar";
+    grid-template-columns: minmax(0, 1fr) 56px;
+    grid-template-rows: min-content min-content min-content;
+  }
+
+  .feedItem {
+    grid-template-areas:
+      "label label"
+      "text text"
+      "metadata byline"
+      "image image";
+    grid-template-columns: minmax(0, min-content) minmax(0, 1fr);
+    grid-template-rows: min-content min-content min-content min-content;
+    max-height: 530px;
+    padding: 10px 0px 15px;
+  }
+
+  .storyUserLink {
+    height: 30px;
+    max-height: 30px;
+    display: flex;
+    align-items: center;
+    align-self: center;
+  }
+
+  .storyImageLink {
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  .storyImageLink img {
+    width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    /* 使用 cover 让图片填充容器，超出的部分被裁剪 */
+    object-position: center top;
+    /* 控制裁剪时显示图片的位置，这里是从顶部开始裁剪 */
+    border-radius: 4px;
+  }
+
+  .storyAvatarLink {
+    align-self: start;
+  }
+
+  .feedItemNormal {
+    grid-template-areas:
+      "byline ."
+      "text avatar"
+      "metadata avatar";
+    grid-template-columns: minmax(0, 1fr) 56px;
+    grid-template-rows: min-content min-content min-content;
+    padding: 20px 0 16px;
+  }
+
+}
+
+@media (min-width: 500px) {
+  .storyImageLink {
+    margin-left: 16px;
+  }
+
+  .feedItem {
+    grid-template-areas:
+      "label label ."
+      "text text image"
+      "metadata byline image";
+    grid-template-columns: minmax(0, min-content) minmax(0, 1fr) 191px;
+    grid-template-rows: min-content min-content min-content;
+  }
+
+  .feedItemNormal {
+    grid-template-areas:
+      "text text avatar"
+      "metadata byline avatar";
+    grid-template-columns: minmax(0, min-content) minmax(0, 1fr) 56px;
+    grid-template-rows: min-content min-content;
+    padding: 16px 0 13px;
+  }
+
+  .storyCounts {
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+  }
+
+  .storyAvatarLink {
+    align-self: center;
+  }
+
+  .storyImageLink img {
+    max-width: 175px;
+    max-height: 116px;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+}
+
+.storyImageLink {
+  display: flex;
+  grid-area: image;
+}
+
+.storyCounts {
+  position: relative;
+  height: 30px;
+  max-height: 30px;
+  display: flex;
+  align-items: center;
+  grid-area: metadata;
+}
+
+.storyCountsText {
+  min-width: 30px;
+}
+
+.storyCountsIcon {
+  height: 16px;
+}
+
+.storyCount {
+  margin-right: 6px;
+  align-items: center;
+  color: #d6d6d7;
+  cursor: pointer;
+  display: inline-flex;
+  user-select: none;
+  font-size: small;
+}
+
+.storyAvatarLink {
+  margin-left: 16px;
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  display: flex;
+  grid-area: avatar;
+  overflow: hidden;
+}
+
+.dropdownMenu {
+  z-index: 99;
+  position: absolute;
+  top: 100%;
+  background-color: #182e43;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  min-width: 180px;
+  color: #fff;
+  font-weight: bold;
+  font-size: small;
+}
+
+.navMenuItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.navMenuItem:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.navMenuIcon {
+  margin: 5px;
+  margin-right: 10px;
+}
+
+@keyframes floatIn {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 500px) {
+  .storyCountsText {
+    display: none;
+  }
+}
+
+.rippleButton {
+  position: relative;
+  overflow: hidden;
+  background-color: #007bff;
+  color: #fff;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  font-size: 16px;
+}
+
+.rippleButton::before,
+.rippleButton::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+}
+
+.rippleButton::before {
+  width: 100%;
+  padding-top: 100%;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  transform: translate(-50%, -50%);
+}
+
+.rippleButton::after {
+  width: 50px;
+  height: 50px;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(5);
+    opacity: 0;
+  }
+}

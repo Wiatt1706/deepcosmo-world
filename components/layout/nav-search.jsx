@@ -2,7 +2,7 @@
 import styles from "./nav-search.module.css";
 import { Input } from "@nextui-org/input";
 import { HiMagnifyingGlass } from "react-icons/hi2";
-import { useKeywordStore } from "../products/product-keyword";
+import { useKeywordStore } from "../assembly/keyword";
 import { Listbox, ListboxItem } from "@nextui-org/react";
 import { TbHash } from "react-icons/tb";
 import { useEffect, useState, useRef } from "react";

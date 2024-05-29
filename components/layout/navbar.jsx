@@ -1,5 +1,5 @@
 import styles from "./navbar.module.css";
-import AuthButtonServer from "../auth-button-server";
+import AuthButtonServer from "./auth-button-server";
 import SearchNav from "./nav-search";
 import { TbBell } from "react-icons/tb";
 

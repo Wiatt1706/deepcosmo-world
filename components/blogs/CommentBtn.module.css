@@ -1,0 +1,102 @@
+.button {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    line-height: 32px;
+    padding: 0px 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 5px;
+    color: #D1DBE6;
+}
+
+.button svg {
+    width: 18px;
+    height: 18px;
+}
+
+.button-number {
+    margin-right: 5px;
+}
+
+.button-text {
+    padding: 0 5px;
+}
+
+.comment-popup {
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 99;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    animation: floatUpAnimation 0.3s ease;
+    background-color: #1f364d;
+    padding-bottom: 5px;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1b2d40;
+    z-index: 99;
+}
+
+.header span {
+    padding: 0 1rem;
+}
+
+.backBtn {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.backBtn svg {
+    font-size: 1.8rem; margin-right: 5px;
+}
+
+@keyframes floatUpAnimation {
+    0% {
+        transform: translateY(100%);
+        /* 初始位置在底部 */
+    }
+
+    100% {
+        transform: translateY(0);
+        /* 最终位置在顶部 */
+    }
+}
+
+@media (max-width: 800px) {
+    .comment-popup {
+        position: fixed;
+        left: 0;
+        right: 0;
+        width: 100%;
+    }
+
+    .button-text {
+        display: none;
+    }
+
+    .button {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        line-height: 32px;
+        background-color: rgba(10, 12, 12, 0.2);
+        color: #43D5ff;
+        padding: 0px 8px;
+        margin-right: 8px;
+        border-radius: 5px;
+    }
+
+}

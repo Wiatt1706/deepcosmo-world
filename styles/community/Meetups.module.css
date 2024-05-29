@@ -1,0 +1,127 @@
+@keyframes threadRowDropIn {
+    0% {
+        opacity: 0;
+        transform: translateY(16px)
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0)
+    }
+}
+
+@media (min-width: 870px) and (max-width: 1171px) {
+    .communityTrending {
+        border-bottom: none !important;
+        border-top: var(--def-border-color) 1px solid;
+    }
+}
+
+@media (min-width: 500px) {
+    .communityTrending {
+        animation-delay: 0s;
+        animation-fill-mode: backwards;
+        animation: threadRowDropIn .5s;
+    }
+
+    .communityStore {
+        animation-delay: .1s;
+        animation-fill-mode: backwards;
+        animation: threadRowDropIn .5s;
+    }
+}
+
+@media (max-width: 869px) {
+    .communityContent .communitySidebarSection:not(:last-child) {
+        border-bottom: none;
+    }
+
+    .communitySidebarSection {
+        border-left: var(--def-border-color) 1px solid;
+        border-right: var(--def-border-color) 1px solid;
+        flex: 1 1 auto;
+        height: auto !important;
+        max-width: 400px;
+        width: 300px;
+        margin: auto;
+    }
+
+}
+
+.communityTrending {
+    border-bottom: var(--def-border-color) 1px solid;
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    height: -moz-min-content;
+    height: min-content;
+    position: relative;
+    text-align: left;
+}
+
+.communitySidebarSection {
+    padding: 24px;
+}
+
+.sidebarHeader {
+    margin-bottom: 24px;
+    align-items: center;
+    display: flex;
+    position: relative;
+    width: 100%;
+}
+
+.sidebarHeaderlink {
+    position: relative;
+    color: var(--main-color);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: color 160ms;
+}
+
+.sidebarHeaderlink>label {
+    border-bottom: var(--def-border-color) 3px solid;
+    color: var(--main-color);
+    font-size: 17px;
+    font-weight: 600;
+    padding-bottom: 2px;
+}
+
+.sidebarHeaderlink>svg {
+    height: 14px;
+    width: 14px;
+    fill: var(--main-color);
+    left: calc(100% + 6px);
+    position: absolute;
+    top: calc(50% - 6px);
+    transition: all 160ms;
+}
+
+.communityStore {
+    align-items: stretch;
+    display: flex;
+    justify-content: stretch;
+}
+
+.communityStoreLink {
+    align-items: center;
+    background-image: url(https://storage.googleapis.com/indie-hackers.appspot.com/miscellaneous-images/shirt-for-store-ad-background.png?2);
+    background-clip: content-box;
+    background-color: linear-gradient(#fc00ff, #010101);
+    ;
+    /* background: linear-gradient(#0e2439, #010101); */
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: var(--def-border-color) 3px solid;
+    border-radius: 4px;
+    box-shadow: 0 0 24px rgba(0, 0, 0, .1), inset -12px -12px 24px rgba(0, 0, 0, .2);
+    cursor: pointer;
+    display: flex;
+    height: 200px;
+    padding: 8px;
+    justify-content: center;
+    width: 100%;
+}

@@ -1,0 +1,209 @@
+@media (min-width: 1172px) {
+
+  .communityContent {
+    align-items: stretch;
+    grid-template-areas: "leftCol middleCol rightCol";
+    grid-template-columns: 300px 1fr 300px;
+  }
+
+  .communityContent>:nth-child(2) {
+    border-left: var(--def-border-color) 1px solid;
+    border-right: var(--def-border-color) 1px solid;
+  }
+}
+
+@media (min-width: 870px) and (max-width: 1171px) {
+  .communityContent {
+    grid-template-areas:
+      "middleCol rightCol"
+      "middleCol leftCol";
+    grid-template-columns: 1fr 300px;
+    grid-template-rows: min-content 1fr;
+  }
+
+  .communityContent>:nth-child(2) {
+    border-right: var(--def-border-color) 1px solid;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 869px) {
+
+  .communityContent {
+    grid-template-areas:
+      "middleCol"
+      "rightCol"
+      "leftCol";
+    grid-template-columns: 1fr;
+  }
+
+  .communityMain {
+    padding-bottom: 24px;
+  }
+
+  .communityLeft,
+  .communityReft {
+    border-top: var(--def-border-color) 1px solid;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (min-width: 870px) and (max-width: 1171px) {
+
+  .communityContent>:nth-child(2) {
+    border-right: var(--def-border-color) 1px solid;
+    overflow: hidden;
+  }
+
+  .communityContent>:nth-child(1),
+  .communityContent>:nth-child(3) {
+    width: 300px;
+  }
+
+}
+
+.communityContent {
+  display: grid;
+  justify-items: stretch;
+  width: 100%;
+  font-size: 17px;
+}
+
+.communityLeft {
+  display: flex;
+  flex-direction: column;
+  grid-area: leftCol;
+  text-align: left;
+}
+
+.communityMain {
+  display: flex;
+  flex-direction: column;
+  grid-area: middleCol;
+}
+
+.communityReft {
+  display: flex;
+  flex-direction: column;
+  grid-area: rightCol;
+  text-align: left;
+}
+
+.homePage {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "nav-202305161840"
+    "top-items-202305161841";
+
+  display: grid;
+  margin: 0 auto;
+  max-width: 748px;
+  min-width: 0;
+  position: relative;
+  width: 100%;
+}
+
+.homeNav {
+  margin: 0 auto;
+  width: 100%;
+}
+
+.sectionHeader {
+  padding: 20px 20px 10px;
+  align-items: center;
+  justify-items: start;
+  display: flex;
+  font-size: 17px;
+  position: relative;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  width: 100%;
+}
+
+.sectionHeader nav {
+  align-self: center;
+  display: flex;
+  flex: 0 1 auto;
+  height: 32px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sectionNavContent {
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex: 0 0 auto;
+  height: 52px;
+  min-width: 0;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+
+.sectionNavLink {
+  align-items: center;
+  border-bottom: 3px solid transparent;
+  color: var(--title-sub-color);
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 auto;
+  height: 32px;
+  margin-right: 18px;
+}
+
+.sectionNavContent .active {
+  border-bottom: 3px solid #4799eb;
+  color: var(--main-color);
+  fill: var(--main-color);
+  font-weight: 600;
+  z-index: 1;
+}
+
+.creataButton {
+  cursor: pointer;
+  border-radius: 5px;
+  color: var(--main-color);
+  font-weight: 600;
+  text-align: center;
+  font-size: 14px;
+  height: 36px;
+  line-height: 36px;
+  margin-left: auto;
+  padding: 0 10px;
+  position: relative;
+  white-space: nowrap;
+  z-index: 2;
+  /* background-image: linear-gradient(to right, #e052a0, #f15c41); */
+  background: var(--btn-gradient);
+}
+
+.loaderToober {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.rotatingLoader {
+  animation: rotate 1s linear infinite;
+  margin: 5px;
+  /* 2s 为动画一次周期的持续时间 */
+}

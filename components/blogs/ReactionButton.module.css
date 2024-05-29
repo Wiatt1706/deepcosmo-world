@@ -1,0 +1,38 @@
+.storyCountLikes {
+    margin-right: 8px;
+    align-items: center;
+    color: var(--label-sub-color);
+    cursor: pointer;
+    display: inline-flex;
+    padding: 0 8px;
+    height: 2.3rem;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border-radius: 1rem;
+    background-color: rgba(120, 120, 120, 0.15);
+}
+
+.likeLabel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    margin: -6px;
+    background-color: #0c2032;
+
+}
+
+.likeLabelText {
+    display: flex;
+    font-size: small;
+    margin-left: 10px;
+}
+
+.likeLabelText font {
+    color: #d6d6d7;
+    margin-right: 5px;
+}

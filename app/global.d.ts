@@ -4,6 +4,7 @@ declare global {
     type Database = DB
     type Land = DB["public"]["Tables"]["land_info"]["Row"];
     type Product = DB["public"]["Tables"]["ProductsInfo"]["Row"];
+    type PxCmtyArticles = DB["public"]["Tables"]["PxCmtyArticles"]["Row"];
     type Keyword = DB["public"]["Tables"]["Keyword"]["Row"];
     type BlockModels = DB["public"]["Tables"]["block_models"]["Row"];
     type Profile = DB["public"]["Tables"]["profiles"]["Row"];

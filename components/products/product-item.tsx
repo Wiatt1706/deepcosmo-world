@@ -11,7 +11,7 @@ import {
 } from "@nextui-org/react";
 import { SecuritySvg } from "../utils/icons";
 import ScoreInput from "@/components/assembly/score-input";
-import { useKeywordStore } from "./product-keyword";
+import { useKeywordStore } from "../assembly/keyword";
 import { useEffect, useState } from "react";
 
 const PUBLIC_URL =
