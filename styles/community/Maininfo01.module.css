@@ -7,13 +7,13 @@
 
 .storyItem {
   width: 100%;
-  animation: floatIn 0.5s ease-out;
+  animation: floatIn 0.2s ease-out;
 }
 
 
 
 .topItems .storyItem:not(:last-child) {
-  border-bottom: var(--def-border-color) 1px solid !important;
+  border-bottom: rgba(120, 120, 120, 0.15) 1px solid !important;
 }
 
 .feedItem {
@@ -28,8 +28,9 @@
   padding: 18px;
 }
 
-.feedItemPro:hover {
-  background-color: rgba(0, 0, 0, 0.15);
+.feedItemPro:hover h3 {
+  color: #0070f0;
+  /* 将 h3 元素的字体颜色设置为红色 */
 }
 
 .feedItemNormal {
@@ -59,9 +60,9 @@
 }
 
 .storyTextLink h3 {
-  font-size: 22px;
-  color: var(--main-color);
-  font-weight: inherit;
+  font-size: 20px;
+  color: #272727;
+  font-weight: bold;
 }
 
 .storyTextLink h4 {
@@ -72,7 +73,8 @@
 
 .storyTextLink p {
   overflow: hidden;
-  font-size: 16px;
+  font-size: 14px;
+  letter-spacing: 1px;
   margin: 8px 0;
   line-height: 1.3em;
 }
@@ -103,7 +105,7 @@
   content: "@";
 }
 
-@media (max-width: 500px) {
+@media (max-width: 700px) {
 
   .feedItemNormal {
     grid-template-areas:
@@ -163,18 +165,22 @@
     padding: 20px 0 16px;
   }
 
+  .storyCountsText {
+    display: none;
+  }
+
 }
 
-@media (min-width: 500px) {
+@media (min-width: 700px) {
   .storyImageLink {
     margin-left: 16px;
   }
 
   .feedItem {
     grid-template-areas:
-      "label label ."
-      "text text image"
-      "metadata byline image";
+      "label label . ."
+      "text text image image"
+      "metadata byline image image";
     grid-template-columns: minmax(0, min-content) minmax(0, 1fr) 191px;
     grid-template-rows: min-content min-content min-content;
   }
@@ -200,8 +206,8 @@
   }
 
   .storyImageLink img {
-    max-width: 175px;
-    max-height: 116px;
+    max-width: 250px;
+    max-height: 150px;
     object-fit: contain;
     border-radius: 4px;
   }
@@ -210,11 +216,11 @@
 .storyImageLink {
   display: flex;
   grid-area: image;
+  align-self: center;
 }
 
 .storyCounts {
   position: relative;
-  height: 30px;
   max-height: 30px;
   display: flex;
   align-items: center;
@@ -232,7 +238,6 @@
 .storyCount {
   margin-right: 6px;
   align-items: center;
-  color: #d6d6d7;
   cursor: pointer;
   display: inline-flex;
   user-select: none;
@@ -291,11 +296,6 @@
   }
 }
 
-@media (max-width: 500px) {
-  .storyCountsText {
-    display: none;
-  }
-}
 
 .rippleButton {
   position: relative;

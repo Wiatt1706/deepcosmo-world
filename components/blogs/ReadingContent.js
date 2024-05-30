@@ -10,7 +10,7 @@ export default function PostPage({ post }) {
     const pageTitle = post?.title; // 从内容中获取页面标题
     const pageDescription = post?.description; // 从内容中获取页面描述
     const pageKeywords = post.Keyword; // 从内容中获取页面关键字
-    const userName = post?.UserDetail?.full_name;
+    const userName = post?.profiles?.username;
     const { likeArray } = useLikes();
 
     return (
@@ -28,7 +28,7 @@ export default function PostPage({ post }) {
                             <div className={styles.avatarShow}>
                                 <a className={styles.storyAvatarLink}>
                                     <Image
-                                        src={post.UserDetail?.avatar_url} // Route of the image file
+                                        src={post.profiles?.avatar_url} // Route of the image file
                                         width={40}
                                         height={40}
                                         alt={userName}
@@ -37,10 +37,10 @@ export default function PostPage({ post }) {
                                 <div className={styles.avatarInfo}>
                                     <Link href={`/blogs/${post.id}`} className={styles.storyTextLink}>{userName}</Link>
                                     <p className="fs-xs color-base-60">
-                                        {post.createDate && (
-                                            <DateComponent dateString={post.createDate} label="Posted on" />
+                                        {post.created_at && (
+                                            <DateComponent dateString={post.created_at} label="Posted on" />
                                         )}
-                                        {post.createDate && post.updateDate && ' • '}
+                                        {post.created_at && post.updateDate && ' • '}
                                         {post.updateDate && (
                                             <DateComponent dateString={post.updateDate} label="Updated on" />
                                         )}

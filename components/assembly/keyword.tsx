@@ -39,11 +39,6 @@ export default function ProductKeyword({
           <Chip
             variant="light"
             key={keyword.id}
-            style={{
-              color: activeKeys?.includes(String(keyword.id))
-                ? keyword.color ?? undefined // Use the nullish coalescing operator to ensure color is undefined if it's null
-                : undefined,
-            }}
             className="cursor-pointer hover:bg-gray-200"
             href={"/product/" + keyword.id}
             as={Link}

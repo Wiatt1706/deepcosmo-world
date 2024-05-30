@@ -22,7 +22,8 @@
     height: 30px;
     border-radius: 100%;
     margin: -6px;
-    background-color: #0c2032;
+    background-color: #fff;
+    border: rgba(120, 120, 120, 0.5) 1px solid;
 
 }
 
@@ -33,6 +34,6 @@
 }
 
 .likeLabelText font {
-    color: #d6d6d7;
+    color: #272727;
     margin-right: 5px;
 }

@@ -95,8 +95,8 @@
 }
 
 .editable blockquote {
-  background-color: #182e43;
-  box-shadow: 0 0 18px rgba(0, 0, 0, .1);
+  background-color: #f1f1f1;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .1);
   padding: 16px 17px;
   transition: box-shadow 140ms;
   border-radius: 3px;
@@ -106,7 +106,6 @@
 }
 
 .editable h1 {
-  color: #fff;
   display: block;
   font-size: 1.5em;
   margin-block-start: 0.67em;
@@ -118,7 +117,6 @@
 }
 
 .editable h2 {
-  color: #fff;
   display: block;
   font-size: 1.17em;
   margin-block-start: 0.83em;
@@ -129,7 +127,6 @@
 }
 
 .editable h3 {
-  color: #fff;
   display: block;
   font-size: 1.17em;
   margin-block-start: 1em;
@@ -141,18 +138,13 @@
 
 .editable a {
   cursor: pointer;
-  color: #e2e3e3;
+  color: #0070f0;
   word-wrap: break-word;
-  border-bottom: 2px solid #e2e3e3;
+  border-bottom: 2px solid #0070f0;
   transition: all .38s;
 }
 
-.editable a:hover {
-  border-bottom: 2px solid #B81E37;
-  transition: all .38s;
-}
-
-.editable p {
+  .editable p {
   display: block;
   margin-block-start: 1em;
   margin-block-end: 1em;

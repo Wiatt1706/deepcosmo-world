@@ -3,7 +3,7 @@ import Footer from "@/components/layout/footer";
 import RouteLoader from "@/components/assembly/route-loader";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import ProductKeyword from "@/components/products/product-keyword";
+import ProductKeyword from "@/components/assembly/keyword";
 import ProductBtnGroup from "@/components/products/product-btnGroup";
 import ProductInfo from "@/components/products/product-item";
 import ProductPagination from "@/components/products/product-pagination";

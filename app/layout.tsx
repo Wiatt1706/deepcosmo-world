@@ -45,7 +45,7 @@ export default function RootLayout({
             <main className="light ">
               <section className="flex relative w-full h-full overflow-hidden">
                 <MenuLeft />
-                <div className="w-full max-h-screen overflow-y-auto inline-block text-center justify-center">
+                <div className="w-full max-h-screen overflow-y-auto inline-block">
                   <Navbar />
                   {children}
                 </div>

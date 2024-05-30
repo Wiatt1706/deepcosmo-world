@@ -82,7 +82,7 @@ export default function BlogClient({ post }: any) {
 
           {/* 评论模块 */}
           <div ref={commentsRef}>
-            <CommentSection post={post} />
+            {/* <CommentSection post={post} /> */}
           </div>
         </div>
       </CommentProvider>

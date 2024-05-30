@@ -4,7 +4,7 @@ https://prismjs.com/download.html#themes=prism-tomorrow&languages=markup+css+cli
     position: relative;
 }
 .preElement select {
-    background-color: #0c2034;
+    background-color: #08090a;
     position: absolute;
     right: 5px;
     top: 5px;
@@ -14,7 +14,7 @@ https://prismjs.com/download.html#themes=prism-tomorrow&languages=markup+css+cli
     font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     line-height: 20px;
     margin-top: 0;
-    background: #0c2034;
+    background: #08090a;
     color: #f8f8f2;
     font-size: 1.125rem;
     text-align: left;
@@ -41,7 +41,7 @@ https://prismjs.com/download.html#themes=prism-tomorrow&languages=markup+css+cli
 
 :not(.preElement)>code[class*=language-],
 .preElement pre[class*=language-] {
-    background: #0c2034;
+    background: #08090a;
 }
 
 :not(.preElement)>code[class*=language-] {

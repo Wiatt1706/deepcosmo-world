@@ -53,14 +53,13 @@ export default async function communityPage({
 
   const { data: keywords } = await supabase
     .from("Keyword")
-    .select("*")
-    .eq("label_type", "1");
+    .select("*");
 
   return (
     <Suspense fallback={<RouteLoader />}>
       <div className="flex flex-col items-center justify-center">
         <div className="text-[17px] w-full sticky top-[48px] z-20 bg-white bg-opacity-80 backdrop-blur-md">
-          <div className="flex py-2 justify-between items-center w-full max-w-[1500px] mx-auto px-8">
+          <div className="flex py-2 justify-between items-center w-full  mx-auto px-8">
             <ProductKeyword keywords={keywords} activeKeys={[]} />
             <div className="flex justify-end">
               <ProductBtnGroup sort={sort} />
