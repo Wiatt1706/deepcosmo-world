@@ -7,17 +7,20 @@ import CommentBtn from "@/components/blogs/CommentBtn";
 import CommentSection from "@/components/blogs/comment";
 import { LikesProvider } from "@/components/blogs/LikesContext";
 import { CommentProvider } from "@/components/blogs/CommentContext";
-
-
-export default function BlogClient({ post }: any) {
-  console.log(post);
-
+import { Session } from "@supabase/auth-helpers-nextjs";
+export default function BlogClient({
+  post,
+  session,
+}: {
+  post: PostVO;
+  session: Session | null;
+}) {
   const [shouldFixActions, setShouldFixActions] = useState(false);
 
-  const contentRef = useRef(null);
-  const actionsRef = useRef(null);
-  const commentsRef = useRef(null);
-  const shouldFixActionsRef = useRef(false);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const actionsRef = useRef<HTMLDivElement | null>(null);
+  const commentsRef = useRef<HTMLDivElement | null>(null);
+  const shouldFixActionsRef = useRef<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,7 +56,7 @@ export default function BlogClient({ post }: any) {
   }, []);
 
   const getContentActionsStyles = () => {
-    if (shouldFixActions) {
+    if (shouldFixActions && contentRef.current) {
       const contentRect = contentRef.current.getBoundingClientRect();
       return {
         width: `${contentRect.width}px`,
@@ -66,7 +69,7 @@ export default function BlogClient({ post }: any) {
   return (
     <LikesProvider post={post}>
       <CommentProvider post={post}>
-        <div className={styles.content} ref={contentRef}>
+        <div ref={contentRef} className={styles.content}>
           <ReadingContent post={post} />
 
           <div
@@ -76,13 +79,13 @@ export default function BlogClient({ post }: any) {
             }`}
             style={getContentActionsStyles()}
           >
-            <UpvoteBtn post={post} />
+            <UpvoteBtn />
             <CommentBtn parentRef={contentRef} post={post} />
           </div>
 
           {/* 评论模块 */}
           <div ref={commentsRef}>
-            {/* <CommentSection post={post} /> */}
+            <CommentSection post={post} session={session} />
           </div>
         </div>
       </CommentProvider>

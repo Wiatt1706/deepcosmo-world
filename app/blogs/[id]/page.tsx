@@ -18,22 +18,38 @@ export default async function BlogsPageService({ params }: any) {
     supabase,
     postId
   );
-  let result = pxCmtyArticles;
 
-  if (!result) {
+  if (!pxCmtyArticles) {
     return {
       notFound: true, // 触发 Next.js 默认的 404 页面
     };
   }
 
+  let resultVo: PostVO = {
+    ...pxCmtyArticles,
+    Keyword: null,
+    likeArray: null,
+    isReject: false,
+  };
   // 获取当前用户的抵制记录
-  const Keyword = await KeywordService.findByIds(supabase, result.keywords);
-  result = { ...result, Keyword: Keyword };
+  if (pxCmtyArticles.keywords) {
+    const Keyword = await KeywordService.findByIds(
+      supabase,
+      pxCmtyArticles.keywords
+    );
+    console.log("Keyword", Keyword);
 
-  const { data: userInfo } = await supabase.auth.getUser();
+    resultVo.Keyword = Keyword;
+  }
 
-  if (userInfo) {
-    const userId = userInfo.user?.id;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session) {
+    const userId = session.user?.id;
+
+    console.log("session", userId);
 
     // 获取当前用户的点赞记录
     const likeArray = await LikeRecordService.findPostLikeArray(
@@ -51,8 +67,9 @@ export default async function BlogsPageService({ params }: any) {
       0
     );
 
-    result = { ...result, likeArray: likeArray, isReject: isReject | false };
+    resultVo.likeArray = likeArray;
+    resultVo.isReject = isReject || false;
   }
 
-  return <BlogClient post={result} />;
+  return <BlogClient post={resultVo} session={session} />;
 }

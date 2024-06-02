@@ -26,10 +26,12 @@ export const get = async (url, params) => {
     return response.json();
 };
 
-export const post = async (url, data) => {
+export const post = async (url, data, customOptions = {}) => {
     const response = await request(url, {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: data instanceof FormData ? data : JSON.stringify(data),
+        headers: data instanceof FormData ? {} : { 'Content-Type': 'application/json' },
+        ...customOptions,
     });
     return response.json();
 };

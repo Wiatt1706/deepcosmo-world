@@ -10,11 +10,11 @@ import { CommentEditor } from '../../comment-editor';
 import { useKeyboardEvent } from '@/components/utils/GeneralEvent';
 import { FormattedMessage } from 'react-intl';
 import { useComment } from './../CommentContext';
-
-export default function CommentContent({ commentRef, handlePublish: handlePublish }) {
+import { useUserStore } from "@/components/SocketManager";
+export default function CommentContent({ commentRef, handlePublish, session }) {
     // 从上下文获取文章数据
     const { comments, commentRecordNum } = useComment();
-
+    
     return (
         <div ref={commentRef} className={styles.comment_container}>
             <div className={styles.commentHeader}>
@@ -33,7 +33,7 @@ export default function CommentContent({ commentRef, handlePublish: handlePublis
             <div className={styles.commentList}>
                 {comments?.map(comment => (
                     <div key={comment.id} className={styles.commentItem}>
-                        <CommentItem comment={comment} handlePublish={handlePublish} />
+                        <CommentItem session={session} comment={comment} handlePublish={handlePublish} />
                     </div>
                 ))}
             </div>
@@ -48,14 +48,14 @@ export default function CommentContent({ commentRef, handlePublish: handlePublis
 }
 
 
-const CommentItem = ({ comment, handlePublish }) => {
+const CommentItem = ({ comment, handlePublish, session }) => {
 
     const { refresh } = useComment();
     const [isLoading, setIsLoading] = useState(false);
     const [isEditorVisible, setIsEditorVisible] = useState(false);
     const [isUnfold, setIsUnfold] = useState(false); // 是否展开
-    const { user, checkLogin } = useContext(UserContext); // 获取上下文中的用户信息
     const [showSubComments, setShowSubComments] = useState(false);
+    const checkLogin = useUserStore((state) => state.checkLogin);
 
     const toggleEditorVisibility = () => {
         setIsEditorVisible(!isEditorVisible);
@@ -68,7 +68,7 @@ const CommentItem = ({ comment, handlePublish }) => {
     };
 
     const handleLikeClick = async () => {
-        if (!user) {
+        if (!session) {
             checkLogin()// 打开用户登录
             return
         }
@@ -164,10 +164,10 @@ const CommentItem = ({ comment, handlePublish }) => {
 
                     {showSubComments
                         ? comment?.commentRecords?.map(subComment => (
-                            <CommentItem key={subComment.id} comment={subComment} handlePublish={handlePublish} />
+                            <CommentItem key={subComment.id} session={session} comment={subComment} handlePublish={handlePublish} />
                         ))
                         : comment?.commentRecords?.slice(0, 3).map(subComment => (
-                            <CommentItem key={subComment.id} comment={subComment} handlePublish={handlePublish} />
+                            <CommentItem key={subComment.id} session={session} comment={subComment} handlePublish={handlePublish} />
                         ))
                     }
                     {comment?.commentRecords?.length > 3 && !isUnfold && (

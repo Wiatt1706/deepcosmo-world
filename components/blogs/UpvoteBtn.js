@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState, useRef } from 'react';
 import { clsx } from 'clsx';
 import styles from './UpvoteBtn.module.css';

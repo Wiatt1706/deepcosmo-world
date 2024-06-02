@@ -9,7 +9,7 @@ export const useComment = () => {
 
 export const CommentProvider = ({ children, post }) => {
 
-    const [commentRecordNum, setCommentRecordNum] = useState(false); // 评论数
+    const [commentRecordNum, setCommentRecordNum] = useState(0); // 评论数
     const [comments, setComments] = useState([]); // 评论记录
     const [triggerRefresh, setTriggerRefresh] = useState(false);
 
@@ -20,11 +20,10 @@ export const CommentProvider = ({ children, post }) => {
     useEffect(() => {
         const getCmtyDocsComment = async () => {
             try {
-                const response = await get(`/comment/get-comments?postId=${post.id}`);
-                console.log("response", response);
-                if (response.status === 200) {
-                    setComments(response.data.data)
-                    setCommentRecordNum(response.data.count);
+                const response = await get(`/comment?postId=${post.id}`);
+                if (response?.data) {
+                    setComments(response.data)
+                    setCommentRecordNum(response.count);
                 }
             } catch (error) {
                 console.error('Error retrieving post:', error);

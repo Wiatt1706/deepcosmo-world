@@ -3,6 +3,11 @@ import { atom } from "jotai";
 import { temporal } from "zundo";
 import { create, useStore } from "zustand";
 
+export const useUserStore = create((set) => ({
+  checkLogin: null,
+  setCheckLogin: (checkLogin) => set({ checkLogin }),
+}));
+
 export const useMyStore = create(
   temporal(
     (set) => ({

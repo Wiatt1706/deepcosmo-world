@@ -25,7 +25,7 @@ const CommentRecordService = {
   async queryByPostId(supabase: SupabaseClient<Database>, postId: string) {
     const { data: commentRecordList, error } = await supabase
       .from("CommentRecord")
-      .select("*,UserDetail(*)")
+      .select("*,profiles(*)")
       .eq("post_id", postId);
     if (!commentRecordList || commentRecordList.length == 0) {
       // 处理可能的错误

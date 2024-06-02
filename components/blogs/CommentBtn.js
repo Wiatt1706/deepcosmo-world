@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState, useRef } from 'react';
 import styles from './CommentBtn.module.css';
 import { BiCommentDots, BiLeftArrowAlt } from 'react-icons/bi';
@@ -42,7 +43,7 @@ export default function CommentBtn({ parentRef, post }) {
                         <div className={styles.backBtn} onClick={() => setOverlayVisible(false)}><BiLeftArrowAlt /> <FormattedMessage id="goBack" /></div>
                         <span><FormattedMessage id="commentsTitle_replies" values={{ count: commentRecordNum }} /></span>
                     </header>
-                    <CommentSection parentRef={sectionRef} post={post} />
+                    <CommentSection post={post} />
                 </div>
             </ShadowComponent>
             <button type="button" className={styles['button']} onClick={() => setOverlayVisible(true)}>

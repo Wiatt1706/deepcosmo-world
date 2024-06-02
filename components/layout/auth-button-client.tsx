@@ -20,7 +20,8 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { GithubSvg, GoogleSvg } from "@/components/utils/icons";
-
+import { create, useStore } from "zustand";
+import { useUserStore } from "../SocketManager";
 type Provider = "github" | "google";
 
 export default function AuthButtonClient({
@@ -44,10 +45,10 @@ export default function AuthButtonClient({
             as="button"
             avatarProps={{
               size: "sm",
-              src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+              src: session?.user?.user_metadata?.avatar_url,
             }}
             className="transition-transform"
-            name="Tony Reichert"
+            name={session?.user?.user_metadata?.user_name || "User"}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="flat">
@@ -66,11 +67,13 @@ export default function AuthButtonClient({
 }
 
 const LoginBtn = () => {
+  const setCheckLogin = useUserStore((state) => state.setCheckLogin);
   const [loading, setLoading] = useState(false);
   const [clickedBtn, setClickedBtn] = useState<string | null>(null);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const supabase = createClientComponentClient<Database>();
 
+  setCheckLogin(onOpen);
   const handleSignIn = (provider: Provider) => {
     setLoading(true);
     setClickedBtn(provider);
