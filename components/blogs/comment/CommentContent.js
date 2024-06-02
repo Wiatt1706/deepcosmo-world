@@ -1,20 +1,21 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import styles from './CommentContent.module.css';
 import { MessageCircle } from 'lucide-react';
 import { BiCaretRight, BiCaretDown, BiSolidHeart, BiHeart } from 'react-icons/bi';
 import { DateInterval } from '../../../components/utils/DateComponent';
 import { parseEmojiCode } from '../../../components/assembly/comment-editor/EmojiBtn';
 import Image from 'next/image';
-import { CommentEditor } from '../../comment-editor';
+import { CommentEditor } from '@/components/assembly/comment-editor';
 import { useKeyboardEvent } from '@/components/utils/GeneralEvent';
 import { FormattedMessage } from 'react-intl';
 import { useComment } from './../CommentContext';
 import { useUserStore } from "@/components/SocketManager";
+import { SecuritySvg } from "@/components/utils/icons";
 export default function CommentContent({ commentRef, handlePublish, session }) {
     // 从上下文获取文章数据
     const { comments, commentRecordNum } = useComment();
-    
+
     return (
         <div ref={commentRef} className={styles.comment_container}>
             <div className={styles.commentHeader}>
@@ -102,12 +103,12 @@ const CommentItem = ({ comment, handlePublish, session }) => {
         <div className={styles.item_main}>
             <div className={`${styles.commentAvatar}`}>
                 <div className={styles.itme_avatar}>
-                    {comment.UserDetail?.avatar_url &&
+                    {comment.profiles?.avatar_url &&
                         <Image
                             className={styles.avatar}
-                            src={comment.UserDetail.avatar_url}
+                            src={comment.profiles.avatar_url}
                             fill={true}
-                            alt={comment.UserDetail.full_name}
+                            alt={comment.profiles?.username}
                         />
                     }
                 </div>
@@ -115,18 +116,18 @@ const CommentItem = ({ comment, handlePublish, session }) => {
 
             <div className={styles.itme_gruop}>
                 <div className={styles.itme_title}>
-                    <span>
-                        {comment.UserDetail?.full_name}
+                    <span className="d_c_c">
+                        {comment.profiles?.username}
                         {comment.is_author && (
                             <font className={styles.itme_title_author}>
-                                <FormattedMessage id="author" />
+                                <SecuritySvg size={14}/>
                             </font>
                         )}
                     </span>
                     {comment.target_comment && (
                         <div className={`d_c_c`}>
                             <BiCaretRight className={styles.separator} />
-                            <span>{comment.target_comment.UserDetail?.full_name}</span>
+                            <span>{comment.target_comment.profiles?.username}</span>
                         </div>
                     )}
                 </div>

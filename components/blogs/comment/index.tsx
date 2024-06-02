@@ -18,7 +18,7 @@ export default function CommentSection({
   post,
   session,
 }: {
-  parentRef: any;
+  parentRef?: any | null;
   post: PostVO;
   session: Session | null;
 }) {
@@ -27,8 +27,6 @@ export default function CommentSection({
   const checkLogin = useUserStore((state) => state.checkLogin);
   const { refresh, commentRecordNum } = useComment();
 
-  console.log("commentRecordNum", commentRecordNum);
-  
   const [shouldFixActions, setShouldFixActions] = useState(false);
   const [showBottomEditor, setShowBottomEditor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -122,10 +120,19 @@ export default function CommentSection({
     };
 
     const response = await postApi(`/comment`, saveData);
-    
+
     setIsLoading(false);
-    if (response.status !== 200) return;
-    refresh(); // 刷新评论
+    console.log("response", response);
+
+    if (response?.data) {
+      refresh(); // 刷新评论
+    } else {
+      addNotification(
+        "发表评论异常，请稍后重试",
+        "error",
+        "Publish Comment Error"
+      );
+    }
   };
 
   const uploadImg = async (file: File) => {

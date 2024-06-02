@@ -12,7 +12,6 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
-    color: #fff;
     font-size: 1.2rem;
     font-weight: 600;
 }
@@ -23,8 +22,8 @@
     font-size: 0.8rem;
     padding: 2px;
     border-radius: 0.41rem;
-    background-color: #1b2d40;
-    color: #aaa;
+    background-color: rgba(0, 112, 240, 0.2);
+    color: #0070f0;
 }
 
 .btn_group button {
@@ -33,7 +32,7 @@
 }
 
 .btn_group .active {
-    background-color: #0c2032;
+    background-color: #0070f0;
     color: #fff;
     border-radius: 0.41rem;
 }
@@ -55,7 +54,7 @@
     position: relative;
     width: 30px;
     height: 30px;
-    background-color: #0c2032;
+    background-color: rgba(0, 112, 240, 0.2);
     border-radius: 0.516rem;
 }
 
@@ -64,27 +63,27 @@
     top: 0;
     width: 30px;
     height: 30px;
-    background-color: #0c2032;
+    background-color: rgba(0, 112, 240, 0.2);
     border-radius: 0.516rem;
 }
 
 .itme_title {
     display: flex;
-    font-size: 1rem;
-    color: #fff;
     margin-bottom: 5px;
+    font-size: 13px;
+    font-weight: bold;
 }
 
 .itme_title_author {
-    margin-left: 5px;
+    margin-left: 4px;
     padding: 0.1rem 0.25rem;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
     color: #aaa;
     font-size: 0.65rem;
 }
 
 .itme_content {
-    color: #D1DBE6;
+    color: #191b1f;
+    font-size: 13px;
 }
 
 .itme_operate {
@@ -93,6 +92,7 @@
     align-items: center;
     font-size: small;
     font-size: 0.8rem;
+    color: #9196a1;
 }
 
 .itme_editor {
@@ -116,7 +116,7 @@
 }
 
 .itme_btn_list button.active {
-    color: #fff;
+    color: #0070f0;
 }
 
 .itme_btn_list span {
@@ -124,7 +124,7 @@
 }
 
 .itme_btn_list button:hover {
-    color: #fff;
+    color: #0070f0;
 }
 
 .separator {
@@ -153,7 +153,7 @@
     }
 
     .itme_title_author {
-        margin-left: 6px;
+        margin-left: 4px;
         padding: 0.1rem 0.25rem;
     }
 

@@ -27,6 +27,7 @@
 .review_input {
     width: 100%;
     border-radius: 0.216rem;
+    background-color: #f1f1f1;
 }
 
 .review_input:focus-within {

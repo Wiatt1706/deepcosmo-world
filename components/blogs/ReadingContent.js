@@ -104,7 +104,7 @@ export default function PostPage({ post }) {
 
             {post?.content && <div className={styles['readEditorContent']}><ReadEditor content={JSON.parse(post.content)} /></div>}
 
-            <div className={styles['tagList']}>
+            {/* <div className={styles['tagList']}>
                 <div className={styles['selectedTags']}>
                     {pageKeywords?.map((tag) => (
                         <div
@@ -118,7 +118,7 @@ export default function PostPage({ post }) {
                         </div>
                     ))}
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

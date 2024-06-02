@@ -3,5 +3,5 @@ export default function CommunityLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <section className="">{children}</section>;
+  return <section className="bg-[#f5f5f5]">{children}</section>;
 }

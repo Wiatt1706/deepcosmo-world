@@ -51,14 +51,12 @@ export default async function communityPage({
       nullsFirst: false,
     });
 
-  const { data: keywords } = await supabase
-    .from("Keyword")
-    .select("*");
+  const { data: keywords } = await supabase.from("Keyword").select("*");
 
   return (
     <Suspense fallback={<RouteLoader />}>
       <div className="flex flex-col items-center justify-center">
-        <div className="text-[17px] w-full sticky top-[48px] z-20 bg-white bg-opacity-80 backdrop-blur-md">
+        <div className="text-[17px] w-full sticky top-[48px] z-20 bg-white bg-opacity-80 backdrop-blur-md border-b border-[rgba(0, 0, 0, 0.1)]">
           <div className="flex py-2 justify-between items-center w-full  mx-auto px-8">
             <ProductKeyword keywords={keywords} activeKeys={[]} />
             <div className="flex justify-end">
@@ -66,15 +64,15 @@ export default async function communityPage({
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center w-full max-w-[1500px] p-8">
+        <div className="flex flex-col items-center justify-center w-full max-w-[750px] p-8 bg-white border-l border-r border-[rgba(0, 0, 0, 0.1)]">
           <div className={styles.topItems}>
             {pxCmtyArticles?.map((postItem: PxCmtyArticles) => (
               <PostItem key={postItem.id} postInfo={postItem} />
             ))}
           </div>
-        </div>
-        <div className="w-full mb-8 flex justify-center items-center">
-          <ProductPagination inintPage={page} total={calculatedTotalPages} />
+          <div className="w-full mt-8 flex justify-center items-center">
+            <ProductPagination inintPage={page} total={calculatedTotalPages} />
+          </div>
         </div>
       </div>
       <Footer />

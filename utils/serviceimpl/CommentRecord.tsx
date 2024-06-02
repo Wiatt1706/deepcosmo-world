@@ -26,7 +26,11 @@ const CommentRecordService = {
     const { data: commentRecordList, error } = await supabase
       .from("CommentRecord")
       .select("*,profiles(*)")
-      .eq("post_id", postId);
+      .eq("post_id", postId)
+      .order("created_at", {
+        ascending: false,
+        nullsFirst: false,
+      });
     if (!commentRecordList || commentRecordList.length == 0) {
       // 处理可能的错误
       console.error("CommentRecordService.queryByPostId error:", error);

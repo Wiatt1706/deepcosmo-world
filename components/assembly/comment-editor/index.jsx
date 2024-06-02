@@ -184,7 +184,6 @@ export const CommentUserEditor = ({
   showFormatToolbarDef = true,
   placeholder = "Add to the discussion",
   isLoading = false,
-  uploadImgSeting,
   session,
 }) => {
 
@@ -216,7 +215,6 @@ export const CommentUserEditor = ({
           showFormatToolbarDef={showFormatToolbarDef}
           placeholder={placeholder}
           isLoading={isLoading}
-          uploadImgSeting={uploadImgSeting}
         />
       </div>
     </div>
