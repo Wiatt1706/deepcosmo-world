@@ -185,6 +185,24 @@
     grid-template-rows: min-content min-content min-content;
   }
 
+  /* No image case */
+  .noImage {
+    grid-template-areas:
+      "label label label label"
+      "text text text text"
+      "metadata byline byline byline";
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .noImage .image {
+    display: none;
+  }
+
+  /* Hide image container when image is not available */
+  .feedItem.no-image .image {
+    display: none;
+  }
+
   .feedItemNormal {
     grid-template-areas:
       "text text avatar"

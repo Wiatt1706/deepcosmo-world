@@ -1,13 +1,15 @@
 // LikesContext.js
 import React, { useEffect, createContext, useContext, useState } from 'react';
-const LikesContext = createContext();
+import { post as postApi, put } from "@/utils/api";
+import { useUserStore } from "@/components/SocketManager";
 
+const LikesContext = createContext();
 export const useLikes = () => {
     return useContext(LikesContext);
 };
 
-export const LikesProvider = ({ children, post }) => {
-
+export const LikesProvider = ({ children, post, session }) => {
+    const checkLogin = useUserStore((state) => state.checkLogin);
     const [likesActive, setLikesActive] = useState(false); // 是否激活-喜欢
     const [eatingActive, setEatingActive] = useState(false); // 是否激活-吃瓜
     const [playfulActive, setPlayfulActive] = useState(false); // 是否激活-调皮
@@ -39,15 +41,15 @@ export const LikesProvider = ({ children, post }) => {
 
         console.log(likeActions);
 
-        await postApi(nodeApi, `/interact/like-post`, likeActions).then((response) => {
+        await postApi(`/interact/like-post`, likeActions).then((response) => {
             console.log(response);
         })
     };
 
     // 调用抵制接口
     const callRejectApi = () => {
-        put(nodeApi, `/interact/reject?postId=${post.id}`).then((response) => {
-            if (!response.data.data) {
+        put(`/interact/reject?postId=${post.id}`).then((response) => {
+            if (!response.data) {
                 console.error('Failed to reject:', response.message);
             }
         })
@@ -55,9 +57,9 @@ export const LikesProvider = ({ children, post }) => {
 
     // 处理点赞操作
     const handleLikeClick = (type) => {
-        if (!user) {
-            checkLogin()// 打开用户登录
-            return
+        if (!session) {
+            checkLogin(); // 打开用户登录
+            return;
         }
         let saveData = {
             post_id: post.id,
@@ -109,9 +111,9 @@ export const LikesProvider = ({ children, post }) => {
 
     // 抵制
     const handleRejectClick = () => {
-        if (!user) {
-            checkLogin()// 打开用户登录
-            return
+        if (!session) {
+            checkLogin(); // 打开用户登录
+            return;
         }
         const newLikeArray = [...likeArray];
 

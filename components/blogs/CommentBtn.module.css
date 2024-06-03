@@ -32,18 +32,18 @@
     left: 0;
     width: 100%;
     animation: floatUpAnimation 0.3s ease;
-    background-color: #1f364d;
+    background-color: #f5f5f5;
     padding-bottom: 5px;
 }
 
 .header {
     position: sticky;
     top: 0;
-    font-weight: 600;
+    font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #1b2d40;
+    background-color: #f5f5f5;
     z-index: 99;
 }
 

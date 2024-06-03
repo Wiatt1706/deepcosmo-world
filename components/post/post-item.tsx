@@ -33,7 +33,12 @@ export default function PostItem({ postInfo }: { postInfo: PxCmtyArticles }) {
 
   return (
     <div className={clsx([styles.feedItemPro, styles.storyItem])}>
-      <Link href={`/blogs/${postInfo.id}`} className={clsx([styles.feedItem])}>
+      <Link
+        href={`/blogs/${postInfo.id}`}
+        className={clsx([styles.feedItem], {
+          [styles.noImage]: !postInfo.banner_img_url,
+        })}
+      >
         <div className={styles.storyTextLink}>
           <h3>{postInfo.title}</h3>
           <div className="flex ml-[-5px]" style={{ maxWidth: "100%" }}>

@@ -67,7 +67,7 @@ export default function BlogClient({
   };
 
   return (
-    <LikesProvider post={post}>
+    <LikesProvider post={post} session={session}>
       <CommentProvider post={post}>
         <div ref={contentRef} className={styles.content}>
           <ReadingContent post={post} />

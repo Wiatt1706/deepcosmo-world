@@ -8,6 +8,7 @@ import {
   KeywordService,
 } from "@/utils/serviceimpl";
 import BlogClient from "./blogClient";
+import Footer from "@/components/layout/footer";
 
 export default async function BlogsPageService({ params }: any) {
   const postId = params?.id;
@@ -71,5 +72,10 @@ export default async function BlogsPageService({ params }: any) {
     resultVo.isReject = isReject || false;
   }
 
-  return <BlogClient post={resultVo} session={session} />;
+  return (
+    <>
+      <BlogClient post={resultVo} session={session} />
+      <Footer />
+    </>
+  );
 }

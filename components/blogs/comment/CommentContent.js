@@ -12,6 +12,7 @@ import { FormattedMessage } from 'react-intl';
 import { useComment } from './../CommentContext';
 import { useUserStore } from "@/components/SocketManager";
 import { SecuritySvg } from "@/components/utils/icons";
+import { post as postApi } from "@/utils/api";
 export default function CommentContent({ commentRef, handlePublish, session }) {
     // 从上下文获取文章数据
     const { comments, commentRecordNum } = useComment();
@@ -82,8 +83,8 @@ const CommentItem = ({ comment, handlePublish, session }) => {
             comment_id: comment.id,
         }
 
-        await postApi(nodeApi, `/interact/like-comment`, saveData).then((response) => {
-            if (response.status === 200) {
+        await postApi(`/interact/like-comment`, saveData).then((response) => {
+            if (response.data) {
                 refresh();
             } else {
                 console.error('Failed to upvote:', response.data.message);
@@ -120,7 +121,7 @@ const CommentItem = ({ comment, handlePublish, session }) => {
                         {comment.profiles?.username}
                         {comment.is_author && (
                             <font className={styles.itme_title_author}>
-                                <SecuritySvg size={14}/>
+                                <SecuritySvg size={14} />
                             </font>
                         )}
                     </span>

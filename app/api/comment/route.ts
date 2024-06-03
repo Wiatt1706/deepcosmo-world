@@ -54,8 +54,9 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const postId = url.searchParams.get('postId');
     if (!postId) {
-        return new Response(JSON.stringify({ error: "请提供合法入参" }), { status: 401, headers: { "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ error: "请提供合法入参" }), { status: 500, headers: { "Content-Type": "application/json" } });
     }
+    
     const supabase = createRouteHandlerClient<Database>({ cookies });
     try {
         let userId: string | null = null;

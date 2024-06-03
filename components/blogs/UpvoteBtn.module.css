@@ -65,8 +65,8 @@
     bottom: 45px;
     border-top-right-radius: 0.5rem;
     border-top-left-radius: 0.5rem;
-    background-color: #1f364d;
-    box-shadow: 0 0 0 1px #0c2032;
+    background-color: #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
     margin-left: -7px;
     display: flex;
     padding: 0.1rem;
@@ -77,21 +77,21 @@
     line-height: 32px;
     padding: 0.2rem 1.2rem;
     border-radius: 1rem;
-    color: #D1DBE6;
+    color: #000;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    border: 3px #1f364d solid;
+    border: 3px #fff solid;
 }
 
 .float-actions .active {
-    background-color: #0c2032;
+    background-color: #cce2fc;
     box-shadow: inset 0 0 0 2px rgba(250, 250, 250, 0.3);
 }
 
 .crayons-item:hover {
-    background-color: #0c2032;
+    background-color: #cce2fc;
 }
 
 .crayons-item label {
