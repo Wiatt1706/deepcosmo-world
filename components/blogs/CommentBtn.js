@@ -8,7 +8,7 @@ import CommentSection from './comment';
 import ShadowComponent from './../utils/ShadowComponent';
 import { useComment } from './CommentContext';
 
-export default function CommentBtn({ parentRef, post }) {
+export default function CommentBtn({ parentRef, post, session }) {
     const sectionRef = useRef(null);
     // 从上下文获取文章数据
     const { commentRecordNum } = useComment();
@@ -43,7 +43,7 @@ export default function CommentBtn({ parentRef, post }) {
                         <div className={styles.backBtn} onClick={() => setOverlayVisible(false)}><BiLeftArrowAlt /> <FormattedMessage id="goBack" /></div>
                         <span><FormattedMessage id="commentsTitle_replies" values={{ count: commentRecordNum }} /></span>
                     </header>
-                    <CommentSection post={post} />
+                    <CommentSection post={post} session={session} />
                 </div>
             </ShadowComponent>
             <button type="button" className={styles['button']} onClick={() => setOverlayVisible(true)}>

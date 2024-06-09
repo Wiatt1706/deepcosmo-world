@@ -30,7 +30,7 @@ export default function RootLayout({
       <head />
       <body
         className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
+          "bg-background font-sans antialiased",
           fontSans.variable
         )}
       >
@@ -41,11 +41,11 @@ export default function RootLayout({
             themes: ["light"],
           }}
         >
-          <div className="relative flex flex-col h-screen">
+          <div className="relative flex flex-col">
             <main className="light ">
-              <section className="flex relative w-full h-full overflow-hidden">
-                <MenuLeft />
-                <div className="w-full max-h-screen overflow-y-auto inline-block">
+              <section className="flex relative w-full">
+                {/* <MenuLeft /> */}
+                <div className="w-full inline-block">
                   <Navbar />
                   {children}
                 </div>

@@ -13,6 +13,7 @@
     background-color: #fff;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
+    font-size: 14px;
     color: black;
 }
 
@@ -20,8 +21,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #272727;
-    font-size: 14px;
+    color: #6B7280;
+    height: 48px;
+    font-size: 12px;
+    padding: 0 10px;
     cursor: pointer;
 }
 

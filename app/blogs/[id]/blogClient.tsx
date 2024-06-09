@@ -80,7 +80,7 @@ export default function BlogClient({
             style={getContentActionsStyles()}
           >
             <UpvoteBtn />
-            <CommentBtn parentRef={contentRef} post={post} />
+            <CommentBtn parentRef={contentRef} post={post} session={session} />
           </div>
 
           {/* 评论模块 */}
