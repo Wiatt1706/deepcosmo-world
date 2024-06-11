@@ -1,28 +1,63 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import styles from "@/styles/canvas/canvas.module.css";
-import { BoardProps, Position, Character } from "@/types/CanvasTypes";
-import {
-  drawCircle,
-  detectCollision,
-  drawCircularLight,
-  drawSectorLight,
-} from "./helpers/BaseDraw";
+import { BoardProps, Character } from "@/types/CanvasTypes";
+import { drawViewpoints, getSightPolygon } from "./helpers/LightDraw";
 import useKeyPress from "../hook/useKeyPress";
 
-export const RenderCanvas = (props: BoardProps) => {
+const segments = [
+  // Border
+  { a: { x: 0, y: 0 }, b: { x: 640, y: 0 } },
+  { a: { x: 640, y: 0 }, b: { x: 640, y: 360 } },
+  { a: { x: 640, y: 360 }, b: { x: 0, y: 360 } },
+  { a: { x: 0, y: 360 }, b: { x: 0, y: 0 } },
+
+  // Polygon #1
+  { a: { x: 100, y: 150 }, b: { x: 120, y: 50 } },
+  { a: { x: 120, y: 50 }, b: { x: 200, y: 80 } },
+  { a: { x: 200, y: 80 }, b: { x: 140, y: 210 } },
+  { a: { x: 140, y: 210 }, b: { x: 100, y: 150 } },
+
+  // Polygon #2
+  { a: { x: 100, y: 200 }, b: { x: 120, y: 250 } },
+  { a: { x: 120, y: 250 }, b: { x: 60, y: 300 } },
+  { a: { x: 60, y: 300 }, b: { x: 100, y: 200 } },
+
+  // Polygon #3
+  { a: { x: 200, y: 260 }, b: { x: 220, y: 150 } },
+  { a: { x: 220, y: 150 }, b: { x: 300, y: 200 } },
+  { a: { x: 300, y: 200 }, b: { x: 350, y: 320 } },
+  { a: { x: 350, y: 320 }, b: { x: 200, y: 260 } },
+
+  // Polygon #4
+  { a: { x: 340, y: 60 }, b: { x: 360, y: 40 } },
+  { a: { x: 360, y: 40 }, b: { x: 370, y: 70 } },
+  { a: { x: 370, y: 70 }, b: { x: 340, y: 60 } },
+
+  // Polygon #5
+  { a: { x: 450, y: 190 }, b: { x: 560, y: 170 } },
+  { a: { x: 560, y: 170 }, b: { x: 540, y: 270 } },
+  { a: { x: 540, y: 270 }, b: { x: 430, y: 290 } },
+  { a: { x: 430, y: 290 }, b: { x: 450, y: 190 } },
+
+  // Polygon #6
+  { a: { x: 400, y: 95 }, b: { x: 580, y: 50 } },
+  { a: { x: 580, y: 50 }, b: { x: 480, y: 150 } },
+  { a: { x: 480, y: 150 }, b: { x: 400, y: 95 } },
+];
+
+const RenderCanvas = (props: BoardProps) => {
   const { width, height, lightIntensity, mouseSensitivity } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const renderRef = useRef<HTMLCanvasElement | null>(null);
-  const mapRef = useRef<HTMLCanvasElement | null>(null);
-  const firmRef = useRef<HTMLCanvasElement | null>(null);
+  const buffRef = useRef<HTMLCanvasElement | null>(null);
+  const foregroundRef = useRef<HTMLCanvasElement | null>(null);
   const lightRef = useRef<HTMLCanvasElement | null>(null);
-  const actRef = useRef<HTMLCanvasElement | null>(null);
 
   const [pos, setPos] = useState<Character>({
-    x: 100,
-    y: 100,
+    x: 125,
+    y: 125,
     radius: 50,
     angle: 0,
     speed: 2,
@@ -37,146 +72,57 @@ export const RenderCanvas = (props: BoardProps) => {
     right: false,
   });
 
-  // 按键监听
   useKeyPress(setKeys);
 
-  // 初始化活动画布
-  const initActCanavas = (centrePos: Position) => {
-    const container = containerRef.current;
-    const canvas = actRef.current;
-    if (!container || !canvas) {
-      return;
-    }
-    canvas.width = container.clientWidth;
-    canvas.height = container.clientHeight;
-
-    // 绘制角色运动半径
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      return;
-    }
-    drawCircle(ctx, centrePos.x, centrePos.y, pos.radius, "gray", 0.5);
-  };
-
-  // 初始化灯光画布
-  const initLightCanavas = (centrePos: Position) => {
-    const container = containerRef.current;
-    const canvas = lightRef.current;
-    if (!container || !canvas) {
-      return;
-    }
-    canvas.width = container.clientWidth;
-    canvas.height = container.clientHeight;
-
-    // 绘制角色运动半径
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      return;
-    }
-    ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    drawCircularLight(ctx, centrePos.x, centrePos.y, 200);
-    drawSectorLight(
-      ctx,
-      centrePos.x,
-      centrePos.y,
-      600,
-      (Math.PI / 3) * 0.9,
-      -Math.PI / 2
-    );
-  };
-
-  // 初始化坚固画布
-  const initMapCanavas = () => {
-    const canvas = mapRef.current;
-    const firmCanvas = firmRef.current;
-    if (!canvas || !firmCanvas) {
-      return;
-    }
-    const ctx = canvas.getContext("2d");
-
-    if (ctx) {
-      const img = new Image();
-      img.src = "/images/pixel_map_1.jpg";
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0);
-        ctx.drawImage(firmCanvas, 0, 0);
-      };
-    }
-  };
-
-  // 初始化坚固画布
-  const initFirmCanavas = () => {
-    const firmCanvas = firmRef.current;
-    if (!firmCanvas) {
-      return;
-    }
-    const firmCtx = firmCanvas.getContext("2d");
-
-    if (firmCtx) {
-      const img = new Image();
-      img.src = "/images/image.png";
-      img.onload = () => {
-        firmCtx.clearRect(0, 0, firmCanvas.width, firmCanvas.height);
-        firmCtx.drawImage(img, 0, 0);
-      };
-    }
-  };
-
-  // 初次加载
   useEffect(() => {
-    const initializeCanvasSize = (): void => {
+    const initializeCanvasSize = () => {
       const container = containerRef.current;
       const renderCanvas = renderRef.current;
-      if (!container || !renderCanvas) {
-        return;
-      }
-      const centrePos = {
-        x: container.clientWidth / 2,
-        y: container.clientHeight - 100,
-      };
+      const foregroundCanvas = foregroundRef.current;
+      if (!container || !renderCanvas || !foregroundCanvas) return;
 
       renderCanvas.width = container.clientWidth;
       renderCanvas.height = container.clientHeight;
 
-      initActCanavas(centrePos);
-      initLightCanavas(centrePos);
-      initFirmCanavas();
-      initMapCanavas();
-      render();
+      const foregroundCtx = foregroundCanvas.getContext("2d");
+      if (foregroundCtx) {
+        const img = new Image();
+        img.src = "/images/pixel_map_1.jpg";
+        img.onload = () => {
+          foregroundCtx.drawImage(img, 0, 0);
+          foregroundCtx.strokeStyle = "#fff";
+          segments.forEach((seg) => {
+            foregroundCtx.beginPath();
+            foregroundCtx.moveTo(seg.a.x, seg.a.y);
+            foregroundCtx.lineTo(seg.b.x, seg.b.y);
+            foregroundCtx.stroke();
+          });
+        };
+      }
     };
     initializeCanvasSize();
-  }, [containerRef, renderRef]);
+  }, []);
 
-  // 鼠标拖拽事件处理
   useEffect(() => {
-    let isDragging = false;
-    let initialAngle = 0;
-    let startX = 0;
-
     const handleMouseDown = (event: MouseEvent) => {
-      isDragging = true;
-      startX = event.clientX;
-      initialAngle = pos.angle;
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-    };
+      let startX = event.clientX;
+      let initialAngle = pos.angle;
 
-    const handleMouseMove = (event: MouseEvent) => {
-      if (isDragging) {
+      const handleMouseMove = (event: MouseEvent) => {
         const deltaX = ((event.clientX - startX) / 10) * mouseSensitivity;
         setPos((prevPos) => ({
           ...prevPos,
           angle: initialAngle - deltaX,
         }));
-      }
-    };
+      };
 
-    const handleMouseUp = () => {
-      isDragging = false;
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      const handleMouseUp = () => {
+        window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("mouseup", handleMouseUp);
+      };
+
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
     };
 
     window.addEventListener("mousedown", handleMouseDown);
@@ -186,28 +132,13 @@ export const RenderCanvas = (props: BoardProps) => {
   }, [pos.angle]);
 
   useEffect(() => {
-    const renderCanvas = renderRef.current;
-    const firmCanvas = firmRef.current;
-    const actCanvas = actRef.current;
-    if (!renderCanvas || !firmCanvas || !actCanvas) {
-      return;
-    }
-    const centerX = renderCanvas.width / 2;
-    const centerY = renderCanvas.height - 100;
-    const renderCtx = renderCanvas.getContext("2d");
-    const firmCtx = firmCanvas.getContext("2d");
-    const actCtx = actCanvas.getContext("2d");
-    if (!renderCtx || !firmCtx || !actCtx) {
-      return;
-    }
-
     const moveCharacter = () => {
       setPos((prevPos: Character) => {
         let { x, y, angle, speed, velocityX, velocityY } = prevPos;
         let moveX = 0;
         let moveY = 0;
 
-        const radian = (angle * Math.PI) / 180; // 将角度转换为弧度
+        const radian = (angle * Math.PI) / 180;
 
         if (keys.up) {
           moveX += -Math.sin(radian);
@@ -226,99 +157,42 @@ export const RenderCanvas = (props: BoardProps) => {
           moveY += -Math.sin(radian);
         }
 
-        // 计算总移动矢量的长度
         const length = Math.sqrt(moveX * moveX + moveY * moveY);
         if (length > 0) {
-          // 归一化移动矢量并按速度缩放
           moveX = (moveX / length) * speed;
           moveY = (moveY / length) * speed;
         }
 
-        // 更新速度向量
-        velocityX += moveX;
-        velocityY += moveY;
+        velocityX = velocityX * 0.5 + moveX;
+        velocityY = velocityY * 0.5 + moveY;
 
-        // 应用摩擦力
-        const friction = 0.6; // 调整摩擦力系数，0.9表示较为平滑的减速
-        velocityX *= friction;
-        velocityY *= friction;
-
-        // 预先更新位置
         let newX = x + velocityX;
         let newY = y + velocityY;
 
-        // 碰撞检测
-
-        const collision = detectCollision(
-          actCtx,
-          centerX,
-          centerY,
-          firmCtx,
-          newX,
-          newY,
-          pos.radius
-        );
-
-        if (collision.collision) {
-          // 反弹效果
-          const normalX = collision.dx;
-          const normalY = collision.dy;
-          const dotProduct = velocityX * normalX + velocityY * normalY;
-
-          // 反弹矢量
-          const bounceDamping = 0.0005; // 反弹时的阻尼系数，控制弹力减弱
-          velocityX -= 2 * dotProduct * normalX * bounceDamping;
-          velocityY -= 2 * dotProduct * normalY * bounceDamping;
-
-          // 再次更新位置，避免卡墙
-          newX = x + velocityX;
-          newY = y + velocityY;
-
-          // 再次检查碰撞，避免卡住
-          const secondCollision = detectCollision(
-            actCtx,
-            centerX,
-            centerY,
-            firmCtx,
-            newX,
-            newY,
-            pos.radius
-          );
-
-          if (secondCollision.collision) {
-            // 如果仍然碰撞，则不更新位置
-            return { ...prevPos, velocityX: 0, velocityY: 0 };
-          }
-        }
-
-        return { ...prevPos, x: newX, y: newY, velocityX, velocityY };
+        return {
+          ...prevPos,
+          x: newX,
+          y: newY,
+          velocityX: velocityX,
+          velocityY: velocityY,
+        };
       });
     };
 
-    const intervalId = setInterval(moveCharacter, 16); // 大约每秒 60 帧
+    const intervalId = setInterval(moveCharacter, 16);
     return () => clearInterval(intervalId);
-  }, [keys, pos.radius]);
+  }, [keys]);
 
-  useEffect(() => {
-    render();
-  }, [pos]);
-
-  const render = () => {
+  const render = useCallback(() => {
     const renderCanvas = renderRef.current;
-    const mapCanvas = mapRef.current;
-    const actCanvas = actRef.current;
-    const lightCanvas = lightRef.current;
-    if (!renderCanvas || !mapCanvas || !actCanvas || !lightCanvas) {
-      return;
-    }
-    const renderCtx = renderCanvas.getContext("2d");
-    const mapCtx = mapCanvas.getContext("2d");
-    const actCtx = actCanvas.getContext("2d");
-    const lightCtx = lightCanvas.getContext("2d");
 
-    if (!renderCtx || !mapCtx || !actCtx || !lightCtx) {
-      return;
-    }
+    const buffCanvas = buffRef.current;
+    if (!renderCanvas || !buffCanvas) return;
+
+    const renderCtx = renderCanvas.getContext("2d");
+    const buffCtx = buffCanvas.getContext("2d");
+    if (!renderCtx || !buffCtx) return;
+
     renderCtx.clearRect(0, 0, renderCanvas.width, renderCanvas.height);
 
     const centerX = renderCanvas.width / 2;
@@ -327,27 +201,75 @@ export const RenderCanvas = (props: BoardProps) => {
     renderCtx.save();
     renderCtx.translate(centerX, centerY);
     renderCtx.rotate((pos.angle * Math.PI) / 180);
-    renderCtx.drawImage(mapCanvas, -pos.x, -pos.y);
+    renderCtx.drawImage(buffCanvas, -pos.x, -pos.y);
     renderCtx.restore();
+  }, [pos]);
 
-    renderCtx.drawImage(lightCanvas, 0, 0);
-    renderCtx.drawImage(actCanvas, 0, 0);
-  };
+  useEffect(() => {
+    const animationFrameId = requestAnimationFrame(render);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [pos, render]);
+
+  const drawLight = useCallback(() => {
+    const buffCanvas = buffRef.current;
+    const lightCanvas = lightRef.current;
+    const foregroundCanvas = foregroundRef.current;
+    if (!buffCanvas || !lightCanvas || !foregroundCanvas) return;
+
+    const lightCtx = lightCanvas.getContext("2d");
+    const buffCtx = buffCanvas.getContext("2d");
+    if (!lightCtx || !buffCtx) return;
+    lightCtx.clearRect(0, 0, buffCanvas.width, buffCanvas.height);
+
+    const polygons = [getSightPolygon(segments, pos.x, pos.y)];
+
+    lightCtx.fillStyle = "rgba(0, 0, 0, 0.9)";
+    lightCtx.fillRect(0, 0, buffCanvas.width, buffCanvas.height);
+
+    // 绘制圆形视图
+    drawViewpoints(lightCtx, polygons, "circular", {
+      x: pos.x,
+      y: pos.y,
+      radius: 100,
+    });
+
+    // 绘制扇形视图
+    drawViewpoints(lightCtx, polygons, "sector", {
+      x: pos.x,
+      y: pos.y,
+      radius: 500,
+      angle: Math.PI / 3,
+      direction: -(pos.angle * Math.PI) / 180 - Math.PI / 2,
+    });
+
+    buffCtx.clearRect(0, 0, buffCanvas.width, buffCanvas.height);
+    buffCtx.drawImage(foregroundCanvas, 0, 0);
+    buffCtx.drawImage(lightCanvas, 0, 0);
+  }, [pos]);
+
+  useEffect(() => {
+    const animationFrameId = requestAnimationFrame(drawLight);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [pos.x, pos.y, pos.angle, drawLight]);
 
   return (
     <div className={styles["canvas-container"]} ref={containerRef}>
-      <canvas ref={renderRef} style={{ background: "black" }} />
-      <canvas ref={actRef} style={{ display: "none" }} />
-      <canvas ref={lightRef} style={{ display: "none" }} />
+      <canvas ref={renderRef} />
       <canvas
         style={{ display: "none" }}
-        ref={mapRef}
+        ref={buffRef}
         width={width}
         height={height}
       />
       <canvas
         style={{ display: "none" }}
-        ref={firmRef}
+        ref={foregroundRef}
+        width={width}
+        height={height}
+      />
+      <canvas
+        style={{ display: "none" }}
+        ref={lightRef}
         width={width}
         height={height}
       />

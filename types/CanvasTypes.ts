@@ -4,6 +4,24 @@ interface Position {
     y: number;
 }
 
+
+interface Point {
+    x: number;
+    y: number;
+    angle?: number;
+    param?: number;
+}
+
+interface Ray {
+    a: Point;
+    b: Point;
+}
+
+interface Segment {
+    a: Point;
+    b: Point;
+}
+
 interface Character {
     x: number; // 角色在地图的x坐标
     y: number; // 角色在地图的y坐标
@@ -26,4 +44,4 @@ interface BoardProps {
 }
 
 
-export type { Position, CssSize, BoardProps, Character };
+export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray };

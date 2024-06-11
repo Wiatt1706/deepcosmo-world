@@ -1,27 +1,4 @@
-export const drawLine = (
-  ctx: CanvasRenderingContext2D,
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number
-) => {
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-};
-
-export const drawRect = (
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number
-) => {
-  ctx.beginPath();
-  ctx.rect(x, y, width, height);
-  ctx.stroke();
-};
+import { Point, Ray, Segment } from "@/types/CanvasTypes";
 
 /**
  * 绘制圆形的函数
@@ -48,56 +25,7 @@ export const drawCircle = (
   ctx.restore();
 };
 
-// 绘制扇形灯光
-export const applySectorLight = (
-  ctx: CanvasRenderingContext2D,
-  maskX: number,
-  maskY: number,
-  maskRadius: number,
-  sectorAngle: number, // 扇形角度，单位为度
-  sectorRotationAngle: number, // 扇形旋转角度，单位为度
-  intensity: number
-) => {
-  const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-  const data = imageData.data;
-  const sectorAngleRad = (sectorAngle / 2) * (Math.PI / 180); // 扇形半角，单位转换为弧度
-  const sectorRotationRad = sectorRotationAngle * (Math.PI / 180); // 扇形旋转角度，单位转换为弧度
-
-  for (let y = 0; y < ctx.canvas.height; y++) {
-    for (let x = 0; x < ctx.canvas.width; x++) {
-      const i = (y * ctx.canvas.width + x) * 4;
-
-      const dx = x - maskX;
-      const dy = y - maskY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      // 计算相对于向上方向（正y轴）的角度，并应用旋转
-      let angle = Math.atan2(dy, dx) - sectorRotationRad;
-
-      // 将角度调整到 [-PI, PI] 范围内
-      if (angle < -Math.PI) angle += 2 * Math.PI;
-      if (angle > Math.PI) angle -= 2 * Math.PI;
-
-      // 检查是否在扇形内
-      const inSector = angle >= -sectorAngleRad && angle <= sectorAngleRad;
-
-      if (distance > maskRadius && !inSector) {
-        const fadeFactor = Math.max(
-          0,
-          Math.min(1, (distance - maskRadius) / maskRadius)
-        );
-        const darkness = 1 - intensity * fadeFactor;
-
-        data[i] *= darkness;
-        data[i + 1] *= darkness;
-        data[i + 2] *= darkness;
-      }
-    }
-  }
-
-  ctx.putImageData(imageData, 0, 0);
-};
-
+// 检测碰撞
 export const detectCollision = (
   firmCtx: CanvasRenderingContext2D,
   firmCircleX: number,
@@ -137,6 +65,118 @@ export const detectCollision = (
   return { collision: false, dx: 0, dy: 0 };
 };
 
+export const detectLightCollision = (
+  firmCtx: CanvasRenderingContext2D,
+  firmCircleX: number,
+  firmCircleY: number,
+  lightCtx: CanvasRenderingContext2D,
+  lightCircleX: number,
+  lightCircleY: number,
+  radius: number
+) => {
+  const firmData = firmCtx.getImageData(
+    firmCircleX - radius,
+    firmCircleY - radius,
+    radius * 2,
+    radius * 2
+  ).data;
+  const lightData = lightCtx.getImageData(
+    lightCircleX - radius,
+    lightCircleY - radius,
+    radius * 2,
+    radius * 2
+  ).data;
+
+  let collisionDetected = false;
+  const maskImageData = lightCtx.createImageData(radius * 2, radius * 2);
+  const maskData = maskImageData.data;
+
+  for (let j = 0; j < radius * 2; j++) {
+    for (let i = 0; i < radius * 2; i++) {
+      const dx = i - radius;
+      const dy = j - radius;
+      if (dx * dx + dy * dy <= radius * radius) {
+        const index = (j * radius * 2 + i) * 4;
+        const actAlpha = lightData[index + 3];
+        const firmAlpha = firmData[index + 3];
+        if (actAlpha > 0 && firmAlpha > 0) {
+          collisionDetected = true;
+          maskData[index] = 0; // Red
+          maskData[index + 1] = 0; // Green
+          maskData[index + 2] = 0; // Blue
+          maskData[index + 3] = 255; // Alpha (fully opaque)
+        } else {
+          // Set the alpha to 0 if not masked
+          maskData[index + 3] = 0;
+        }
+      }
+    }
+  }
+
+  // Apply the mask to the light context
+  lightCtx.putImageData(
+    maskImageData,
+    lightCircleX - radius,
+    lightCircleY - radius
+  );
+};
+
+// 处理碰撞检测
+export const handleCollision = (
+  actCtx: CanvasRenderingContext2D,
+  centerX: number,
+  centerY: number,
+  firmCtx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  velocityX: number,
+  velocityY: number
+) => {
+  let newX = x + velocityX;
+  let newY = y + velocityY;
+
+  const collision = detectCollision(
+    actCtx,
+    centerX,
+    centerY,
+    firmCtx,
+    newX,
+    newY,
+    radius
+  );
+
+  if (collision.collision) {
+    const normalX = collision.dx;
+    const normalY = collision.dy;
+    const dotProduct = velocityX * normalX + velocityY * normalY;
+
+    const bounceDamping = 0.0005;
+    velocityX -= 2 * dotProduct * normalX * bounceDamping;
+    velocityY -= 2 * dotProduct * normalY * bounceDamping;
+
+    newX = x + velocityX;
+    newY = y + velocityY;
+
+    const secondCollision = detectCollision(
+      actCtx,
+      centerX,
+      centerY,
+      firmCtx,
+      newX,
+      newY,
+      radius
+    );
+
+    if (secondCollision.collision) {
+      return { x, y, velocityX: 0, velocityY: 0 };
+    }
+  }
+
+  return { x: newX, y: newY, velocityX, velocityY };
+};
+
+// 绘制圆形灯光
 export const drawCircularLight = (
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -157,13 +197,14 @@ export const drawCircularLight = (
   ctx.globalCompositeOperation = "source-over";
 };
 
+// 绘制扇形灯光
 export const drawSectorLight = (
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
-  length: number,
   angle: number,
-  direction: number
+  direction: number,
+  length: number
 ) => {
   const startAngle = direction - angle / 2;
   const endAngle = direction + angle / 2;
@@ -197,4 +238,48 @@ export const drawSectorLight = (
   // 重置阴影
   ctx.shadowBlur = 0;
   ctx.shadowColor = "transparent";
+};
+
+export const isPointInSector = (
+  px: number,
+  py: number,
+  cx: number,
+  cy: number,
+  angle: number,
+  direction: number,
+  radius: number
+) => {
+  let dx = px - cx;
+  let dy = py - cy;
+  let distanceSquared = dx * dx + dy * dy;
+  if (distanceSquared > radius * radius) {
+    return false;
+  }
+  let pointAngle = Math.atan2(dy, dx);
+  if (pointAngle < 0) {
+    pointAngle += 2 * Math.PI;
+  }
+  let startAngle = direction;
+  let endAngle = direction + angle;
+  if (endAngle > 2 * Math.PI) {
+    return pointAngle >= startAngle || pointAngle <= endAngle - 2 * Math.PI;
+  } else {
+    return pointAngle >= startAngle && pointAngle <= endAngle;
+  }
+};
+
+export const drawLine = (
+  ctx: CanvasRenderingContext2D,
+  startX: number,
+  startY: number,
+  angle: number,
+  length: number
+) => {
+  const endX = startX + length * Math.cos(angle);
+  const endY = startY + length * Math.sin(angle);
+
+  ctx.beginPath();
+  ctx.moveTo(startX, startY);
+  ctx.lineTo(endX, endY);
+  ctx.stroke();
 };

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>射线与不规则形体相交检测</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="photoCanvas" width="800" height="300"></canvas>
+    <canvas id="demo" width="800" height="300"></canvas>
+
+    <script>
+        const photoCanvas = document.getElementById('photoCanvas');
+        const demoCanvas = document.getElementById('demo');
+        const photoCtx = photoCanvas.getContext('2d');
+        const demoCtx = demoCanvas.getContext('2d');
+
+        const rayAnchor = { x: 100, y: 150 };
+        const eps = 0.00001;
+        const pointColor = '#b22f89';
+        const pointRadius = 5;
+
+        let boundarySegments = [];
+
+        const image = new Image();
+        image.src = '"C:\Users\apure\Pictures\4b26e1a172e6ef1c1414b1aac48bf0a-removebg-preview.png"';  // 替换为你的图片路径
+        image.onload = () => {
+            photoCtx.drawImage(image, 0, 0);
+            boundarySegments = extractBoundarySegments(photoCanvas);
+        };
+
+        demoCanvas.addEventListener('mousemove', event => {
+            const mousePos = getMousePosition(event, demoCanvas);
+            draw(mousePos);
+        });
+
+        function getMousePosition(event, canvas) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            return {
+                x: (event.clientX - rect.left) * scaleX,
+                y: (event.clientY - rect.top) * scaleY,
+            };
+        }
+
+        function clearCanvas(ctx, canvas) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function drawSegments(ctx, segments) {
+            ctx.strokeStyle = '#343434';
+            ctx.lineWidth = 3;
+
+            segments.forEach(segment => {
+                ctx.beginPath();
+                ctx.moveTo(segment[0].x, segment[0].y);
+                ctx.lineTo(segment[1].x, segment[1].y);
+                ctx.stroke();
+            });
+        }
+
+        function drawRay(ctx, ray) {
+            ctx.strokeStyle = '#1d57a9';
+            ctx.lineWidth = 3;
+
+            const x = ray[1].x + (ray[1].x - ray[0].x) * 1000;
+            const y = ray[1].y + (ray[1].y - ray[0].y) * 1000;
+
+            ctx.beginPath();
+            ctx.moveTo(ray[0].x, ray[0].y);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        function drawIntersectionPoints(ctx, ray, segments) {
+            ctx.fillStyle = pointColor;
+
+            getIntersectionPoints(ray, segments).forEach(point => {
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, pointRadius, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+        }
+
+        function getIntersectionPoints(ray, segments) {
+            return segments
+                .map(segment => getIntersectionPoint(ray, segment))
+                .filter(point => point !== null);
+        }
+
+        function getIntersectionPoint(ray, segment) {
+            const [A, B] = segment;
+            const [C, D] = ray;
+
+            const denominator = (D.x - C.x) * (B.y - A.y) - (B.x - A.x) * (D.y - C.y);
+            if (Math.abs(denominator) < eps) return null;
+
+            const r = ((B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y)) / denominator;
+            if (r < 0) return null;
+
+            const s = ((A.x - C.x) * (D.y - C.y) - (D.x - C.x) * (A.y - C.y)) / denominator;
+            if (s < 0 || s > 1) return null;
+
+            return {
+                x: s * (B.x - A.x) + A.x,
+                y: s * (B.y - A.y) + A.y,
+                r,
+            };
+        }
+
+        function extractBoundarySegments(canvas) {
+            const width = canvas.width;
+            const height = canvas.height;
+            const imageData = photoCtx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+
+            const boundaryPoints = [];
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const index = (y * width + x) * 4;
+                    const alpha = data[index + 3];
+                    if (alpha > 0) {
+                        boundaryPoints.push({ x, y });
+                    }
+                }
+            }
+
+            const segments = [];
+            const pointCount = boundaryPoints.length;
+            for (let i = 0; i < pointCount; i++) {
+                const pointA = boundaryPoints[i];
+                const pointB = boundaryPoints[(i + 1) % pointCount];
+                segments.push([pointA, pointB]);
+            }
+
+            return segments;
+        }
+
+        function draw(mousePos) {
+            clearCanvas(demoCtx, demoCanvas);
+            drawSegments(demoCtx, boundarySegments);
+            drawRay(demoCtx, [rayAnchor, mousePos]);
+            drawIntersectionPoints(demoCtx, [rayAnchor, mousePos], boundarySegments);
+        }
+    </script>
+</body>
+
+</html>
