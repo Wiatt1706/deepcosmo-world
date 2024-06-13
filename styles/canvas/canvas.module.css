@@ -4,8 +4,25 @@
   left: 0;
   right: 0;
   top: 48px;
-  background-color: #000;
   overflow: hidden;
+}
+
+.bottom-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  height: 25px;
+  overflow: hidden;
+  background: #fff;
+  color:#171717;
+  font-family: Instrument Sans;
+  font-size: 12px;
+  z-index: 999;
 }
 
 .canvas-info {

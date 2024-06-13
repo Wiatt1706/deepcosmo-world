@@ -1,0 +1,58 @@
+.menuLeft {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    font-size: 14px;
+    color: #000;
+    width: 250px;
+    height: 100vh;
+    background-color: #f1f1f1;
+    font-size: small;
+    font-family: Instrument Sans;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.menuItem {
+    cursor: pointer;
+    color: #838383;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: Instrument Sans;
+    width: 100%;
+    text-align: left;
+    padding: 13px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease-in-out;
+}
+
+.menuItemActive {
+    cursor: pointer;
+    color: black;
+    background-color: white;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: Instrument Sans;
+    width: 100%;
+    text-align: left;
+    padding: 13px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.menuItem:hover {
+    color: black;
+    background-color: white;
+    transition: all 0.2s ease-in-out;
+}
+
+.menuChevronsRight {
+    z-index: 999;
+}
+
+.inputGroup {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #000;
+    border-radius: 5px;
+}

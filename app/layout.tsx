@@ -5,7 +5,6 @@ import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
 import clsx from "clsx";
 import MenuLeft from "@/components/layout/menu-left";
-import { Navbar } from "@/components/layout/navbar";
 
 export const metadata: Metadata = {
   title: {
@@ -46,7 +45,6 @@ export default function RootLayout({
               <section className="flex relative w-full">
                 {/* <MenuLeft /> */}
                 <div className="w-full inline-block">
-                  <Navbar />
                   {children}
                 </div>
               </section>

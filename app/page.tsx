@@ -7,6 +7,8 @@ import ProductKeyword from "@/components/assembly/keyword";
 import ProductBtnGroup from "@/components/products/product-btnGroup";
 import ProductInfo from "@/components/products/product-item";
 import ProductPagination from "@/components/products/product-pagination";
+import { Navbar } from "@/components/layout/navbar";
+
 export default async function Home({
   searchParams,
 }: {
@@ -54,6 +56,8 @@ export default async function Home({
 
   return (
     <Suspense fallback={<RouteLoader />}>
+      <Navbar />
+
       <div className="flex flex-col items-center justify-center">
         <div className="text-[17px] w-full sticky top-[48px] z-20 bg-white bg-opacity-80 backdrop-blur-md">
           <div className="flex py-2 justify-between items-center w-full max-w-[1500px] mx-auto px-8">

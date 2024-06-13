@@ -39,6 +39,14 @@ export const Navbar = () => {
           <div className="px-2">🗡️</div>
           画板
         </Link>
+
+        <Link
+          href="/canvas/editor"
+          className={`navbar_box_item h-[48px] flex items-center px-3 text-[#6B7280] text-[14px] hover:text-[#000]`}
+        >
+          <div className="px-2">📝</div>
+          编辑器
+        </Link>
       </div>
       <SearchNav />
 

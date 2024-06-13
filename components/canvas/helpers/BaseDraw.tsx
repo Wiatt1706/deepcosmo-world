@@ -13,14 +13,12 @@ export const drawCircle = (
   x: number,
   y: number,
   radius: number,
-  color: string,
-  alpha: number
+  color: string
 ) => {
   ctx.save();
   ctx.beginPath();
   ctx.arc(x, y, radius, 0, Math.PI * 2, false);
   ctx.fillStyle = color;
-  ctx.globalAlpha = alpha;
   ctx.fill();
   ctx.restore();
 };

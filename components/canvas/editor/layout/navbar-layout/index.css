@@ -1,0 +1,42 @@
+.toolbar_view {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 48px;
+    -webkit-user-select: none;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    z-index: 999;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    color: black;
+}
+
+.navbar_box_item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #272727;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.navbar_box_item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+
+.navbar_box_item_active {
+    background-color: #0070f0;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+}
