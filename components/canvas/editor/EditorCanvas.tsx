@@ -82,7 +82,8 @@ const EditorCanvas = () => {
     const buffCanvas = buffRef.current;
     const renderCanvas = renderRef.current;
     if (!strongCanvas || !renderCanvas || !buffCanvas) return null;
-
+    strongCanvas.width = projectInfo.width;
+    strongCanvas.height = projectInfo.height;
     const strongCtx = strongCanvas.getContext("2d");
     const renderCtx = renderCanvas.getContext("2d");
 
@@ -95,7 +96,6 @@ const EditorCanvas = () => {
     const dy = clientY - rect.top;
     const x = dx - (centerX - buffCanvas.width / 2) + canvasInfo.offsetX;
     const y = dy - (centerY - buffCanvas.height / 2) + canvasInfo.offsetY;
-
     // 计算矩形左上角的坐标并绘制矩形
     const halfThickness = wallThickness / 2;
     strongCtx.fillStyle = "red";
@@ -208,7 +208,12 @@ const EditorCanvas = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isMousePressed, startMousePos, operatingModes, geometryList]);
+  }, [
+    isMousePressed,
+    startMousePos,
+    operatingModes,
+    geometryList,
+  ]);
 
   useEvent("resize", (e: UIEvent) => {
     initializeCanvasSize();
@@ -258,6 +263,7 @@ const EditorCanvas = () => {
     renderCtx.clearRect(0, 0, renderCanvas.width, renderCanvas.height);
     buffCanvas.width = projectInfo.width;
     buffCanvas.height = projectInfo.height;
+
     const centerX = renderCanvas.width / 2;
     const centerY = renderCanvas.height / 2;
 
@@ -291,6 +297,7 @@ const EditorCanvas = () => {
     // 绘制背景图层
     buffCtx.drawImage(backgroundCanvas, 0, 0);
     // 绘制坚固图层
+
     buffCtx.drawImage(strongCanvas, 0, 0);
   };
 
