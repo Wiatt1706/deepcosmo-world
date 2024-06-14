@@ -281,3 +281,59 @@ export const drawLine = (
   ctx.lineTo(endX, endY);
   ctx.stroke();
 };
+
+export const calculateRectangleVertices = (
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  w: number
+) => {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+
+  // Calculate the length of this vector
+  const length = Math.sqrt(dx * dx + dy * dy);
+
+  // Calculate the unit vector perpendicular to this vector (normalized)
+  const ux = -dy / length;
+  const uy = dx / length;
+
+  // Calculate half the width to apply on both sides of the midline
+  const halfWidth = w / 2;
+
+  // Calculate the vector to move the middle points inward
+  const inwardFactor = -halfWidth / length;
+
+  // Adjust the midpoints inward by half the width
+  const adjustedX1 = x1 + dx * inwardFactor;
+  const adjustedY1 = y1 + dy * inwardFactor;
+  const adjustedX2 = x2 - dx * inwardFactor;
+  const adjustedY2 = y2 - dy * inwardFactor;
+
+  // Calculate the four vertices of the rectangle
+  const x3 = adjustedX1 + ux * halfWidth;
+  const y3 = adjustedY1 + uy * halfWidth;
+
+  const x4 = adjustedX1 - ux * halfWidth;
+  const y4 = adjustedY1 - uy * halfWidth;
+
+  const x5 = adjustedX2 + ux * halfWidth;
+  const y5 = adjustedY2 + uy * halfWidth;
+
+  const x6 = adjustedX2 - ux * halfWidth;
+  const y6 = adjustedY2 - uy * halfWidth;
+
+  // 计算矩形的四个顶点坐标
+  const topLeft = { x: x3, y: y3 };
+  const topRight = { x: x4, y: y4 };
+  const bottomRight = { x: x6, y: y6 };
+  const bottomLeft = { x: x5, y: y5 };
+
+  return [
+    { a: topLeft, b: topRight },
+    { a: topRight, b: bottomRight },
+    { a: bottomRight, b: bottomLeft },
+    { a: bottomLeft, b: topLeft },
+  ];
+};

@@ -16,7 +16,6 @@ import { useStatusStore } from "@/components/canvas/editor/SocketManager";
 import { HiOutlineQueueList, HiAdjustmentsHorizontal } from "react-icons/hi2";
 import { TbGrid3X3, TbGridScan } from "react-icons/tb";
 export const EdotorNavbar = ({ landWorldInfo }) => {
-  console.log("landWorldInfo", landWorldInfo);
   const handleWheel = (event) => {
     // 阻止鼠标滚轮事件的默认行为
     event.preventDefault();

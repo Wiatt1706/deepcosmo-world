@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const useKeyPress = (setKeys) => {
+export const useBaseKeyPress = (setKeys) => {
   useEffect(() => {
     const handleKey = (event, isKeyDown) => {
       const keyMap = {
@@ -12,6 +12,9 @@ const useKeyPress = (setKeys) => {
         s: "down",
         a: "left",
         d: "right",
+        e: "e",
+        v: "v",
+        " ": "space", // Add spacebar key
       };
 
       const key = keyMap[event.key.toLowerCase()]; // Ensure case insensitivity
@@ -32,5 +35,3 @@ const useKeyPress = (setKeys) => {
     };
   }, [setKeys]);
 };
-
-export default useKeyPress;

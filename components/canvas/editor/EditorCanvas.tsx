@@ -1,31 +1,60 @@
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import styles from "@/styles/canvas/canvas.module.css";
-import { BoardProps, CanvasInfo, Geometry } from "@/types/CanvasTypes";
+import {
+  BoardProps,
+  CanvasInfo,
+  Geometry,
+  Point,
+  Segment,
+} from "@/types/CanvasTypes";
 import { useCanvasEditorStore, useStatusStore } from "./SocketManager";
 import EditorMenuLeft from "@/components/canvas/editor/layout/menu-left-layout/menu-left";
 import { useEvent } from "@/components/utils/GeneralEvent";
+import { useBaseKeyPress } from "@/components/hook/useKeyPress";
+import { calculateRectangleVertices } from "../helpers/BaseDraw";
 
 const EditorCanvas = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const renderRef = useRef<HTMLCanvasElement | null>(null);
   const buffRef = useRef<HTMLCanvasElement | null>(null);
   const backgroundRef = useRef<HTMLCanvasElement | null>(null);
-  const lightRef = useRef<HTMLCanvasElement | null>(null);
+  const strongRef = useRef<HTMLCanvasElement | null>(null);
 
-  const [geometryList, setGeometryList, projectInfo, setProjectInfo] =
-    useCanvasEditorStore((state) => [
-      state.geometryList,
-      state.setGeometryList,
-      state.projectInfo,
-      state.setProjectInfo,
-    ]);
+  const [
+    geometryList,
+    setGeometryList,
+    projectInfo,
+    setProjectInfo,
+    lastWellPoint,
+    setLastWellPoint,
+  ] = useCanvasEditorStore((state) => [
+    state.geometryList,
+    state.setGeometryList,
+    state.projectInfo,
+    state.setProjectInfo,
+    state.lastWellPoint,
+    state.setLastWellPoint,
+  ]);
   const {
-    isSpacePressed,
+    operatingModes,
+    setOperatingModes,
     isMousePressed,
-    setIsSpacePressed,
     setIsMousePressed,
+    activeWallEditor,
+    setActiveWallEditor,
+    wallThickness,
   } = useStatusStore();
+
+  const [keys, setKeys] = useState({
+    space: false,
+    e: false,
+    v: false,
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+  });
 
   const [canvasInfo, setCanvasInfo] = useState<CanvasInfo>({
     offsetX: 0,
@@ -33,29 +62,118 @@ const EditorCanvas = () => {
     offseAngle: 0,
   });
 
+  useEffect(() => {
+    if (keys.e) {
+      console.log("geometryList：", geometryList);
+
+      setOperatingModes(operatingModes ^ 1);
+      // 初始化墙体编辑数据
+      setActiveWallEditor(false);
+      setLastWellPoint(null);
+    }
+    if (keys.v) setOperatingModes(0);
+  }, [keys]);
+
   const [startMousePos, setStartMousePos] = useState({ x: 0, y: 0 });
+  useBaseKeyPress(setKeys);
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.code === "Space") {
-      setIsSpacePressed(true);
+  const wallOnclickHandler = (clientX: number, clientY: number) => {
+    const strongCanvas = strongRef.current;
+    const buffCanvas = buffRef.current;
+    const renderCanvas = renderRef.current;
+    if (!strongCanvas || !renderCanvas || !buffCanvas) return null;
+
+    const strongCtx = strongCanvas.getContext("2d");
+    const renderCtx = renderCanvas.getContext("2d");
+
+    if (!strongCtx || !renderCtx) return null;
+
+    const rect = renderCanvas.getBoundingClientRect();
+    const centerX = renderCanvas.width / 2;
+    const centerY = renderCanvas.height / 2;
+    const dx = clientX - rect.left;
+    const dy = clientY - rect.top;
+    const x = dx - (centerX - buffCanvas.width / 2) + canvasInfo.offsetX;
+    const y = dy - (centerY - buffCanvas.height / 2) + canvasInfo.offsetY;
+
+    // 计算矩形左上角的坐标并绘制矩形
+    const halfThickness = wallThickness / 2;
+    strongCtx.fillStyle = "red";
+    strongCtx.fillRect(
+      x - halfThickness,
+      y - halfThickness,
+      wallThickness,
+      wallThickness
+    );
+
+    // 计算矩形的四个顶点坐标
+    const topLeft = { x: x - halfThickness, y: y - halfThickness };
+    const topRight = { x: x + halfThickness, y: y - halfThickness };
+    const bottomRight = { x: x + halfThickness, y: y + halfThickness };
+    const bottomLeft = { x: x - halfThickness, y: y + halfThickness };
+    // 更新最后一个点
+    setLastWellPoint({ x, y });
+
+    // 仅第一次新增几何
+    if (!activeWallEditor) {
+      // 加入几何体清单
+      setGeometryList([
+        ...geometryList,
+        {
+          name: `Polygon #${geometryList.length + 1}`,
+          type: 0,
+          segments: [
+            { a: topLeft, b: topRight },
+            { a: topRight, b: bottomRight },
+            { a: bottomRight, b: bottomLeft },
+            { a: bottomLeft, b: topLeft },
+          ],
+        },
+      ]);
+    } else {
+      const newGeometryList = [...geometryList];
+      // 获取最后一个对象
+      const lastGeometry = newGeometryList[newGeometryList.length - 1];
+      let segments = lastGeometry.segments;
+
+      const wallPoint = calculateRectangleVertices(
+        x,
+        y,
+        lastWellPoint.x,
+        lastWellPoint.y,
+        wallThickness
+      );
+      segments.push(...wallPoint);
+      // 更新最后一个对象的 segments 属性
+      geometryList[geometryList.length - 1] = {
+        ...lastGeometry,
+        segments,
+      };
+      // 使用 setGeometryList 更新状态
+      setGeometryList(newGeometryList);
+      strongCtx.strokeStyle = "#fff";
+      wallPoint.forEach((segment) => {
+        strongCtx.beginPath();
+        strongCtx.moveTo(segment.a.x, segment.a.y);
+        strongCtx.lineTo(segment.b.x, segment.b.y);
+        strongCtx.stroke();
+      });
     }
-  };
 
-  const handleKeyUp = (e: KeyboardEvent) => {
-    if (e.code === "Space") {
-      setIsSpacePressed(false);
-    }
+    setActiveWallEditor(true);
+    render();
   };
-
   const handleMouseDown = (e: MouseEvent) => {
-    if (isSpacePressed) {
-      setIsMousePressed(true);
-      setStartMousePos({ x: e.clientX, y: e.clientY });
+    setIsMousePressed(true);
+    setStartMousePos({ x: e.clientX, y: e.clientY });
+    // 墙体编辑模式打开-点击
+    if (operatingModes === 1) {
+      wallOnclickHandler(e.clientX, e.clientY);
     }
   };
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (isSpacePressed && isMousePressed) {
+    if (keys.space && isMousePressed) {
       const deltaX = startMousePos.x - e.clientX;
       const deltaY = startMousePos.y - e.clientY;
       setCanvasInfo((prev) => ({
@@ -65,27 +183,32 @@ const EditorCanvas = () => {
       }));
       setStartMousePos({ x: e.clientX, y: e.clientY });
     }
+
+    if (operatingModes === 1 && activeWallEditor) {
+      console.log("wall editor");
+
+      //墙体编辑模式打开-拖拽
+    }
   };
 
   const handleMouseUp = () => {
     setIsMousePressed(false);
+    // 墙体编辑模式打开-释放
+    if (operatingModes === 1) {
+    }
   };
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isSpacePressed, isMousePressed, startMousePos]);
+  }, [isMousePressed, startMousePos, operatingModes, geometryList]);
 
   useEvent("resize", (e: UIEvent) => {
     initializeCanvasSize();
@@ -97,14 +220,14 @@ const EditorCanvas = () => {
   const initializeCanvasSize = () => {
     const container = containerRef.current;
     const renderCanvas = renderRef.current;
-    const lightCanvas = lightRef.current;
+    const strongCanvas = strongRef.current;
     const buffCanvas = buffRef.current;
     const backgroundCanvas = backgroundRef.current;
     if (
       !container ||
       !renderCanvas ||
       !backgroundCanvas ||
-      !lightCanvas ||
+      !strongCanvas ||
       !buffCanvas
     )
       return;
@@ -117,18 +240,20 @@ const EditorCanvas = () => {
     renderCanvas.height = container.clientHeight;
     buffCanvas.width = projectInfo.width;
     buffCanvas.height = projectInfo.height;
+    strongCanvas.width = projectInfo.width;
+    strongCanvas.height = projectInfo.height;
 
     render();
   };
   const render = useCallback(() => {
     const renderCanvas = renderRef.current;
     const buffCanvas = buffRef.current;
-    const lightCanvas = lightRef.current;
-    if (!renderCanvas || !buffCanvas || !lightCanvas) return;
+    const strongCanvas = strongRef.current;
+    if (!renderCanvas || !buffCanvas || !strongCanvas) return;
 
     const renderCtx = renderCanvas.getContext("2d");
-    const lightCtx = lightCanvas.getContext("2d");
-    if (!renderCtx || !lightCtx) return;
+    const strongCtx = strongCanvas.getContext("2d");
+    if (!renderCtx || !strongCtx) return;
 
     renderCtx.clearRect(0, 0, renderCanvas.width, renderCanvas.height);
     buffCanvas.width = projectInfo.width;
@@ -143,17 +268,18 @@ const EditorCanvas = () => {
     renderCtx.rotate((canvasInfo.offseAngle * Math.PI) / 180);
     renderCtx.drawImage(
       buffCanvas,
-      -canvasInfo.offsetX - buffCanvas.width / 2,
-      -canvasInfo.offsetY - buffCanvas.height / 2
+      -buffCanvas.width / 2 - canvasInfo.offsetX,
+      -buffCanvas.height / 2 - canvasInfo.offsetY
     );
     renderCtx.restore();
-  }, [canvasInfo, projectInfo]);
+  }, [canvasInfo, projectInfo, operatingModes]);
 
   // 绘制缓冲区
   const drawBuff = () => {
     const buffCanvas = buffRef.current;
     const backgroundCanvas = backgroundRef.current;
-    if (!buffCanvas || !backgroundCanvas) return;
+    const strongCanvas = strongRef.current;
+    if (!buffCanvas || !backgroundCanvas || !strongCanvas) return;
     const buffCtx = buffCanvas.getContext("2d");
     if (!buffCtx) return;
 
@@ -164,6 +290,8 @@ const EditorCanvas = () => {
 
     // 绘制背景图层
     buffCtx.drawImage(backgroundCanvas, 0, 0);
+    // 绘制坚固图层
+    buffCtx.drawImage(strongCanvas, 0, 0);
   };
 
   useEffect(() => {
@@ -178,15 +306,22 @@ const EditorCanvas = () => {
       ref={containerRef}
     >
       <canvas ref={renderRef} />
-      <canvas style={{ display: "none" }} ref={lightRef} />
+      <canvas style={{ display: "none" }} ref={strongRef} />
       <canvas style={{ display: "none" }} ref={buffRef} />
       <canvas style={{ display: "none" }} ref={backgroundRef} />
 
       <div className={styles["bottom-container"]}>
         <span></span>
-        <span className="pr-[50px]">
-          {"offset：（" + canvasInfo.offsetX + "," + canvasInfo.offsetY + "）"}
-        </span>
+        <div className="pr-[50px]">
+          <span className="pr-2">operatingMode：{operatingModes}</span>
+          <span>
+            {"offset：（" +
+              canvasInfo.offsetX +
+              "," +
+              canvasInfo.offsetY +
+              "）"}
+          </span>
+        </div>
       </div>
     </div>
   );

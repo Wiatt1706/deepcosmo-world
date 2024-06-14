@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import styles from "@/styles/canvas/canvas.module.css";
 import { BoardProps, Character, Geometry } from "@/types/CanvasTypes";
 import { drawCharacterViewpoints } from "./helpers/LightDraw";
-import useKeyPress from "../hook/useKeyPress";
+import { useBaseKeyPress } from "../hook/useKeyPress";
 import { handleCollision } from "@/components/canvas/helpers/PhysicsDraw";
 import { drawCircle } from "./helpers/BaseDraw";
 
@@ -108,7 +108,7 @@ const RenderCanvas = (props: BoardProps) => {
     attackAngle: Math.PI / 3,
   });
 
-  useKeyPress(setKeys);
+  useBaseKeyPress(setKeys);
 
   useEffect(() => {
     const initializeCanvasSize = () => {
