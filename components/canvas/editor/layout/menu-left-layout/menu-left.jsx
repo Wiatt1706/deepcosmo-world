@@ -9,7 +9,13 @@ import {
 import { Input } from "@nextui-org/input";
 import { TbPalette } from "react-icons/tb";
 export default function EditorMenuLeft() {
-  const isOpenElement = useStatusStore((state) => state.isOpenElement);
+  const [isOpenElement, wallThickness, setWallThickness] = useStatusStore(
+    (state) => [
+      state.isOpenElement,
+      state.wallThickness,
+      state.setWallThickness,
+    ]
+  );
   const [projectInfo, setProjectInfo] = useCanvasEditorStore((state) => [
     state.projectInfo,
     state.setProjectInfo,
@@ -64,6 +70,16 @@ export default function EditorMenuLeft() {
               value={projectInfo.height}
               onUpdate={(value) => setProjectInfo("height", value)}
               prefix="H"
+              suffix="px"
+            />
+          </div>
+          <div className="px-4 pt-2 w-full">
+            <label className="text-xs">墙体编辑</label>
+
+            <NumInput
+              value={wallThickness}
+              onUpdate={(value) => setWallThickness(value)}
+              prefix="厚度"
               suffix="px"
             />
           </div>

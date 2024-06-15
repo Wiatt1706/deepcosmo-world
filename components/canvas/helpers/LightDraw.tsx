@@ -229,18 +229,19 @@ export function drawCharacterViewpoints(
   attackAngle: number,
   direction: number
 ) {
-  const fileList = filterSegments(
-    geometryList,
-    {
-      x: x,
-      y: y,
-    },
-    visibleRadius
-  );
+    // const fileList = filterSegments(
+    //   geometryList,
+    //   {
+    //     x: x,
+    //     y: y,
+    //   },
+    //   visibleRadius * 2
+    // );
+  const fileList = geometryList;
 
-  const fuzzyRadius = 10;
+  const fuzzyRadius = 5;
   const polygons = [getSightPolygon(fileList, x, y)];
-  for (var angle = 0; angle < Math.PI * 2; angle += (Math.PI * 2) / 10) {
+  for (var angle = 0; angle < Math.PI * 2; angle += (Math.PI * 2)) {
     const dx = Math.cos(angle) * fuzzyRadius;
     const dy = Math.sin(angle) * fuzzyRadius;
     polygons.push(getSightPolygon(fileList, x + dx, y + dy));
@@ -269,7 +270,7 @@ export function drawCharacterViewpoints(
     x,
     y,
     attackRadius,
-    attackAngle,
+    attackAngle / 3,
     direction
   );
 }

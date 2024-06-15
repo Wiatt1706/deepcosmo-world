@@ -12,7 +12,10 @@ import { useCanvasEditorStore, useStatusStore } from "./SocketManager";
 import EditorMenuLeft from "@/components/canvas/editor/layout/menu-left-layout/menu-left";
 import { useEvent } from "@/components/utils/GeneralEvent";
 import { useBaseKeyPress } from "@/components/hook/useKeyPress";
-import { calculateRectangleVertices } from "../helpers/BaseDraw";
+import {
+  calculateRectangleVertices,
+  generateRectangleAndMerge,
+} from "../helpers/BaseDraw";
 
 const EditorCanvas = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,8 +44,6 @@ const EditorCanvas = () => {
     setOperatingModes,
     isMousePressed,
     setIsMousePressed,
-    activeWallEditor,
-    setActiveWallEditor,
     wallThickness,
   } = useStatusStore();
 
@@ -68,26 +69,25 @@ const EditorCanvas = () => {
 
       setOperatingModes(operatingModes ^ 1);
       // 初始化墙体编辑数据
-      setActiveWallEditor(false);
       setLastWellPoint(null);
+      setLastStrongPos(null);
     }
     if (keys.v) setOperatingModes(0);
   }, [keys]);
 
-  const [startMousePos, setStartMousePos] = useState({ x: 0, y: 0 });
+  const [startMousePos, setStartMousePos] = useState<Point>({ x: 0, y: 0 });
+  const [lastStrongPos, setLastStrongPos] = useState<Point | null>(null);
   useBaseKeyPress(setKeys);
 
-  const wallOnclickHandler = (clientX: number, clientY: number) => {
+  const getStrongClientRect = (clientX: number, clientY: number): Point => {
     const strongCanvas = strongRef.current;
     const buffCanvas = buffRef.current;
     const renderCanvas = renderRef.current;
-    if (!strongCanvas || !renderCanvas || !buffCanvas) return null;
-    strongCanvas.width = projectInfo.width;
-    strongCanvas.height = projectInfo.height;
+    if (!strongCanvas || !renderCanvas || !buffCanvas) return { x: 0, y: 0 };
     const strongCtx = strongCanvas.getContext("2d");
     const renderCtx = renderCanvas.getContext("2d");
 
-    if (!strongCtx || !renderCtx) return null;
+    if (!strongCtx || !renderCtx) return { x: 0, y: 0 };
 
     const rect = renderCanvas.getBoundingClientRect();
     const centerX = renderCanvas.width / 2;
@@ -96,6 +96,15 @@ const EditorCanvas = () => {
     const dy = clientY - rect.top;
     const x = dx - (centerX - buffCanvas.width / 2) + canvasInfo.offsetX;
     const y = dy - (centerY - buffCanvas.height / 2) + canvasInfo.offsetY;
+    return { x, y };
+  };
+
+  const wallOnclickHandler = (clientX: number, clientY: number) => {
+    const strongCanvas = strongRef.current;
+    if (!strongCanvas) return null;
+    const strongCtx = strongCanvas.getContext("2d");
+    if (!strongCtx) return null;
+    const { x, y } = getStrongClientRect(clientX, clientY);
     // 计算矩形左上角的坐标并绘制矩形
     const halfThickness = wallThickness / 2;
     strongCtx.fillStyle = "red";
@@ -115,7 +124,7 @@ const EditorCanvas = () => {
     setLastWellPoint({ x, y });
 
     // 仅第一次新增几何
-    if (!activeWallEditor) {
+    if (!lastWellPoint) {
       // 加入几何体清单
       setGeometryList([
         ...geometryList,
@@ -151,17 +160,7 @@ const EditorCanvas = () => {
       };
       // 使用 setGeometryList 更新状态
       setGeometryList(newGeometryList);
-      strongCtx.strokeStyle = "#fff";
-      wallPoint.forEach((segment) => {
-        strongCtx.beginPath();
-        strongCtx.moveTo(segment.a.x, segment.a.y);
-        strongCtx.lineTo(segment.b.x, segment.b.y);
-        strongCtx.stroke();
-      });
     }
-
-    setActiveWallEditor(true);
-    render();
   };
   const handleMouseDown = (e: MouseEvent) => {
     setIsMousePressed(true);
@@ -184,9 +183,9 @@ const EditorCanvas = () => {
       setStartMousePos({ x: e.clientX, y: e.clientY });
     }
 
-    if (operatingModes === 1 && activeWallEditor) {
+    if (operatingModes === 1 && lastWellPoint) {
       console.log("wall editor");
-
+      setLastStrongPos(getStrongClientRect(e.clientX, e.clientY));
       //墙体编辑模式打开-拖拽
     }
   };
@@ -208,12 +207,7 @@ const EditorCanvas = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [
-    isMousePressed,
-    startMousePos,
-    operatingModes,
-    geometryList,
-  ]);
+  }, [isMousePressed, startMousePos, operatingModes, geometryList]);
 
   useEvent("resize", (e: UIEvent) => {
     initializeCanvasSize();
@@ -243,14 +237,18 @@ const EditorCanvas = () => {
 
     renderCanvas.width = container.clientWidth;
     renderCanvas.height = container.clientHeight;
-    buffCanvas.width = projectInfo.width;
-    buffCanvas.height = projectInfo.height;
-    strongCanvas.width = projectInfo.width;
-    strongCanvas.height = projectInfo.height;
+    backgroundCanvas.width = projectInfo.width;
+    backgroundCanvas.height = projectInfo.height;
 
-    render();
+    const img = new Image();
+    img.src = "/images/map01.png";
+    img.onload = () => {
+      backgroundCtx.drawImage(img, 0, 0);
+      backgroundCtx.strokeStyle = "#fff";
+      buffCtx.drawImage(backgroundCanvas, 0, 0);
+    };
   };
-  const render = useCallback(() => {
+  useEffect(() => {
     const renderCanvas = renderRef.current;
     const buffCanvas = buffRef.current;
     const strongCanvas = strongRef.current;
@@ -261,8 +259,6 @@ const EditorCanvas = () => {
     if (!renderCtx || !strongCtx) return;
 
     renderCtx.clearRect(0, 0, renderCanvas.width, renderCanvas.height);
-    buffCanvas.width = projectInfo.width;
-    buffCanvas.height = projectInfo.height;
 
     const centerX = renderCanvas.width / 2;
     const centerY = renderCanvas.height / 2;
@@ -278,7 +274,7 @@ const EditorCanvas = () => {
       -buffCanvas.height / 2 - canvasInfo.offsetY
     );
     renderCtx.restore();
-  }, [canvasInfo, projectInfo, operatingModes]);
+  }, [canvasInfo, projectInfo, operatingModes, geometryList, lastStrongPos]);
 
   // 绘制缓冲区
   const drawBuff = () => {
@@ -287,8 +283,10 @@ const EditorCanvas = () => {
     const strongCanvas = strongRef.current;
     if (!buffCanvas || !backgroundCanvas || !strongCanvas) return;
     const buffCtx = buffCanvas.getContext("2d");
-    if (!buffCtx) return;
-
+    const backgroundCtx = backgroundCanvas.getContext("2d");
+    if (!buffCtx || !backgroundCtx) return;
+    buffCanvas.width = projectInfo.width;
+    buffCanvas.height = projectInfo.height;
     buffCtx.clearRect(0, 0, buffCanvas.width, buffCanvas.height);
     // 绘制遮罩
     buffCtx.fillStyle = projectInfo?.canvasBackgroundColor;
@@ -297,14 +295,157 @@ const EditorCanvas = () => {
     // 绘制背景图层
     buffCtx.drawImage(backgroundCanvas, 0, 0);
     // 绘制坚固图层
-
+    drawGeometry();
     buffCtx.drawImage(strongCanvas, 0, 0);
   };
 
-  useEffect(() => {
-    const animationFrameId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [canvasInfo, render, projectInfo]);
+  const drawGeometry = () => {
+    const buffCanvas = buffRef.current;
+    const strongCanvas = strongRef.current;
+    if (!buffCanvas || !strongCanvas) return;
+    const strongCtx = strongCanvas.getContext("2d");
+    if (!strongCtx) return;
+    strongCanvas.width = projectInfo.width;
+    strongCanvas.height = projectInfo.height;
+    strongCtx.clearRect(0, 0, strongCanvas.width, strongCanvas.height);
+    strongCtx.strokeStyle = "#fff";
+    geometryList.forEach((seg: Geometry) => {
+      seg.segments.forEach((segment: Segment) => {
+        strongCtx.beginPath();
+        strongCtx.moveTo(segment.a.x, segment.a.y);
+        strongCtx.lineTo(segment.b.x, segment.b.y);
+        strongCtx.stroke();
+      });
+    });
+
+    if (lastStrongPos) {
+      // strongCtx.beginPath();
+      // strongCtx.moveTo(segment.a.x, segment.a.y);
+      // strongCtx.lineTo(segment.b.x, segment.b.y);
+      // strongCtx.stroke();
+      const lastGeometry = geometryList[geometryList.length - 1];
+      let segments = lastGeometry.segments;
+      const wallPoint = calculateRectangleVertices(
+        lastStrongPos.x,
+        lastStrongPos.y,
+        lastWellPoint.x,
+        lastWellPoint.y,
+        wallThickness
+      );
+
+      strongCtx.strokeStyle = "red";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        segments[segments.length - 4].a.x,
+        segments[segments.length - 4].a.y
+      );
+      strongCtx.lineTo(
+        segments[segments.length - 4].b.x,
+        segments[segments.length - 4].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "yellow";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        segments[segments.length - 3].a.x,
+        segments[segments.length - 3].a.y
+      );
+      strongCtx.lineTo(
+        segments[segments.length - 3].b.x,
+        segments[segments.length - 3].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "blue";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        segments[segments.length - 2].a.x,
+        segments[segments.length - 2].a.y
+      );
+      strongCtx.lineTo(
+        segments[segments.length - 2].b.x,
+        segments[segments.length - 2].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "green";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        segments[segments.length - 1].a.x,
+        segments[segments.length - 1].a.y
+      );
+      strongCtx.lineTo(
+        segments[segments.length - 1].b.x,
+        segments[segments.length - 1].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "#fff";
+      wallPoint.forEach((segment: Segment) => {
+        strongCtx.beginPath();
+        strongCtx.moveTo(segment.a.x, segment.a.y);
+        strongCtx.lineTo(segment.b.x, segment.b.y);
+        strongCtx.stroke();
+      });
+
+      strongCtx.strokeStyle = "red";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        wallPoint[wallPoint.length - 4].a.x,
+        wallPoint[wallPoint.length - 4].a.y
+      );
+      strongCtx.lineTo(
+        wallPoint[wallPoint.length - 4].b.x,
+        wallPoint[wallPoint.length - 4].b.y
+      );
+      wallPoint;
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "yellow";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        wallPoint[wallPoint.length - 3].a.x,
+        wallPoint[wallPoint.length - 3].a.y
+      );
+      strongCtx.lineTo(
+        wallPoint[wallPoint.length - 3].b.x,
+        wallPoint[wallPoint.length - 3].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "blue";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        wallPoint[wallPoint.length - 2].a.x,
+        wallPoint[wallPoint.length - 2].a.y
+      );
+      strongCtx.lineTo(
+        wallPoint[wallPoint.length - 2].b.x,
+        wallPoint[wallPoint.length - 2].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "green";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        wallPoint[wallPoint.length - 1].a.x,
+        wallPoint[wallPoint.length - 1].a.y
+      );
+      strongCtx.lineTo(
+        wallPoint[wallPoint.length - 1].b.x,
+        wallPoint[wallPoint.length - 1].b.y
+      );
+      strongCtx.stroke();
+
+      //  const newSegments = generateRectangleAndMerge(
+      //    segments,
+      //    lastStrongPos.x,
+      //    lastStrongPos.y,
+      //    wallThickness
+      //  );
+    }
+  };
 
   return (
     <div

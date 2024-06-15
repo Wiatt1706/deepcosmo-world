@@ -12,15 +12,17 @@ interface Point {
     param?: number;
 }
 
+interface Segment {
+    a: Point;
+    b: Point;
+}
+
 interface Ray {
     a: Point;
     b: Point;
 }
 
-interface Segment {
-    a: Point;
-    b: Point;
-}
+
 interface Geometry {
     name: string;
     type: number;

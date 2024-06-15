@@ -6,7 +6,7 @@ export const useStatusStore = create((set) => ({
   isMousePressed: false,
   operatingModes: 0,
   activeWallEditor: false,
-  wallThickness: 10,
+  wallThickness: 50,
   setOpenElement: (isOpenElement) => set({ isOpenElement }),
   setIsMousePressed: (isMousePressed) => set({ isMousePressed }),
   setOperatingModes: (operatingModes) => set({ operatingModes }),
@@ -22,8 +22,8 @@ export const useCanvasEditorStore = create(
       projectInfo: {
         backgroundColor: "#ffffff",
         canvasBackgroundColor: "#272727",
-        width: 640,
-        height: 360,
+        width: 2432,
+        height: 1216,
       },
       setGeometryList: (geometryList) => {
         set({ geometryList });

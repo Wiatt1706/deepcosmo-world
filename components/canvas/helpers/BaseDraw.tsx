@@ -1,4 +1,5 @@
 import { Point, Ray, Segment } from "@/types/CanvasTypes";
+import { getIntersection } from "./LightDraw";
 
 /**
  * 绘制圆形的函数
@@ -292,26 +293,92 @@ export const calculateRectangleVertices = (
   const dx = x2 - x1;
   const dy = y2 - y1;
 
-  // Calculate the length of this vector
+  // 计算这个向量的长度
   const length = Math.sqrt(dx * dx + dy * dy);
 
-  // Calculate the unit vector perpendicular to this vector (normalized)
+  // 计算垂直于这个向量的单位向量（归一化）
   const ux = -dy / length;
   const uy = dx / length;
 
-  // Calculate half the width to apply on both sides of the midline
+  // 计算矩形宽度的一半，以便在中线的两侧应用
   const halfWidth = w / 2;
 
-  // Calculate the vector to move the middle points inward
+  // 计算将中间点向内移动的向量
   const inwardFactor = -halfWidth / length;
 
-  // Adjust the midpoints inward by half the width
+  // 将中间点向内调整半个宽度
   const adjustedX1 = x1 + dx * inwardFactor;
   const adjustedY1 = y1 + dy * inwardFactor;
   const adjustedX2 = x2 - dx * inwardFactor;
   const adjustedY2 = y2 - dy * inwardFactor;
 
-  // Calculate the four vertices of the rectangle
+  // 计算矩形的四个顶点
+  const x3 = adjustedX1 + ux * halfWidth;
+  const y3 = adjustedY1 + uy * halfWidth;
+
+  const x4 = adjustedX1 - ux * halfWidth;
+  const y4 = adjustedY1 - uy * halfWidth;
+
+  const x5 = adjustedX2 + ux * halfWidth;
+  const y5 = adjustedY2 + uy * halfWidth;
+
+  const x6 = adjustedX2 - ux * halfWidth;
+  const y6 = adjustedY2 - uy * halfWidth;
+
+  // 计算矩形的四个顶点坐标
+  const topLeft = { x: x3, y: y3 };
+  const topRight = { x: x4, y: y4 };
+  const bottomRight = { x: x6, y: y6 };
+  const bottomLeft = { x: x5, y: y5 };
+
+  return [
+    { a: topLeft, b: topRight },
+    { a: topRight, b: bottomRight },
+    { a: bottomRight, b: bottomLeft },
+    { a: bottomLeft, b: topLeft },
+  ];
+};
+
+const getMidpointPoint = (point1: Point, point2: Point) => {
+  return {
+    x: (point1.x + point2.x) / 2,
+    y: (point1.y + point2.y) / 2,
+  };
+};
+
+export const generateRectangleAndMerge = (
+  segments: Segment[],
+  x1: number,
+  y1: number,
+  w: number
+) => {
+  const { x: x2, y: y2 } = getMidpointPoint(
+    segments[segments.length - 2].a,
+    segments[segments.length - 2].b
+  );
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+
+  // 计算这个向量的长度
+  const length = Math.sqrt(dx * dx + dy * dy);
+
+  // 计算垂直于这个向量的单位向量（归一化）
+  const ux = -dy / length;
+  const uy = dx / length;
+
+  // 计算矩形宽度的一半，以便在中线的两侧应用
+  const halfWidth = w / 2;
+
+  // 计算将中间点向内移动的向量
+  const inwardFactor = -halfWidth / length;
+
+  // 将中间点向内调整半个宽度
+  const adjustedX1 = x1 + dx;
+  const adjustedY1 = y1 + dy;
+  const adjustedX2 = x2 - dx;
+  const adjustedY2 = y2 - dy;
+
+  // 计算矩形的四个顶点
   const x3 = adjustedX1 + ux * halfWidth;
   const y3 = adjustedY1 + uy * halfWidth;
 
