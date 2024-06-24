@@ -53,5 +53,27 @@ interface CanvasInfo {
     offseAngle: number
 }
 
+interface Weapon {
+    speed: number;
+    bulletLength: number;
+    bulletWidth: number;
+    airResistance: number;
+    imageSrc: string;
+}
 
-export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray, Geometry, CanvasInfo };
+interface Bullet {
+    code: string;
+    x: number;
+    y: number;
+    speed: number;
+    direction: number;
+    bulletLength: number;
+    bulletWidth: number;
+    airResistance: number;
+    active: boolean;
+    update(): void;
+    draw(ctx: CanvasRenderingContext2D, image: HTMLImageElement): void;
+}
+
+
+export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray, Geometry, CanvasInfo, Bullet, Weapon };

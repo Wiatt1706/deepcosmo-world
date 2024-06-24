@@ -1,21 +1,16 @@
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import styles from "@/styles/canvas/canvas.module.css";
-import { BoardProps, Bullet, Character, Geometry } from "@/types/CanvasTypes";
-import { drawCharacterViewpoints } from "./helpers/LightDraw";
-import { useBaseKeyPress } from "../hook/useKeyPress";
-import { handleCollision } from "@/components/canvas/helpers/PhysicsDraw";
-import { GeometryList, drawCircle } from "./helpers/BaseDraw";
-import { createBullet, weaponDatabase } from "./helpers/FightingDraw";
+
 
 const RenderCanvas = (props: BoardProps) => {
   const { width, height, lightIntensity, mouseSensitivity } = props;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const renderRef = useRef<HTMLCanvasElement | null>(null);
   const buffRef = useRef<HTMLCanvasElement | null>(null);
   const backgroundRef = useRef<HTMLCanvasElement | null>(null);
   const lightRef = useRef<HTMLCanvasElement | null>(null);
-  const bulletRef = useRef<HTMLCanvasElement | null>(null);
 
   const [pos, setPos] = useState<Character>({
     x: 50,
@@ -24,11 +19,6 @@ const RenderCanvas = (props: BoardProps) => {
     angle: 0,
     speed: 3,
   });
-
-  const [bulletList, setBulletList] = useState<Bullet[]>([]);
-  const [bulletImages, setBulletImages] = useState<{
-    [key: string]: HTMLImageElement;
-  }>({});
 
   const [keys, setKeys] = useState({
     up: false,
@@ -47,27 +37,19 @@ const RenderCanvas = (props: BoardProps) => {
   useBaseKeyPress(setKeys);
 
   useEffect(() => {
-    // 预加载图像
-    const preloadImages = () => {
-      for (const weaponCode in weaponDatabase) {
-        const weapon = weaponDatabase[weaponCode];
-        const image = new Image();
-        image.src = weapon.imageSrc;
-        image.onload = () => {
-          setBulletImages((prevImages) => ({
-            ...prevImages,
-            [weaponCode]: image,
-          }));
-        };
-      }
-    };
-
     const initializeCanvasSize = () => {
       const container = containerRef.current;
       const renderCanvas = renderRef.current;
+      const lightCanvas = lightRef.current;
       const buffCanvas = buffRef.current;
       const backgroundCanvas = backgroundRef.current;
-      if (!container || !renderCanvas || !backgroundCanvas || !buffCanvas)
+      if (
+        !container ||
+        !renderCanvas ||
+        !backgroundCanvas ||
+        !lightCanvas ||
+        !buffCanvas
+      )
         return;
       const backgroundCtx = backgroundCanvas.getContext("2d");
       const buffCtx = buffCanvas.getContext("2d");
@@ -82,17 +64,22 @@ const RenderCanvas = (props: BoardProps) => {
       img.onload = () => {
         backgroundCtx.drawImage(img, 0, 0);
         backgroundCtx.strokeStyle = "#fff";
+        // GeometryList.forEach((seg) => {
+        //   seg.segments.forEach((segment) => {
+        //     backgroundCtx.beginPath();
+        //     backgroundCtx.moveTo(segment.a.x, segment.a.y);
+        //     backgroundCtx.lineTo(segment.b.x, segment.b.y);
+        //     backgroundCtx.stroke();
+        //   });
+        // });
         buffCtx.drawImage(backgroundCanvas, 0, 0);
       };
     };
-    preloadImages();
     initializeCanvasSize();
   }, []);
 
-  // 改变角度
   useEffect(() => {
     const handleMouseDown = (event: MouseEvent) => {
-      event.preventDefault();
       let startX = event.clientX;
       let initialAngle = pos.angle;
 
@@ -109,15 +96,6 @@ const RenderCanvas = (props: BoardProps) => {
         window.removeEventListener("mouseup", handleMouseUp);
       };
 
-      setBulletList((prevBulletList) => [
-        ...prevBulletList,
-        createBullet(
-          pos.x,
-          pos.y,
-          -(pos.angle * Math.PI) / 180 - Math.PI / 2,
-          "rifle"
-        ),
-      ]);
       window.addEventListener("mousemove", handleMouseMove);
       window.addEventListener("mouseup", handleMouseUp);
     };
@@ -126,9 +104,8 @@ const RenderCanvas = (props: BoardProps) => {
     return () => {
       window.removeEventListener("mousedown", handleMouseDown);
     };
-  }, [pos.angle, pos.x, pos.y]);
+  }, [pos.angle]);
 
-  // 移动
   useEffect(() => {
     const radian = (angle: number) => (angle * Math.PI) / 180;
 
@@ -182,18 +159,20 @@ const RenderCanvas = (props: BoardProps) => {
         return newPos;
       });
     };
+
     const intervalId = setInterval(moveCharacter, 16);
     return () => clearInterval(intervalId);
   }, [keys]);
 
-  // 渲染
   const render = useCallback(() => {
     const renderCanvas = renderRef.current;
     const buffCanvas = buffRef.current;
-    if (!renderCanvas || !buffCanvas) return;
+    const lightCanvas = lightRef.current;
+    if (!renderCanvas || !buffCanvas || !lightCanvas) return;
 
     const renderCtx = renderCanvas.getContext("2d");
-    if (!renderCtx) return;
+    const lightCtx = lightCanvas.getContext("2d");
+    if (!renderCtx || !lightCtx) return;
 
     renderCtx.clearRect(0, 0, renderCanvas.width, renderCanvas.height);
 
@@ -220,34 +199,25 @@ const RenderCanvas = (props: BoardProps) => {
   useEffect(() => {
     const animationFrameId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [render]);
+  }, [pos.angle, pos.radius, pos.x, pos.y, render]);
 
   // 绘制缓冲区
   const drawBuff = () => {
+    const lightCanvas = lightRef.current;
     const buffCanvas = buffRef.current;
     const backgroundCanvas = backgroundRef.current;
-    if (!buffCanvas || !backgroundCanvas) return;
-    const buffCtx = buffCanvas.getContext("2d");
-    if (!buffCtx) return;
-    // 绘制缓冲图层
-    buffCtx.clearRect(0, 0, buffCanvas.width, buffCanvas.height);
-    // 绘制背景图层
-    buffCtx.drawImage(backgroundCanvas, 0, 0);
+    if (!lightCanvas || !buffCanvas || !backgroundCanvas) return;
 
-    drawLight(buffCtx);
-    drawBullet(buffCtx);
-  };
-
-  // 绘制灯光
-  const drawLight = (buffCtx: CanvasRenderingContext2D) => {
-    const lightCanvas = lightRef.current;
-    if (!lightCanvas) return;
     const lightCtx = lightCanvas.getContext("2d");
-    if (!lightCtx) return;
-    // 绘制遮罩
-    lightCtx.fillStyle = "rgba(0, 0, 0, 0.9)";
+    const buffCtx = buffCanvas.getContext("2d");
+    if (!lightCtx || !buffCtx) return;
+
     lightCtx.clearRect(0, 0, lightCanvas.width, lightCanvas.height);
+
+    // 绘制遮罩
+    lightCtx.fillStyle = "rgba(0, 0, 0, 0.8)";
     lightCtx.fillRect(0, 0, lightCanvas.width, lightCanvas.height);
+
     // 绘制角色视线
     drawCharacterViewpoints(
       lightCtx,
@@ -261,42 +231,24 @@ const RenderCanvas = (props: BoardProps) => {
       // -Math.PI / 2,
       -(pos.angle * Math.PI) / 180 - Math.PI / 2
     );
+    // 绘制缓冲图层
+    buffCtx.clearRect(0, 0, buffCanvas.width, buffCanvas.height);
+    // 绘制背景图层
+    buffCtx.drawImage(backgroundCanvas, 0, 0);
+
+    // 绘制灯光图层
     buffCtx.drawImage(lightCanvas, 0, 0);
   };
-  const drawBullet = (buffCtx: CanvasRenderingContext2D) => {
-    const bulletCanvas = bulletRef.current;
-    if (!bulletCanvas) return;
-    const bulletCtx = bulletCanvas.getContext("2d");
-    if (!bulletCtx) return;
-    // 绘制遮罩
-    bulletCtx.clearRect(0, 0, bulletCanvas.width, bulletCanvas.height);
-    // 绘制子弹
-    if (bulletList.length > 0) {
-      bulletList.forEach((bullet) => {
-        const image = bulletImages[bullet.code];
 
-        if (!image) return;
-        if (bullet.active) {
-          bullet.update();
-          bullet.draw(bulletCtx, image);
-        }
-      });
-
-      setBulletList(
-        bulletList.filter((bullet) => {
-          if (bullet.active) {
-            return true;
-          } else {
-            return false;
-          }
-        })
-      );
-    }
-    buffCtx.drawImage(bulletCanvas, 0, 0);
-  };
   return (
     <div className={styles["canvas-container"]} ref={containerRef}>
       <canvas ref={renderRef} />
+      <canvas
+        style={{ display: "none" }}
+        width={width}
+        height={height}
+        ref={lightRef}
+      />
       <canvas
         style={{ display: "none" }}
         ref={buffRef}
@@ -309,18 +261,10 @@ const RenderCanvas = (props: BoardProps) => {
         width={width}
         height={height}
       />
-      <canvas
-        style={{ display: "none" }}
-        ref={lightRef}
-        width={width}
-        height={height}
-      />
-      <canvas
-        style={{ display: "none" }}
-        ref={bulletRef}
-        width={width}
-        height={height}
-      />
+
+      {/* <div
+        className={styles["canvas-info"]}
+      >{`x: ${pos.x}, y: ${pos.y}, angle: ${pos.angle}`}</div> */}
     </div>
   );
 };

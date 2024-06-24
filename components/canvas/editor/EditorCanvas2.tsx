@@ -64,39 +64,22 @@ const EditorCanvas = () => {
     offseAngle: 0,
   });
 
-  const [startMousePos, setStartMousePos] = useState<Point>({ x: 0, y: 0 });
-  const [lastStrongPos, setLastStrongPos] = useState<Point | null>(null);
-  useBaseKeyPress(setKeys);
   useEffect(() => {
     if (keys.e) {
       console.log("geometryList：", geometryList);
-      // 初始化墙体编辑数据
-      if (operatingModes === 1 && lastWellPoint) {
-        const newGeometryList = [...geometryList];
-        // 获取最后一个对象
-        const lastGeometry = newGeometryList[newGeometryList.length - 1];
-        let segments = lastGeometry.segments;
 
-        const wallPoint = {
-          a: segments[segments.length - 1].b,
-          b: segments[0].a,
-        };
-        segments.push(wallPoint);
-        // 更新最后一个对象的 segments 属性
-        geometryList[geometryList.length - 1] = {
-          ...lastGeometry,
-          segments,
-        };
-        // 使用 setGeometryList 更新状态
-        setGeometryList(newGeometryList);
-        setOperatingModes(0);
-      }
       setOperatingModes(operatingModes ^ 1);
+      // 初始化墙体编辑数据
       setLastWellPoint(null);
       setLastStrongPos(null);
     }
     if (keys.v) setOperatingModes(0);
   }, [keys]);
+
+  const [startMousePos, setStartMousePos] = useState<Point>({ x: 0, y: 0 });
+  const [lastStrongPos, setLastStrongPos] = useState<Point | null>(null);
+  useBaseKeyPress(setKeys);
+
   const getStrongClientRect = (clientX: number, clientY: number): Point => {
     const strongCanvas = strongRef.current;
     const buffCanvas = buffRef.current;
@@ -133,6 +116,14 @@ const EditorCanvas = () => {
       wallThickness
     );
 
+    // 计算矩形的四个顶点坐标
+    const topLeft = { x: x - halfThickness, y: y - halfThickness };
+    const topRight = { x: x + halfThickness, y: y - halfThickness };
+    const bottomRight = { x: x + halfThickness, y: y + halfThickness };
+    const bottomLeft = { x: x - halfThickness, y: y + halfThickness };
+    // 更新最后一个点
+    setLastWellPoint({ x, y });
+
     // 仅第一次新增几何
     if (!lastWellPoint) {
       // 加入几何体清单
@@ -141,7 +132,12 @@ const EditorCanvas = () => {
         {
           name: `Polygon #${geometryList.length + 1}`,
           type: 0,
-          segments: [],
+          segments: [
+            { a: topLeft, b: topRight },
+            { a: topRight, b: bottomRight },
+            { a: bottomRight, b: bottomLeft },
+            { a: bottomLeft, b: topLeft },
+          ],
         },
       ]);
     } else {
@@ -150,8 +146,14 @@ const EditorCanvas = () => {
       const lastGeometry = newGeometryList[newGeometryList.length - 1];
       let segments = lastGeometry.segments;
 
-      const wallPoint = { a: lastWellPoint, b: { x, y } };
-      segments.push(wallPoint);
+      const wallPoint = calculateRectangleVertices(
+        x,
+        y,
+        lastWellPoint.x,
+        lastWellPoint.y,
+        wallThickness
+      );
+      segments.push(...wallPoint);
       // 更新最后一个对象的 segments 属性
       geometryList[geometryList.length - 1] = {
         ...lastGeometry,
@@ -160,8 +162,6 @@ const EditorCanvas = () => {
       // 使用 setGeometryList 更新状态
       setGeometryList(newGeometryList);
     }
-    // 更新最后一个点
-    setLastWellPoint({ x, y });
   };
   const handleMouseDown = (e: MouseEvent) => {
     setIsMousePressed(true);
@@ -208,13 +208,7 @@ const EditorCanvas = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [
-    isMousePressed,
-    startMousePos,
-    operatingModes,
-    geometryList,
-    lastWellPoint,
-  ]);
+  }, [isMousePressed, startMousePos, operatingModes, geometryList]);
 
   useEvent("resize", (e: UIEvent) => {
     initializeCanvasSize();
@@ -284,6 +278,8 @@ const EditorCanvas = () => {
       -buffCanvas.height / 2 - canvasInfo.offsetY
     );
     renderCtx.restore();
+
+    console.log("projectInfo", projectInfo);
   };
 
   useEffect(() => {
@@ -331,39 +327,140 @@ const EditorCanvas = () => {
     strongCtx.clearRect(0, 0, strongCanvas.width, strongCanvas.height);
     strongCtx.strokeStyle = "#fff";
     geometryList.forEach((seg: Geometry) => {
-      if (seg.segments && seg.segments.length > 0) {
-        // 检查 segments 是否为非空数组
-        seg.segments.forEach((segment: Segment) => {
-          strongCtx.beginPath();
-          strongCtx.moveTo(segment.a.x, segment.a.y);
-          strongCtx.lineTo(segment.b.x, segment.b.y);
-          strongCtx.stroke();
-        });
-      }
+      seg.segments.forEach((segment: Segment) => {
+        strongCtx.beginPath();
+        strongCtx.moveTo(segment.a.x, segment.a.y);
+        strongCtx.lineTo(segment.b.x, segment.b.y);
+        strongCtx.stroke();
+      });
     });
 
     if (lastStrongPos) {
+      // strongCtx.beginPath();
+      // strongCtx.moveTo(segment.a.x, segment.a.y);
+      // strongCtx.lineTo(segment.b.x, segment.b.y);
+      // strongCtx.stroke();
       const lastGeometry = geometryList[geometryList.length - 1];
       let segments = lastGeometry.segments;
+      const wallPoint = calculateRectangleVertices(
+        lastStrongPos.x,
+        lastStrongPos.y,
+        lastWellPoint.x,
+        lastWellPoint.y,
+        wallThickness
+      );
 
-      if (segments.length > 0) {
-        strongCtx.strokeStyle = "rgba(255, 0, 0, 0.8)"; // 加深透明度使颜色更显眼
-        strongCtx.lineWidth = 2; // 增加线条宽度
-        strongCtx.beginPath();
-        strongCtx.moveTo(
-          segments[segments.length - 1].b.x,
-          segments[segments.length - 1].b.y
-        );
-        strongCtx.lineTo(lastStrongPos.x, lastStrongPos.y);
-        strongCtx.stroke();
+      strongCtx.strokeStyle = "red";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        segments[segments.length - 4].a.x,
+        segments[segments.length - 4].a.y
+      );
+      strongCtx.lineTo(
+        segments[segments.length - 4].b.x,
+        segments[segments.length - 4].b.y
+      );
+      strongCtx.stroke();
 
-        strongCtx.strokeStyle = "#fff";
-        strongCtx.lineWidth = 1; // 增加线条宽度
+      strongCtx.strokeStyle = "yellow";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        segments[segments.length - 3].a.x,
+        segments[segments.length - 3].a.y
+      );
+      strongCtx.lineTo(
+        segments[segments.length - 3].b.x,
+        segments[segments.length - 3].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "blue";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        segments[segments.length - 2].a.x,
+        segments[segments.length - 2].a.y
+      );
+      strongCtx.lineTo(
+        segments[segments.length - 2].b.x,
+        segments[segments.length - 2].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "green";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        segments[segments.length - 1].a.x,
+        segments[segments.length - 1].a.y
+      );
+      strongCtx.lineTo(
+        segments[segments.length - 1].b.x,
+        segments[segments.length - 1].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "#fff";
+      wallPoint.forEach((segment: Segment) => {
         strongCtx.beginPath();
-        strongCtx.moveTo(lastStrongPos.x, lastStrongPos.y);
-        strongCtx.lineTo(segments[0].a.x, segments[0].a.y);
+        strongCtx.moveTo(segment.a.x, segment.a.y);
+        strongCtx.lineTo(segment.b.x, segment.b.y);
         strongCtx.stroke();
-      }
+      });
+
+      strongCtx.strokeStyle = "red";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        wallPoint[wallPoint.length - 4].a.x,
+        wallPoint[wallPoint.length - 4].a.y
+      );
+      strongCtx.lineTo(
+        wallPoint[wallPoint.length - 4].b.x,
+        wallPoint[wallPoint.length - 4].b.y
+      );
+      wallPoint;
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "yellow";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        wallPoint[wallPoint.length - 3].a.x,
+        wallPoint[wallPoint.length - 3].a.y
+      );
+      strongCtx.lineTo(
+        wallPoint[wallPoint.length - 3].b.x,
+        wallPoint[wallPoint.length - 3].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "blue";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        wallPoint[wallPoint.length - 2].a.x,
+        wallPoint[wallPoint.length - 2].a.y
+      );
+      strongCtx.lineTo(
+        wallPoint[wallPoint.length - 2].b.x,
+        wallPoint[wallPoint.length - 2].b.y
+      );
+      strongCtx.stroke();
+
+      strongCtx.strokeStyle = "green";
+      strongCtx.beginPath();
+      strongCtx.moveTo(
+        wallPoint[wallPoint.length - 1].a.x,
+        wallPoint[wallPoint.length - 1].a.y
+      );
+      strongCtx.lineTo(
+        wallPoint[wallPoint.length - 1].b.x,
+        wallPoint[wallPoint.length - 1].b.y
+      );
+      strongCtx.stroke();
+
+      //  const newSegments = generateRectangleAndMerge(
+      //    segments,
+      //    lastStrongPos.x,
+      //    lastStrongPos.y,
+      //    wallThickness
+      //  );
     }
   };
 

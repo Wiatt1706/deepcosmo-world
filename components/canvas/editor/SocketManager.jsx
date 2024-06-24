@@ -7,11 +7,17 @@ export const useStatusStore = create((set) => ({
   operatingModes: 0,
   activeWallEditor: false,
   wallThickness: 50,
+  renderScale: 1,
+  originX: 0,
+  originY: 0,
   setOpenElement: (isOpenElement) => set({ isOpenElement }),
   setIsMousePressed: (isMousePressed) => set({ isMousePressed }),
   setOperatingModes: (operatingModes) => set({ operatingModes }),
   setActiveWallEditor: (activeWallEditor) => set({ activeWallEditor }),
   setWallThickness: (wallThickness) => set({ wallThickness }),
+  setRenderScale: (renderScale) => set({ renderScale }),
+  setOriginX: (originX) => set({ originX }),
+  setOriginY: (originY) => set({ originY }),
 }));
 
 export const useCanvasEditorStore = create(
