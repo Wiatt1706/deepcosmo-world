@@ -5,6 +5,7 @@
   right: 0;
   top: 0;
   overflow: hidden;
+  background-color: #000;
 }
 
 .bottom-container {
@@ -27,9 +28,8 @@
 
 .canvas-info {
   position: fixed;
-  top: 50px;
+  top: 0;
   left: 0;
-  background: #fff;
   font-size: 14px;
   color: #000;
   padding: 10px;

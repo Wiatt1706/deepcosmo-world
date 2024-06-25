@@ -773,6 +773,30 @@ export const drawCircle = (
   ctx.restore();
 };
 
+export const drawDashedRing = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius = 10,
+  dashLength = 10,
+  gapLength = 10,
+  color = "red",
+  rotationAngle = 0
+) => {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate((rotationAngle * Math.PI) / 180);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.setLineDash([dashLength, gapLength]);
+
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+  ctx.stroke();
+
+  ctx.restore();
+};
+
 // 检测碰撞
 export const detectCollision = (
   firmCtx: CanvasRenderingContext2D,
@@ -1152,4 +1176,13 @@ export const generateRectangleAndMerge = (
     { a: bottomRight, b: bottomLeft },
     { a: bottomLeft, b: topLeft },
   ];
+};
+
+export const playBackgroundMusic = (src: string) => {
+  const backgroundMusic = new Audio(src);
+  backgroundMusic.loop = true; // 设置循环播放
+  backgroundMusic.play().catch((error) => {
+    console.error("Failed to play background music:", error);
+  });
+  return backgroundMusic;
 };

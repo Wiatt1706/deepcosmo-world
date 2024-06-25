@@ -1,26 +1,37 @@
 import { Geometry, Point, Ray, Segment } from "@/types/CanvasTypes";
 
-export const isColliding = (
-  segments: Segment[],
-  x: number = 0,
-  y: number = 0,
-  radius: number = 0
-) => {
-  for (const segment of segments) {
-    const { a, b } = segment;
-    const dist = distanceFromPointToSegment({ x, y }, a, b);
-    if (dist < radius) {
-      return true;
-    }
+// 线段相交检测函数，返回相交点
+export const getLineSegmentIntersection = (
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  x3: number,
+  y3: number,
+  x4: number,
+  y4: number
+): { x: number; y: number } | null => {
+  const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+  if (denom === 0) return null; // 平行或共线
+
+  const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+  const ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+
+  if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1) {
+    const x = x1 + ua * (x2 - x1);
+    const y = y1 + ua * (y2 - y1);
+    return { x, y };
   }
-  return false;
+
+  return null;
 };
 
+// 计算点到线段的最短距离
 const distanceFromPointToSegment = (
   point: Point,
   segmentA: Point,
   segmentB: Point
-) => {
+): number => {
   const { x: px, y: py } = point;
   const { x: ax, y: ay } = segmentA;
   const { x: bx, y: by } = segmentB;
@@ -32,6 +43,9 @@ const distanceFromPointToSegment = (
 
   const AB_dot_AP = ABx * APx + ABy * APy;
   const AB_length_squared = ABx * ABx + ABy * ABy;
+
+  if (AB_length_squared === 0) return Math.sqrt(APx * APx + APy * APy); // 处理线段长度为0的情况
+
   const t = Math.max(0, Math.min(1, AB_dot_AP / AB_length_squared));
 
   const closestX = ax + t * ABx;
@@ -41,6 +55,18 @@ const distanceFromPointToSegment = (
   return distance;
 };
 
+// 计算线段的法线向量
+const getNormal = (a: Point, b: Point) => {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const length = Math.sqrt(dx * dx + dy * dy);
+
+  if (length === 0) return { x: 0, y: 0 }; // 处理零长度线段的情况
+
+  return { x: dy / length, y: -dx / length };
+};
+
+// 处理碰撞
 export const handleCollision = (
   geometryList: Geometry[],
   radius: number = 0,
@@ -71,14 +97,6 @@ export const handleCollision = (
 
   return { x, y, velocityX, velocityY, collided };
 };
-
-const getNormal = (a: Point, b: Point) => {
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  const length = Math.sqrt(dx * dx + dy * dy);
-  return { x: dy / length, y: -dx / length };
-};
-
 export const resetGeometry = (
   geometryList: Geometry[],
   offsetX: number,

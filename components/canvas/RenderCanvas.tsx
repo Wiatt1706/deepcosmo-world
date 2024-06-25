@@ -1,12 +1,32 @@
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import styles from "@/styles/canvas/canvas.module.css";
-import { BoardProps, Bullet, Character, Geometry } from "@/types/CanvasTypes";
+import {
+  BoardProps,
+  Bullet,
+  Character,
+  Enemy,
+  Geometry,
+  Weapon,
+} from "@/types/CanvasTypes";
 import { drawCharacterViewpoints } from "./helpers/LightDraw";
 import { useBaseKeyPress } from "../hook/useKeyPress";
 import { handleCollision } from "@/components/canvas/helpers/PhysicsDraw";
-import { GeometryList, drawCircle } from "./helpers/BaseDraw";
-import { createBullet, weaponDatabase } from "./helpers/FightingDraw";
+import {
+  GeometryList,
+  drawCircle,
+  drawDashedRing,
+  playBackgroundMusic,
+} from "./helpers/BaseDraw";
+import {
+  createBullet,
+  fireWeapon,
+  reloadWeapon,
+  weaponDatabase,
+} from "./helpers/FightingDraw";
+import { Button } from "@nextui-org/button";
+import { TbMusic, TbMusicX } from "react-icons/tb";
+import { createEnemy, enemyDatabase } from "./helpers/EnemyDraw";
 
 const RenderCanvas = (props: BoardProps) => {
   const { width, height, lightIntensity, mouseSensitivity } = props;
@@ -17,6 +37,20 @@ const RenderCanvas = (props: BoardProps) => {
   const lightRef = useRef<HTMLCanvasElement | null>(null);
   const bulletRef = useRef<HTMLCanvasElement | null>(null);
 
+  // 预加载图像
+  const [buffImages, setBuffImages] = useState<{
+    [key: string]: HTMLImageElement;
+  }>({});
+
+  // 预加载音效
+  const [buffSounds, setBuffSounds] = useState<{
+    [key: string]: HTMLAudioElement;
+  }>({});
+
+  // 预加背景音乐
+  const [bgmSound, setBgmSound] = useState<HTMLAudioElement | null>(null);
+  const [bgmPlaying, setBgmPlaying] = useState<boolean>(false);
+
   const [pos, setPos] = useState<Character>({
     x: 50,
     y: 50,
@@ -25,10 +59,9 @@ const RenderCanvas = (props: BoardProps) => {
     speed: 3,
   });
 
+  const [weapon, setWeapon] = useState<Weapon>();
   const [bulletList, setBulletList] = useState<Bullet[]>([]);
-  const [bulletImages, setBulletImages] = useState<{
-    [key: string]: HTMLImageElement;
-  }>({});
+  const [enemyList, setEnemyList] = useState<Enemy[]>([]);
 
   const [keys, setKeys] = useState({
     up: false,
@@ -48,15 +81,34 @@ const RenderCanvas = (props: BoardProps) => {
 
   useEffect(() => {
     // 预加载图像
-    const preloadImages = () => {
+    const preloadAssets = () => {
       for (const weaponCode in weaponDatabase) {
         const weapon = weaponDatabase[weaponCode];
         const image = new Image();
         image.src = weapon.imageSrc;
         image.onload = () => {
-          setBulletImages((prevImages) => ({
+          setBuffImages((prevImages) => ({
             ...prevImages,
             [weaponCode]: image,
+          }));
+        };
+
+        const audio = new Audio();
+        audio.src = weapon.soundSrc;
+        setBuffSounds((prevSounds) => ({
+          ...prevSounds,
+          [weaponCode]: audio,
+        }));
+      }
+
+      for (const enemyCode in enemyDatabase) {
+        const enemy = enemyDatabase[enemyCode];
+        const image = new Image();
+        image.src = enemy.imageSrc;
+        image.onload = () => {
+          setBuffImages((prevImages) => ({
+            ...prevImages,
+            [enemyCode]: image,
           }));
         };
       }
@@ -85,9 +137,23 @@ const RenderCanvas = (props: BoardProps) => {
         buffCtx.drawImage(backgroundCanvas, 0, 0);
       };
     };
-    preloadImages();
+    preloadAssets();
+    setBgmSound(new Audio("sounds/bgm/loopBgm01.wav"));
+
+    setEnemyList((prevList) => [...prevList, createEnemy("gyonshi", 500, 200)]);
+
+    setWeapon(weaponDatabase.rifle);
     initializeCanvasSize();
   }, []);
+
+  useEffect(() => {
+    if (!bgmSound) return;
+    bgmSound.play();
+    bgmSound.loop = true;
+    if (!bgmPlaying) {
+      bgmSound?.pause();
+    }
+  }, [bgmSound, bgmPlaying]);
 
   // 改变角度
   useEffect(() => {
@@ -102,6 +168,20 @@ const RenderCanvas = (props: BoardProps) => {
           ...prevPos,
           angle: initialAngle - deltaX,
         }));
+
+        if (weapon) {
+          const bullet = fireWeapon(
+            weapon,
+            pos.x,
+            pos.y,
+            -(pos.angle * Math.PI) / 180 - Math.PI / 2,
+            buffSounds["rifle"]
+          );
+
+          if (bullet) {
+            setBulletList((prevBulletList) => [...prevBulletList, bullet]);
+          }
+        }
       };
 
       const handleMouseUp = () => {
@@ -109,15 +189,6 @@ const RenderCanvas = (props: BoardProps) => {
         window.removeEventListener("mouseup", handleMouseUp);
       };
 
-      setBulletList((prevBulletList) => [
-        ...prevBulletList,
-        createBullet(
-          pos.x,
-          pos.y,
-          -(pos.angle * Math.PI) / 180 - Math.PI / 2,
-          "rifle"
-        ),
-      ]);
       window.addEventListener("mousemove", handleMouseMove);
       window.addEventListener("mouseup", handleMouseUp);
     };
@@ -215,6 +286,15 @@ const RenderCanvas = (props: BoardProps) => {
       pos.radius,
       "rgba(255, 255, 255, 0.5)"
     );
+
+    if (weapon) {
+      if (
+        weapon.weaponState.currentAmmo === 0 &&
+        !weapon.weaponState.isReloading
+      ) {
+        reloadWeapon(weapon, renderCtx);
+      }
+    }
   }, [pos]);
 
   useEffect(() => {
@@ -235,6 +315,55 @@ const RenderCanvas = (props: BoardProps) => {
     buffCtx.drawImage(backgroundCanvas, 0, 0);
 
     drawLight(buffCtx);
+
+    // 绘制敌人
+    if (enemyList.length > 0) {
+      enemyList.forEach((enemy) => {
+        const image = buffImages[enemy.code];
+
+        if (!image) return;
+        if (enemy.active) {
+          enemy.update(pos.x, pos.y);
+
+          const dashLength = 10; // 虚线长度
+          const gapLength = 5; // 间隙长度
+          const color = "rgba(255, 10, 10, 0.5)"; // 颜色
+
+          drawDashedRing(
+            buffCtx,
+            enemy.x,
+            enemy.y,
+            enemy.radius + 10,
+            dashLength,
+            gapLength,
+            color,
+            pos.angle
+          );
+
+          buffCtx.save();
+          buffCtx.translate(enemy.x, enemy.y);
+          buffCtx.drawImage(
+            image,
+            -image.width / 2,
+            -image.height / 2,
+            image.width,
+            image.height
+          );
+          buffCtx.restore();
+        }
+      });
+
+      setEnemyList(
+        enemyList.filter((enemy) => {
+          if (enemy.active) {
+            return true;
+          } else {
+            return false;
+          }
+        })
+      );
+    }
+
     drawBullet(buffCtx);
   };
 
@@ -273,11 +402,11 @@ const RenderCanvas = (props: BoardProps) => {
     // 绘制子弹
     if (bulletList.length > 0) {
       bulletList.forEach((bullet) => {
-        const image = bulletImages[bullet.code];
+        const image = buffImages[bullet.code];
 
         if (!image) return;
         if (bullet.active) {
-          bullet.update();
+          bullet.update(GeometryList, enemyList);
           bullet.draw(bulletCtx, image);
         }
       });
@@ -294,6 +423,7 @@ const RenderCanvas = (props: BoardProps) => {
     }
     buffCtx.drawImage(bulletCanvas, 0, 0);
   };
+
   return (
     <div className={styles["canvas-container"]} ref={containerRef}>
       <canvas ref={renderRef} />
@@ -321,6 +451,12 @@ const RenderCanvas = (props: BoardProps) => {
         width={width}
         height={height}
       />
+
+      <div className={styles["canvas-info"]}>
+        <Button isIconOnly onClick={() => setBgmPlaying(!bgmPlaying)}>
+          {bgmPlaying ? <TbMusic /> : <TbMusicX />}
+        </Button>
+      </div>
     </div>
   );
 };

@@ -17,18 +17,27 @@ interface Segment {
     b: Point;
 }
 
-interface Ray {
-    a: Point;
-    b: Point;
-}
-
-
 interface Geometry {
     name: string;
     type: number;
     segments: Segment[];
 }
 
+interface Ray {
+    a: Point;
+    b: Point;
+}
+
+// 粒子效果类型
+type Particle = {
+    x: number;
+    y: number;
+    velocityX: number;
+    velocityY: number;
+    life: number;
+    alpha: number;
+    color: string;
+};
 interface Character {
     x: number; // 角色在地图的x坐标
     y: number; // 角色在地图的y坐标
@@ -54,11 +63,26 @@ interface CanvasInfo {
 }
 
 interface Weapon {
-    speed: number;
-    bulletLength: number;
-    bulletWidth: number;
-    airResistance: number;
-    imageSrc: string;
+    code: string;
+    speed: number;// 子弹初始移动速度
+    damage: number; // 伤害
+    knockbackDistance: number;// 击退距离
+    fireRate: number;// 射击间隔
+    magazineSize: number;// 弹夹容量
+    reloadTime: number;// 重新装弹时间
+    bulletLength: number;// 子弹长度
+    bulletWidth: number;// 子弹宽度
+    airResistance: number;// 空气阻力
+    imageSrc: string;// 子弹图片
+    soundSrc: string;// 子弹音效
+    collisionEffect: { color: string, radius: number, duration: number }; // 子弹碰撞效果
+    weaponState: {
+        lastFireTime: number;
+        currentAmmo: number;
+        isReloading: boolean;
+        isFiring: boolean;
+    };
+
 }
 
 interface Bullet {
@@ -71,9 +95,32 @@ interface Bullet {
     bulletWidth: number;
     airResistance: number;
     active: boolean;
-    update(): void;
+    collision: boolean;
+    collisionX: number;
+    collisionY: number;
+    update(geometryList: Geometry[], enemyList: Enemy[]): void;
     draw(ctx: CanvasRenderingContext2D, image: HTMLImageElement): void;
 }
+// 定义攻击方式类型
+type AttackType = "melee" | "ranged" | "magic";
+// 定义敌人类型
+type Enemy = {
+    code: string;
+    x: number;
+    y: number;
+    radius: number; // 敌人半径
+    angle: number; // 视觉角度
+    speed: number; // 敌人移动速度
+    health: number; // 敌人生命值
+    attackRange: number; // 攻击范围
+    attackType: AttackType; // 攻击方式
+    damage: number; // 伤害
+    active: boolean; // 敌人是否激活
+    imageSrc: string; // 敌人图片
+    update: (playerX: number, playerY: number) => void;
+    attack: () => void;
+};
 
 
-export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray, Geometry, CanvasInfo, Bullet, Weapon };
+
+export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray, Geometry, CanvasInfo, Bullet, Weapon, Enemy, Particle };
