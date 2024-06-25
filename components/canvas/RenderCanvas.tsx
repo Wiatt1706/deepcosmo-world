@@ -168,20 +168,6 @@ const RenderCanvas = (props: BoardProps) => {
           ...prevPos,
           angle: initialAngle - deltaX,
         }));
-
-        if (weapon) {
-          const bullet = fireWeapon(
-            weapon,
-            pos.x,
-            pos.y,
-            -(pos.angle * Math.PI) / 180 - Math.PI / 2,
-            buffSounds["rifle"]
-          );
-
-          if (bullet) {
-            setBulletList((prevBulletList) => [...prevBulletList, bullet]);
-          }
-        }
       };
 
       const handleMouseUp = () => {
@@ -288,6 +274,17 @@ const RenderCanvas = (props: BoardProps) => {
     );
 
     if (weapon) {
+      const bullet = fireWeapon(
+        weapon,
+        pos.x,
+        pos.y,
+        -(pos.angle * Math.PI) / 180 - Math.PI / 2,
+        buffSounds["rifle"]
+      );
+
+      if (bullet) {
+        setBulletList((prevBulletList) => [...prevBulletList, bullet]);
+      }
       if (
         weapon.weaponState.currentAmmo === 0 &&
         !weapon.weaponState.isReloading

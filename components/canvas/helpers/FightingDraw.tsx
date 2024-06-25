@@ -9,7 +9,7 @@ export const weaponDatabase: { [key: string]: Weapon } = {
     bulletLength: 100,
     bulletWidth: 8.3,
     airResistance: 1,
-    knockbackDistance: 1,
+    knockbackDistance: 5,
     imageSrc: "/images/rifle_bullet.png",
     soundSrc: "/sounds/weapon/rifle_shot.wav",
     collisionEffect: {
@@ -18,9 +18,9 @@ export const weaponDatabase: { [key: string]: Weapon } = {
       duration: 200,
     },
     damage: 5, // 伤害
-    fireRate: 300, // 每次射击的间隔时间（毫秒）
+    fireRate: 50, // 每次射击的间隔时间（毫秒）
     magazineSize: 30, // 弹夹容量
-    reloadTime: 2000, // 重新装弹时间（毫秒）
+    reloadTime: 5000, // 重新装弹时间（毫秒）
     weaponState: {
       lastFireTime: 0,
       currentAmmo: 30,
