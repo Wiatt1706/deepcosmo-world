@@ -1,4 +1,11 @@
-import { Bullet, Weapon, Geometry, Enemy, Particle } from "@/types/CanvasTypes";
+import {
+  Bullet,
+  Weapon,
+  Geometry,
+  Enemy,
+  Particle,
+  FloatingStains,
+} from "@/types/CanvasTypes";
 import { getLineSegmentIntersection } from "./PhysicsDraw";
 
 // 更新武器数据库
@@ -19,12 +26,14 @@ export const weaponDatabase: { [key: string]: Weapon } = {
     },
     damage: 5, // 伤害
     fireRate: 50, // 每次射击的间隔时间（毫秒）
-    magazineSize: 30, // 弹夹容量
-    reloadTime: 5000, // 重新装弹时间（毫秒）
+    magazineSize: 300, // 弹夹容量
+    reloadTime: 2000, // 重新装弹时间（毫秒）
     weaponState: {
       lastFireTime: 0,
-      currentAmmo: 30,
+      currentAmmo: 0,
+      currentBulletCount: 2000,
       isReloading: false,
+      lastReloadime: 0,
       isFiring: false,
     },
   },
@@ -40,7 +49,10 @@ export function createBullet(
 ): Bullet {
   const creationTime = Date.now();
 
+  // 渲染粒子
   const particles: Particle[] = [];
+ 
+
   let effectStartTime = 0;
   function generateParticles(
     x: number,
@@ -67,10 +79,10 @@ export function createBullet(
 
   return {
     code: weapon.code,
-    x,
-    y,
-    speed: weapon.speed,
-    direction,
+    x, // 子弹x位置
+    y, // 子弹y位置
+    speed: weapon.speed, // 子弹速度
+    direction, // 子弹方向
     bulletLength: weapon.bulletLength,
     bulletWidth: weapon.bulletWidth,
     airResistance: weapon.airResistance,
@@ -94,11 +106,10 @@ export function createBullet(
 
       // 检查子弹是否碰到敌人
       for (const enemy of enemyList) {
-        const dx = nextX - enemy.x;
-        const dy = nextY - enemy.y;
-        const distance = Math.sqrt(dx * dy + dy * dy);
-
-        if (distance < enemy.radius) {
+        const distance = Math.sqrt(
+          (nextX - enemy.x) ** 2 + (nextY - enemy.y) ** 2
+        );
+        if (distance <= enemy.radius) {
           this.collision = true;
           this.collisionX = nextX;
           this.collisionY = nextY;
@@ -163,6 +174,7 @@ export function createBullet(
         const effectDuration = weapon.collisionEffect.duration;
         const elapsed = Date.now() - effectStartTime;
 
+        // 绘制碰撞效果
         if (elapsed < effectDuration) {
           const effectRadius =
             (elapsed / effectDuration) * weapon.collisionEffect.radius;
@@ -185,10 +197,7 @@ export function createBullet(
           particle.y += particle.velocityY;
           particle.alpha -= 0.03;
           particle.life -= 16;
-        });
-        particles.filter((particle) => particle.life > 0);
 
-        particles.forEach((particle) => {
           ctx.fillStyle = `rgba(${parseInt(
             particle.color.slice(5, 8)
           )}, ${parseInt(particle.color.slice(10, 13))}, ${parseInt(
@@ -198,9 +207,13 @@ export function createBullet(
           ctx.arc(particle.x, particle.y, 2, 0, 2 * Math.PI);
           ctx.fill();
         });
+        particles.filter((particle) => particle.life > 0);
+
         if (particles.length === 0) {
           this.active = false;
         }
+
+       
       } else if (this.active) {
         const halfHeight = this.bulletWidth / 2;
 
@@ -252,15 +265,42 @@ export const fireWeapon = (
   return null;
 };
 
-export const reloadWeapon = (weapon: Weapon, ctx: CanvasRenderingContext2D) => {
+export const reloadWeapon = (weapon: Weapon, sound: HTMLAudioElement) => {
   if (
     !weapon.weaponState.isReloading &&
     weapon.weaponState.currentAmmo < weapon.magazineSize
   ) {
     weapon.weaponState.isReloading = true;
-    setTimeout(() => {
-      weapon.weaponState.currentAmmo = weapon.magazineSize;
-      weapon.weaponState.isReloading = false;
-    }, weapon.reloadTime);
+    weapon.weaponState.lastReloadime = performance.now();
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play();
+    }
   }
+};
+
+export const drawReloadAnimation = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  progress: number
+) => {
+  const endAngle = 2 * Math.PI * progress;
+  ctx.save();
+
+  // 绘制根据进度填充的半透明圆
+  ctx.beginPath();
+  ctx.arc(x, y, 50, 0, endAngle);
+  ctx.lineTo(x, y); // 将线条连到圆心
+  ctx.closePath(); // 闭合路径
+  ctx.fillStyle = "rgba(253, 160, 20, 0.2)"; // 半透明填充颜色
+  ctx.fill();
+
+  // 绘制进度弧线
+  ctx.beginPath();
+  ctx.arc(x, y, 50, 0, endAngle);
+  ctx.strokeStyle = "rgba(253, 160, 20, 0.6)";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.restore();
 };

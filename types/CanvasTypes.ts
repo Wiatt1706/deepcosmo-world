@@ -38,12 +38,25 @@ type Particle = {
     alpha: number;
     color: string;
 };
+
+// 浮动污渍效果类型
+type FloatingStains = {
+    x: number;
+    y: number;
+    radius: number;
+    alpha: number;
+    life: number;
+};
 interface Character {
     x: number; // 角色在地图的x坐标
     y: number; // 角色在地图的y坐标
     radius: number; // 体型半径
     angle: number; // 视觉角度
     speed: number; // 角色移动速度
+    health: number; // 生命值
+    shield: number; // 护盾值
+    maxHealth: number; // 最大生命值
+    maxShield: number; // 最大护盾值
 }
 interface CssSize {
     width: number;
@@ -77,10 +90,13 @@ interface Weapon {
     soundSrc: string;// 子弹音效
     collisionEffect: { color: string, radius: number, duration: number }; // 子弹碰撞效果
     weaponState: {
-        lastFireTime: number;
-        currentAmmo: number;
-        isReloading: boolean;
-        isFiring: boolean;
+        lastFireTime: number;// 上次射击时间
+        currentBulletCount: number;// 当前子弹数
+        currentAmmo: number;// 当前弹匣子弹数
+        isReloading: boolean;// 是否正在装弹
+        lastReloadime: number;// 上次装弹时间
+        isFiring: boolean;// 是否正在射击
+        soundPlayed?: boolean;// 是否已播放音效
     };
 
 }
@@ -112,6 +128,7 @@ type Enemy = {
     angle: number; // 视觉角度
     speed: number; // 敌人移动速度
     health: number; // 敌人生命值
+    maxHealth: number; // 敌人最大生命值
     attackRange: number; // 攻击范围
     attackType: AttackType; // 攻击方式
     damage: number; // 伤害
@@ -123,4 +140,4 @@ type Enemy = {
 
 
 
-export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray, Geometry, CanvasInfo, Bullet, Weapon, Enemy, Particle };
+export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray, Geometry, CanvasInfo, Bullet, Weapon, Enemy, Particle, FloatingStains };

@@ -1,5 +1,6 @@
-import { Geometry, Point, Ray, Segment } from "@/types/CanvasTypes";
+import { Enemy, Geometry, Point, Ray, Segment } from "@/types/CanvasTypes";
 import { getIntersection } from "./LightDraw";
+import { drawReloadAnimation } from "./FightingDraw";
 
 export const GeometryList: Geometry[] = [
   {
@@ -770,6 +771,38 @@ export const drawCircle = (
   ctx.arc(x, y, radius, 0, Math.PI * 2, false);
   ctx.fillStyle = color;
   ctx.fill();
+  ctx.restore();
+};
+
+export const drawHealthBar = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  progress: number,
+  radius: number,
+  direction: number
+) => {
+  const fullArc = (2 * Math.PI) / 2; // 三分之一圆
+  const startAngle = (direction * Math.PI) / 180;
+  const endAngle = startAngle + fullArc * progress;
+  const fullEndAngle = startAngle + fullArc;
+
+  ctx.save();
+
+  // 绘制红色代表扣除血量的弧线
+  ctx.beginPath();
+  ctx.arc(x, y, radius, startAngle, fullEndAngle);
+  ctx.strokeStyle = "rgba(255, 0, 0, 0.5)";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // 绘制绿色代表剩余血量的弧线
+  ctx.beginPath();
+  ctx.arc(x, y, radius, startAngle, endAngle);
+  ctx.strokeStyle = "rgba(0, 255, 0, 0.5)";
+  ctx.lineWidth = 5;
+  ctx.stroke();
+
   ctx.restore();
 };
 

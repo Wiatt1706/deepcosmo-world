@@ -16,17 +16,25 @@ import {
   GeometryList,
   drawCircle,
   drawDashedRing,
+  drawHealthBar,
   playBackgroundMusic,
 } from "./helpers/BaseDraw";
 import {
   createBullet,
+  drawReloadAnimation,
   fireWeapon,
   reloadWeapon,
   weaponDatabase,
 } from "./helpers/FightingDraw";
 import { Button } from "@nextui-org/button";
-import { TbMusic, TbMusicX } from "react-icons/tb";
+import {
+  TbActivityHeartbeat,
+  TbMusic,
+  TbMusicX,
+  TbShieldHeart,
+} from "react-icons/tb";
 import { createEnemy, enemyDatabase } from "./helpers/EnemyDraw";
+import { Image as NextImage, Slider } from "@nextui-org/react";
 
 const RenderCanvas = (props: BoardProps) => {
   const { width, height, lightIntensity, mouseSensitivity } = props;
@@ -52,11 +60,15 @@ const RenderCanvas = (props: BoardProps) => {
   const [bgmPlaying, setBgmPlaying] = useState<boolean>(false);
 
   const [pos, setPos] = useState<Character>({
-    x: 50,
-    y: 50,
+    x: 750,
+    y: 150,
     radius: 20,
-    angle: 0,
-    speed: 3,
+    angle: 180,
+    speed: 2,
+    health: 100,
+    shield: 0,
+    maxHealth: 100,
+    maxShield: 100,
   });
 
   const [weapon, setWeapon] = useState<Weapon>();
@@ -82,6 +94,14 @@ const RenderCanvas = (props: BoardProps) => {
   useEffect(() => {
     // 预加载图像
     const preloadAssets = () => {
+      const loadSounds = (code: string, src: string) => {
+        const audio = new Audio(src);
+        setBuffSounds((prevSounds) => ({
+          ...prevSounds,
+          [code]: audio,
+        }));
+      };
+
       for (const weaponCode in weaponDatabase) {
         const weapon = weaponDatabase[weaponCode];
         const image = new Image();
@@ -92,14 +112,12 @@ const RenderCanvas = (props: BoardProps) => {
             [weaponCode]: image,
           }));
         };
-
-        const audio = new Audio();
-        audio.src = weapon.soundSrc;
-        setBuffSounds((prevSounds) => ({
-          ...prevSounds,
-          [weaponCode]: audio,
-        }));
+        loadSounds(weaponCode, weapon.soundSrc);
       }
+
+      // 预加载音效
+      loadSounds("weaponLoaded", "/sounds/weapon/loaded.wav");
+      loadSounds("weaponLoading", "/sounds/weapon/loading.wav");
 
       for (const enemyCode in enemyDatabase) {
         const enemy = enemyDatabase[enemyCode];
@@ -140,7 +158,10 @@ const RenderCanvas = (props: BoardProps) => {
     preloadAssets();
     setBgmSound(new Audio("sounds/bgm/loopBgm01.wav"));
 
-    setEnemyList((prevList) => [...prevList, createEnemy("gyonshi", 500, 200)]);
+    setEnemyList((prevList) => [
+      ...prevList,
+      createEnemy("gyonshi", 1000, 700),
+    ]);
 
     setWeapon(weaponDatabase.rifle);
     initializeCanvasSize();
@@ -273,7 +294,35 @@ const RenderCanvas = (props: BoardProps) => {
       "rgba(255, 255, 255, 0.5)"
     );
 
-    if (weapon) {
+    // 绘制血条
+    drawHealthBar(
+      renderCtx,
+      centerX,
+      centerY,
+      pos.health / pos.maxHealth,
+      pos.radius,
+      (pos.angle * Math.PI) / 180 - Math.PI / 2
+    );
+
+    drawWeapon(renderCtx, centerX, centerY);
+  }, [pos]);
+
+  const drawWeapon = (
+    renderCtx: CanvasRenderingContext2D,
+    x: number,
+    y: number
+  ) => {
+    if (!weapon) return;
+
+    const weaponState = weapon.weaponState;
+
+    const playSound = (sound: HTMLAudioElement) => {
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play();
+      }
+    };
+    if (weaponState.currentAmmo > 0) {
       const bullet = fireWeapon(
         weapon,
         pos.x,
@@ -285,14 +334,38 @@ const RenderCanvas = (props: BoardProps) => {
       if (bullet) {
         setBulletList((prevBulletList) => [...prevBulletList, bullet]);
       }
-      if (
-        weapon.weaponState.currentAmmo === 0 &&
-        !weapon.weaponState.isReloading
-      ) {
-        reloadWeapon(weapon, renderCtx);
+    } else if (weaponState.currentBulletCount > 0 && !weaponState.isReloading) {
+      // 装弹
+      reloadWeapon(weapon, buffSounds["weaponLoading"]);
+    }
+
+    if (weaponState.isReloading) {
+      // 装弹动画
+      const elapsed = performance.now() - weaponState.lastReloadime;
+
+      if (elapsed >= weapon.reloadTime - 500 && !weaponState.soundPlayed) {
+        // 提前一秒播放装弹完成的声音
+        buffSounds["weaponLoading"].pause();
+        playSound(buffSounds["weaponLoaded"]);
+        weaponState.soundPlayed = true;
+      }
+
+      if (elapsed >= weapon.reloadTime) {
+        // 装弹完成
+        weaponState.isReloading = false;
+        const currentAmmo = Math.min(
+          weapon.magazineSize,
+          weaponState.currentBulletCount
+        );
+        weaponState.currentAmmo = currentAmmo;
+        weaponState.currentBulletCount -= currentAmmo;
+        weaponState.soundPlayed = false; // 重置声音播放标记
+      } else {
+        const progress = elapsed / weapon.reloadTime;
+        drawReloadAnimation(renderCtx, x, y, progress);
       }
     }
-  }, [pos]);
+  };
 
   useEffect(() => {
     const animationFrameId = requestAnimationFrame(render);
@@ -311,57 +384,60 @@ const RenderCanvas = (props: BoardProps) => {
     // 绘制背景图层
     buffCtx.drawImage(backgroundCanvas, 0, 0);
 
+    // 绘制灯光
     drawLight(buffCtx);
+    // 绘制子弹
+    drawBullet(buffCtx);
+    // 绘制敌人
+    drawEnemy(buffCtx);
+  };
 
+  const drawEnemy = (buffCtx: CanvasRenderingContext2D) => {
     // 绘制敌人
     if (enemyList.length > 0) {
       enemyList.forEach((enemy) => {
         const image = buffImages[enemy.code];
 
         if (!image) return;
-        if (enemy.active) {
-          enemy.update(pos.x, pos.y);
+        enemy.update(pos.x, pos.y);
 
-          const dashLength = 10; // 虚线长度
-          const gapLength = 5; // 间隙长度
-          const color = "rgba(255, 10, 10, 0.5)"; // 颜色
+        const dashLength = 10; // 虚线长度
+        const gapLength = 5; // 间隙长度
+        const color = "rgba(210, 210, 210, 0.5)"; // 颜色
 
-          drawDashedRing(
-            buffCtx,
-            enemy.x,
-            enemy.y,
-            enemy.radius + 10,
-            dashLength,
-            gapLength,
-            color,
-            pos.angle
-          );
+        // 绘制虚线
+        drawDashedRing(
+          buffCtx,
+          enemy.x,
+          enemy.y,
+          enemy.radius,
+          dashLength,
+          gapLength,
+          color,
+          pos.angle
+        );
+        // 绘制血条
+        drawHealthBar(
+          buffCtx,
+          enemy.x,
+          enemy.y,
+          enemy.health / enemy.maxHealth,
+          enemy.radius,
+          -pos.angle
+        );
 
-          buffCtx.save();
-          buffCtx.translate(enemy.x, enemy.y);
-          buffCtx.drawImage(
-            image,
-            -image.width / 2,
-            -image.height / 2,
-            image.width,
-            image.height
-          );
-          buffCtx.restore();
-        }
+        buffCtx.save();
+        buffCtx.translate(enemy.x, enemy.y);
+        buffCtx.drawImage(
+          image,
+          -image.width / 2,
+          -image.height / 2,
+          image.width,
+          image.height
+        );
+        buffCtx.restore();
       });
-
-      setEnemyList(
-        enemyList.filter((enemy) => {
-          if (enemy.active) {
-            return true;
-          } else {
-            return false;
-          }
-        })
-      );
     }
-
-    drawBullet(buffCtx);
   };
 
   // 绘制灯光
@@ -389,6 +465,7 @@ const RenderCanvas = (props: BoardProps) => {
     );
     buffCtx.drawImage(lightCanvas, 0, 0);
   };
+
   const drawBullet = (buffCtx: CanvasRenderingContext2D) => {
     const bulletCanvas = bulletRef.current;
     if (!bulletCanvas) return;
@@ -449,10 +526,69 @@ const RenderCanvas = (props: BoardProps) => {
         height={height}
       />
 
-      <div className={styles["canvas-info"]}>
-        <Button isIconOnly onClick={() => setBgmPlaying(!bgmPlaying)}>
-          {bgmPlaying ? <TbMusic /> : <TbMusicX />}
+      <div className={styles["info-left"]}>
+        <div>
+          <div className="flex align-items-center w-[200px] justify-between">
+            <div className="flex align-items-center">
+              <TbActivityHeartbeat size={24} className="mr-1" />
+              {"血量:" + pos.health + " "}
+            </div>
+            <div className="flex align-items-center">
+              <TbShieldHeart size={18} className="mr-1" />
+              {"护盾:" + pos.shield}
+            </div>
+          </div>
+          <Slider
+            aria-label="Player health"
+            color="danger"
+            isDisabled
+            step={1}
+            maxValue={pos.maxHealth}
+            minValue={0}
+            hideThumb={true}
+            defaultValue={pos.health}
+            className="max-w-md"
+          />
+          <Slider
+            aria-label="Player shield"
+            classNames={{
+              filler: "bg-[#fff]",
+            }}
+            isDisabled
+            step={1}
+            maxValue={pos.maxShield}
+            minValue={0}
+            hideThumb={true}
+            defaultValue={pos.shield}
+            className="max-w-md"
+          />
+        </div>
+        <Button
+          isIconOnly
+          onClick={() => setBgmPlaying(!bgmPlaying)}
+          variant="light"
+          className="text-[#6B7280] hover:bg-[#f0f0f0] mt-1"
+        >
+          {bgmPlaying ? <TbMusic size={20} /> : <TbMusicX size={20} />}
         </Button>
+      </div>
+      <div className={styles["info-right"]}>
+        <NextImage src={"/images/weapon/weapon01.png"} width={150} />
+        <div className="flex align-items-center">
+          <NextImage
+            radius="none"
+            src={"/images/weapon/bullet.png"}
+            width={18}
+          />
+          <div className="text-right flex align-items-center ml-2 ">
+            <span className="ml-1 font-bold text-[#6B7280] text-[20px]">
+              {weapon && weapon?.weaponState.currentAmmo + " / "}
+              <span className="text-[#ae5b36] text-[16px]">
+                {weapon?.weaponState.currentBulletCount}
+              </span>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
