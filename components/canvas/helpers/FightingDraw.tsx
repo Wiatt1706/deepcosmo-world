@@ -223,7 +223,7 @@ export function createBullet(
         ctx.drawImage(
           image,
           -halfHeight,
-          0,
+          -10,
           this.bulletWidth,
           this.bulletLength
         );

@@ -6,7 +6,6 @@ import {
   Bullet,
   Character,
   Enemy,
-  Geometry,
   Weapon,
 } from "@/types/CanvasTypes";
 import { drawCharacterViewpoints } from "./helpers/LightDraw";
@@ -14,13 +13,11 @@ import { useBaseKeyPress } from "../hook/useKeyPress";
 import { handleCollision } from "@/components/canvas/helpers/PhysicsDraw";
 import {
   GeometryList,
-  drawCircle,
   drawDashedRing,
   drawHealthBar,
-  playBackgroundMusic,
+  drawPlayer,
 } from "./helpers/BaseDraw";
 import {
-  createBullet,
   drawReloadAnimation,
   fireWeapon,
   reloadWeapon,
@@ -35,6 +32,7 @@ import {
 } from "react-icons/tb";
 import { createEnemy, enemyDatabase } from "./helpers/EnemyDraw";
 import { Image as NextImage, Slider } from "@nextui-org/react";
+import { useLegMovement } from "../hook/canvas/useLegMovement";
 
 const RenderCanvas = (props: BoardProps) => {
   const { width, height, lightIntensity, mouseSensitivity } = props;
@@ -59,7 +57,7 @@ const RenderCanvas = (props: BoardProps) => {
   const [bgmSound, setBgmSound] = useState<HTMLAudioElement | null>(null);
   const [bgmPlaying, setBgmPlaying] = useState<boolean>(false);
 
-  const [pos, setPos] = useState<Character>({
+  const [player, setPlayer] = useState<Character>({
     x: 750,
     y: 150,
     radius: 20,
@@ -90,6 +88,7 @@ const RenderCanvas = (props: BoardProps) => {
   });
 
   useBaseKeyPress(setKeys);
+  const { legOffsetX, legOffsetY } = useLegMovement(keys, player);
 
   useEffect(() => {
     // 预加载图像
@@ -102,33 +101,28 @@ const RenderCanvas = (props: BoardProps) => {
         }));
       };
 
-      for (const weaponCode in weaponDatabase) {
-        const weapon = weaponDatabase[weaponCode];
+      const loadImages = (code: string, src: string) => {
         const image = new Image();
-        image.src = weapon.imageSrc;
+        image.src = src;
         image.onload = () => {
           setBuffImages((prevImages) => ({
             ...prevImages,
-            [weaponCode]: image,
+            [code]: image,
           }));
         };
-        loadSounds(weaponCode, weapon.soundSrc);
-      }
-
+      };
       // 预加载音效
       loadSounds("weaponLoaded", "/sounds/weapon/loaded.wav");
       loadSounds("weaponLoading", "/sounds/weapon/loading.wav");
-
+      loadImages("ManBlue", "/images/ManBlue/manBlue_gun.png");
+      for (const weaponCode in weaponDatabase) {
+        const weapon = weaponDatabase[weaponCode];
+        loadImages(weaponCode, weapon.imageSrc);
+        loadSounds(weaponCode, weapon.soundSrc);
+      }
       for (const enemyCode in enemyDatabase) {
         const enemy = enemyDatabase[enemyCode];
-        const image = new Image();
-        image.src = enemy.imageSrc;
-        image.onload = () => {
-          setBuffImages((prevImages) => ({
-            ...prevImages,
-            [enemyCode]: image,
-          }));
-        };
+        loadImages(enemyCode, enemy.imageSrc);
       }
     };
 
@@ -176,16 +170,15 @@ const RenderCanvas = (props: BoardProps) => {
     }
   }, [bgmSound, bgmPlaying]);
 
-  // 改变角度
   useEffect(() => {
     const handleMouseDown = (event: MouseEvent) => {
       event.preventDefault();
       let startX = event.clientX;
-      let initialAngle = pos.angle;
+      let initialAngle = player.angle;
 
       const handleMouseMove = (event: MouseEvent) => {
         const deltaX = ((event.clientX - startX) / 10) * mouseSensitivity;
-        setPos((prevPos) => ({
+        setPlayer((prevPos) => ({
           ...prevPos,
           angle: initialAngle - deltaX,
         }));
@@ -200,18 +193,44 @@ const RenderCanvas = (props: BoardProps) => {
       window.addEventListener("mouseup", handleMouseUp);
     };
 
+    const handleTouchStart = (event: TouchEvent) => {
+      event.preventDefault();
+      let startX = event.touches[0].clientX;
+      let initialAngle = player.angle;
+
+      const handleTouchMove = (event: TouchEvent) => {
+        const deltaX =
+          ((event.touches[0].clientX - startX) / 10) * mouseSensitivity;
+        setPlayer((prevPos) => ({
+          ...prevPos,
+          angle: initialAngle - deltaX,
+        }));
+      };
+
+      const handleTouchEnd = () => {
+        window.removeEventListener("touchmove", handleTouchMove);
+        window.removeEventListener("touchend", handleTouchEnd);
+      };
+
+      window.addEventListener("touchmove", handleTouchMove);
+      window.addEventListener("touchend", handleTouchEnd);
+    };
+
     window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("touchstart", handleTouchStart);
+
     return () => {
       window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("touchstart", handleTouchStart);
     };
-  }, [pos.angle, pos.x, pos.y]);
+  }, [player.angle, player.x, player.y]);
 
   // 移动
   useEffect(() => {
     const radian = (angle: number) => (angle * Math.PI) / 180;
 
     const moveCharacter = () => {
-      setPos((prevPos) => {
+      setPlayer((prevPos) => {
         const { x, y, angle, speed } = prevPos;
         let moveX = 0;
         let moveY = 0;
@@ -251,7 +270,7 @@ const RenderCanvas = (props: BoardProps) => {
           collided,
           x: newX,
           y: newY,
-        } = handleCollision(GeometryList, pos.radius, newPos.x, newPos.y);
+        } = handleCollision(GeometryList, player.radius, newPos.x, newPos.y);
         if (collided) {
           newPos.x = newX;
           newPos.y = newY;
@@ -272,7 +291,6 @@ const RenderCanvas = (props: BoardProps) => {
 
     const renderCtx = renderCanvas.getContext("2d");
     if (!renderCtx) return;
-
     renderCtx.clearRect(0, 0, renderCanvas.width, renderCanvas.height);
 
     const centerX = renderCanvas.width / 2;
@@ -282,30 +300,24 @@ const RenderCanvas = (props: BoardProps) => {
     // 渲染缓冲
     renderCtx.save();
     renderCtx.translate(centerX, centerY);
-    renderCtx.rotate((pos.angle * Math.PI) / 180);
-    renderCtx.drawImage(buffCanvas, -pos.x, -pos.y);
+    renderCtx.rotate((player.angle * Math.PI) / 180);
+    renderCtx.drawImage(buffCanvas, -player.x, -player.y);
     renderCtx.restore();
 
-    drawCircle(
-      renderCtx,
-      centerX,
-      centerY,
-      pos.radius,
-      "rgba(255, 255, 255, 0.5)"
-    );
-
-    // 绘制血条
-    drawHealthBar(
-      renderCtx,
-      centerX,
-      centerY,
-      pos.health / pos.maxHealth,
-      pos.radius,
-      (pos.angle * Math.PI) / 180 - Math.PI / 2
-    );
-
+    const image = buffImages["ManBlue"];
+    if (image) {
+      drawPlayer(
+        renderCtx,
+        centerX,
+        centerY,
+        player,
+        image,
+        legOffsetX,
+        legOffsetY
+      );
+    }
     drawWeapon(renderCtx, centerX, centerY);
-  }, [pos]);
+  }, [player]);
 
   const drawWeapon = (
     renderCtx: CanvasRenderingContext2D,
@@ -325,9 +337,9 @@ const RenderCanvas = (props: BoardProps) => {
     if (weaponState.currentAmmo > 0) {
       const bullet = fireWeapon(
         weapon,
-        pos.x,
-        pos.y,
-        -(pos.angle * Math.PI) / 180 - Math.PI / 2,
+        player.x,
+        player.y,
+        -(player.angle * Math.PI) / 180 - Math.PI / 2,
         buffSounds["rifle"]
       );
 
@@ -399,10 +411,9 @@ const RenderCanvas = (props: BoardProps) => {
         const image = buffImages[enemy.code];
 
         if (!image) return;
-        enemy.update(pos.x, pos.y);
+        enemy.update(player.x, player.y);
 
         const dashLength = 10; // 虚线长度
-        const gapLength = 5; // 间隙长度
         const color = "rgba(210, 210, 210, 0.5)"; // 颜色
 
         // 绘制虚线
@@ -412,9 +423,8 @@ const RenderCanvas = (props: BoardProps) => {
           enemy.y,
           enemy.radius,
           dashLength,
-          gapLength,
           color,
-          pos.angle
+          player.angle
         );
         // 绘制血条
         drawHealthBar(
@@ -423,7 +433,7 @@ const RenderCanvas = (props: BoardProps) => {
           enemy.y,
           enemy.health / enemy.maxHealth,
           enemy.radius,
-          -pos.angle
+          -player.angle
         );
 
         buffCtx.save();
@@ -454,14 +464,14 @@ const RenderCanvas = (props: BoardProps) => {
     drawCharacterViewpoints(
       lightCtx,
       GeometryList,
-      pos.x,
-      pos.y,
+      player.x,
+      player.y,
       userAttributes.visibleRadius,
       userAttributes.visibleAngle,
       userAttributes.attackRadius,
       userAttributes.attackAngle,
       // -Math.PI / 2,
-      -(pos.angle * Math.PI) / 180 - Math.PI / 2
+      -(player.angle * Math.PI) / 180 - Math.PI / 2
     );
     buffCtx.drawImage(lightCanvas, 0, 0);
   };
@@ -531,11 +541,11 @@ const RenderCanvas = (props: BoardProps) => {
           <div className="flex align-items-center w-[200px] justify-between">
             <div className="flex align-items-center">
               <TbActivityHeartbeat size={24} className="mr-1" />
-              {"血量:" + pos.health + " "}
+              {"血量:" + player.health + " "}
             </div>
             <div className="flex align-items-center">
               <TbShieldHeart size={18} className="mr-1" />
-              {"护盾:" + pos.shield}
+              {"护盾:" + player.shield}
             </div>
           </div>
           <Slider
@@ -543,10 +553,10 @@ const RenderCanvas = (props: BoardProps) => {
             color="danger"
             isDisabled
             step={1}
-            maxValue={pos.maxHealth}
+            maxValue={player.maxHealth}
             minValue={0}
             hideThumb={true}
-            defaultValue={pos.health}
+            defaultValue={player.health}
             className="max-w-md"
           />
           <Slider
@@ -556,10 +566,10 @@ const RenderCanvas = (props: BoardProps) => {
             }}
             isDisabled
             step={1}
-            maxValue={pos.maxShield}
+            maxValue={player.maxShield}
             minValue={0}
             hideThumb={true}
-            defaultValue={pos.shield}
+            defaultValue={player.shield}
             className="max-w-md"
           />
         </div>
