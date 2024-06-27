@@ -270,7 +270,7 @@ export function drawCharacterViewpoints(
     x,
     y,
     attackRadius,
-    attackAngle / 3,
+    attackAngle,
     direction
   );
 }

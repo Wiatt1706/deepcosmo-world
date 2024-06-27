@@ -30,7 +30,11 @@ import {
   TbMusicX,
   TbShieldHeart,
 } from "react-icons/tb";
-import { createEnemy, enemyDatabase } from "./helpers/EnemyDraw";
+import {
+  createEnemy,
+  enemyDatabase,
+  isEnemyInSector,
+} from "./helpers/EnemyDraw";
 import { Image as NextImage, Slider } from "@nextui-org/react";
 import { useLegMovement } from "../hook/canvas/useLegMovement";
 
@@ -71,7 +75,8 @@ const RenderCanvas = (props: BoardProps) => {
 
   const [weapon, setWeapon] = useState<Weapon>();
   const [bulletList, setBulletList] = useState<Bullet[]>([]);
-  const [enemyList, setEnemyList] = useState<Enemy[]>([]);
+  const [enemyList, setEnemyList] = useState<Enemy[]>([]); // 敌人
+  const [attackableEnemies, setAttackableEnemies] = useState<Enemy[]>([]); // 可攻击的敌人
 
   const [keys, setKeys] = useState({
     up: false,
@@ -84,7 +89,7 @@ const RenderCanvas = (props: BoardProps) => {
     visibleRadius: 300,
     visibleAngle: Math.PI / 3,
     attackRadius: 200,
-    attackAngle: Math.PI / 3,
+    attackAngle: Math.PI / 6,
   });
 
   useBaseKeyPress(setKeys);
@@ -334,7 +339,7 @@ const RenderCanvas = (props: BoardProps) => {
         sound.play();
       }
     };
-    if (weaponState.currentAmmo > 0) {
+    if (weaponState.currentAmmo > 0 && attackableEnemies.length > 0) {
       const bullet = fireWeapon(
         weapon,
         player.x,
@@ -346,7 +351,13 @@ const RenderCanvas = (props: BoardProps) => {
       if (bullet) {
         setBulletList((prevBulletList) => [...prevBulletList, bullet]);
       }
-    } else if (weaponState.currentBulletCount > 0 && !weaponState.isReloading) {
+    }
+
+    if (
+      weaponState.currentAmmo == 0 &&
+      weaponState.currentBulletCount > 0 &&
+      !weaponState.isReloading
+    ) {
       // 装弹
       reloadWeapon(weapon, buffSounds["weaponLoading"]);
     }
@@ -407,7 +418,18 @@ const RenderCanvas = (props: BoardProps) => {
   const drawEnemy = (buffCtx: CanvasRenderingContext2D) => {
     // 绘制敌人
     if (enemyList.length > 0) {
-      enemyList.forEach((enemy) => {
+      const showEnemy = enemyList.filter((enemy) =>
+        isEnemyInSector(
+          enemy,
+          player.x,
+          player.y,
+          userAttributes.visibleRadius,
+          userAttributes.visibleAngle,
+          -(player.angle * Math.PI) / 180 - Math.PI / 2
+        )
+      );
+
+      showEnemy.forEach((enemy) => {
         const image = buffImages[enemy.code];
 
         if (!image) return;
@@ -447,6 +469,19 @@ const RenderCanvas = (props: BoardProps) => {
         );
         buffCtx.restore();
       });
+
+      setAttackableEnemies(
+        showEnemy.filter((enemy) =>
+          isEnemyInSector(
+            enemy,
+            player.x,
+            player.y,
+            userAttributes.attackRadius,
+            userAttributes.attackAngle,
+            -(player.angle * Math.PI) / 180 - Math.PI / 2
+          )
+        )
+      );
     }
   };
 

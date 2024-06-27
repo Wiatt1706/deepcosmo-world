@@ -138,6 +138,13 @@ type Enemy = {
     attack: () => void;
 };
 
+interface Sector {
+    radius: number;
+    angle: number;
+    direction: number;
+    startX: number;
+    startY: number;
+}
 
 
-export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray, Geometry, CanvasInfo, Bullet, Weapon, Enemy, Particle, FloatingStains };
+export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray, Geometry, CanvasInfo, Bullet, Weapon, Enemy, Particle, FloatingStains, Sector };
