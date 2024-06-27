@@ -24,7 +24,7 @@ export const weaponDatabase: { [key: string]: Weapon } = {
       radius: 10,
       duration: 200,
     },
-    damage: 5, // 伤害
+    damage: 100, // 伤害
     fireRate: 50, // 每次射击的间隔时间（毫秒）
     magazineSize: 300, // 弹夹容量
     reloadTime: 2000, // 重新装弹时间（毫秒）

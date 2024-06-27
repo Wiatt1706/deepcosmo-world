@@ -492,7 +492,7 @@ const RenderCanvas = (props: BoardProps) => {
     const lightCtx = lightCanvas.getContext("2d");
     if (!lightCtx) return;
     // 绘制遮罩
-    lightCtx.fillStyle = "rgba(0, 0, 0, 0.9)";
+    lightCtx.fillStyle = "rgba(0, 0, 0, 0.97)";
     lightCtx.clearRect(0, 0, lightCanvas.width, lightCanvas.height);
     lightCtx.fillRect(0, 0, lightCanvas.width, lightCanvas.height);
     // 绘制角色视线
