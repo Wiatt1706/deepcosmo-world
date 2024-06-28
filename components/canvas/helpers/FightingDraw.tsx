@@ -16,7 +16,7 @@ export const weaponDatabase: { [key: string]: Weapon } = {
     bulletLength: 100,
     bulletWidth: 8.3,
     airResistance: 1,
-    knockbackDistance: 5,
+    knockbackDistance: 2,
     imageSrc: "/images/rifle_bullet.png",
     soundSrc: "/sounds/weapon/rifle_shot.wav",
     collisionEffect: {
@@ -26,8 +26,8 @@ export const weaponDatabase: { [key: string]: Weapon } = {
     },
     damage: 100, // 伤害
     fireRate: 50, // 每次射击的间隔时间（毫秒）
-    magazineSize: 300, // 弹夹容量
-    reloadTime: 2000, // 重新装弹时间（毫秒）
+    magazineSize: 100, // 弹夹容量
+    reloadTime: 3000, // 重新装弹时间（毫秒）
     weaponState: {
       lastFireTime: 0,
       currentAmmo: 0,
@@ -51,7 +51,6 @@ export function createBullet(
 
   // 渲染粒子
   const particles: Particle[] = [];
- 
 
   let effectStartTime = 0;
   function generateParticles(
@@ -212,8 +211,6 @@ export function createBullet(
         if (particles.length === 0) {
           this.active = false;
         }
-
-       
       } else if (this.active) {
         const halfHeight = this.bulletWidth / 2;
 
@@ -283,14 +280,15 @@ export const drawReloadAnimation = (
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
-  progress: number
+  progress: number,
+  scale: number
 ) => {
   const endAngle = 2 * Math.PI * progress;
   ctx.save();
 
   // 绘制根据进度填充的半透明圆
   ctx.beginPath();
-  ctx.arc(x, y, 50, 0, endAngle);
+  ctx.arc(x, y, 50 * scale, 0, endAngle);
   ctx.lineTo(x, y); // 将线条连到圆心
   ctx.closePath(); // 闭合路径
   ctx.fillStyle = "rgba(253, 160, 20, 0.2)"; // 半透明填充颜色
@@ -298,9 +296,9 @@ export const drawReloadAnimation = (
 
   // 绘制进度弧线
   ctx.beginPath();
-  ctx.arc(x, y, 50, 0, endAngle);
+  ctx.arc(x, y, 50 * scale, 0, endAngle);
   ctx.strokeStyle = "rgba(253, 160, 20, 0.6)";
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 3 * scale;
   ctx.stroke();
   ctx.restore();
 };

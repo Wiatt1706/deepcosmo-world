@@ -968,17 +968,24 @@ export const drawPlayer = (
   player: Character,
   playerImage: HTMLImageElement,
   legOffsetX: number,
-  legOffsetY: number
+  legOffsetY: number,
+  scale: number
 ) => {
   if (!playerImage) return;
 
-  drawCircle(renderCtx, x, y, player.radius, "rgba(255, 255, 255, 0.5)");
+  drawCircle(
+    renderCtx,
+    x,
+    y,
+    player.radius * scale,
+    "rgba(255, 255, 255, 0.5)"
+  );
 
   drawDashedRing(
     renderCtx,
     x,
     y,
-    player.radius * 10,
+    player.radius * 10 * scale,
     20,
     "rgba(210, 210, 210, 0.2)",
     player.angle
@@ -987,7 +994,7 @@ export const drawPlayer = (
   renderCtx.save();
   renderCtx.translate(x, y);
 
-  const legRadius = player.radius / 3; // 腿部圆形半径
+  const legRadius = (player.radius / 3) * scale; // 腿部圆形半径
   // 绘制腿部
   renderCtx.beginPath();
   renderCtx.ellipse(
@@ -1021,10 +1028,10 @@ export const drawPlayer = (
   // 绘制角色图像
   renderCtx.drawImage(
     playerImage,
-    -playerImage.width / 2,
-    -playerImage.height / 2,
-    playerImage.width,
-    playerImage.height
+    (-playerImage.width * scale) / 2,
+    (-playerImage.height * scale) / 2,
+    playerImage.width * scale,
+    playerImage.height * scale
   );
 
   renderCtx.restore();

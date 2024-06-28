@@ -6,9 +6,13 @@ import {
   Bullet,
   Character,
   Enemy,
+  LightType,
   Weapon,
 } from "@/types/CanvasTypes";
-import { drawCharacterViewpoints } from "./helpers/LightDraw";
+import {
+  drawCharacterViewpoints,
+  drawViewpointsList,
+} from "./helpers/LightDraw";
 import { useBaseKeyPress } from "../hook/useKeyPress";
 import { handleCollision } from "@/components/canvas/helpers/PhysicsDraw";
 import {
@@ -33,13 +37,29 @@ import {
 import {
   createEnemy,
   enemyDatabase,
+  isEnemyInCircle,
   isEnemyInSector,
 } from "./helpers/EnemyDraw";
 import { Image as NextImage, Slider } from "@nextui-org/react";
 import { useLegMovement } from "../hook/canvas/useLegMovement";
+import useScale from "../hook/canvas/useScale";
 
 const RenderCanvas = (props: BoardProps) => {
   const { width, height, lightIntensity, mouseSensitivity } = props;
+
+  // 加载图像
+  const [buffImages, setBuffImages] = useState<{
+    [key: string]: HTMLImageElement;
+  }>({});
+
+  // 加载音效
+  const [buffSounds, setBuffSounds] = useState<{
+    [key: string]: HTMLAudioElement;
+  }>({});
+
+  // 背景音乐
+  const [bgmSound, setBgmSound] = useState<HTMLAudioElement | null>(null);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const renderRef = useRef<HTMLCanvasElement | null>(null);
   const buffRef = useRef<HTMLCanvasElement | null>(null);
@@ -47,18 +67,11 @@ const RenderCanvas = (props: BoardProps) => {
   const lightRef = useRef<HTMLCanvasElement | null>(null);
   const bulletRef = useRef<HTMLCanvasElement | null>(null);
 
-  // 预加载图像
-  const [buffImages, setBuffImages] = useState<{
-    [key: string]: HTMLImageElement;
-  }>({});
-
-  // 预加载音效
-  const [buffSounds, setBuffSounds] = useState<{
-    [key: string]: HTMLAudioElement;
-  }>({});
-
-  // 预加背景音乐
-  const [bgmSound, setBgmSound] = useState<HTMLAudioElement | null>(null);
+  const [weapon, setWeapon] = useState<Weapon>();
+  const [lightList, setLightList] = useState<LightType[]>([]);
+  const [bulletList, setBulletList] = useState<Bullet[]>([]);
+  const [enemyList, setEnemyList] = useState<Enemy[]>([]); // 敌人
+  const [attackableEnemies, setAttackableEnemies] = useState<Enemy[]>([]); // 可攻击的敌人
   const [bgmPlaying, setBgmPlaying] = useState<boolean>(false);
 
   const [player, setPlayer] = useState<Character>({
@@ -66,23 +79,11 @@ const RenderCanvas = (props: BoardProps) => {
     y: 150,
     radius: 20,
     angle: 180,
-    speed: 2,
+    speed: 1.5,
     health: 100,
     shield: 0,
     maxHealth: 100,
     maxShield: 100,
-  });
-
-  const [weapon, setWeapon] = useState<Weapon>();
-  const [bulletList, setBulletList] = useState<Bullet[]>([]);
-  const [enemyList, setEnemyList] = useState<Enemy[]>([]); // 敌人
-  const [attackableEnemies, setAttackableEnemies] = useState<Enemy[]>([]); // 可攻击的敌人
-
-  const [keys, setKeys] = useState({
-    up: false,
-    down: false,
-    left: false,
-    right: false,
   });
 
   const [userAttributes, setUserAttributes] = useState({
@@ -92,8 +93,16 @@ const RenderCanvas = (props: BoardProps) => {
     attackAngle: Math.PI / 6,
   });
 
+  const [keys, setKeys] = useState({
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+  });
+
+  const scale = useScale(1.5, 0.5, 30); // 使用自定义
+  const { legOffsetX, legOffsetY } = useLegMovement(keys, player, scale);
   useBaseKeyPress(setKeys);
-  const { legOffsetX, legOffsetY } = useLegMovement(keys, player);
 
   useEffect(() => {
     // 预加载图像
@@ -153,16 +162,29 @@ const RenderCanvas = (props: BoardProps) => {
         backgroundCtx.strokeStyle = "#fff";
         buffCtx.drawImage(backgroundCanvas, 0, 0);
       };
+
+      // 初始化
+      preloadAssets();
+      setBgmSound(new Audio("sounds/bgm/loopBgm01.wav"));
+
+      setEnemyList((prevList) => [
+        ...prevList,
+        createEnemy("gyonshi", 1000, 700),
+      ]);
+
+      setWeapon(weaponDatabase.rifle);
+
+      setLightList([
+        {
+          id: "player",
+          type: "circular",
+          x: 1500,
+          y: 900,
+          radius: userAttributes.visibleRadius / 5,
+        },
+      ]);
     };
-    preloadAssets();
-    setBgmSound(new Audio("sounds/bgm/loopBgm01.wav"));
 
-    setEnemyList((prevList) => [
-      ...prevList,
-      createEnemy("gyonshi", 1000, 700),
-    ]);
-
-    setWeapon(weaponDatabase.rifle);
     initializeCanvasSize();
   }, []);
 
@@ -280,7 +302,7 @@ const RenderCanvas = (props: BoardProps) => {
           newPos.x = newX;
           newPos.y = newY;
         }
-
+        console.log("newPos", newPos);
         return newPos;
       });
     };
@@ -290,23 +312,21 @@ const RenderCanvas = (props: BoardProps) => {
 
   // 渲染
   const render = useCallback(() => {
-    const renderCanvas = renderRef.current;
-    const buffCanvas = buffRef.current;
-    if (!renderCanvas || !buffCanvas) return;
+    const renderCtx = renderRef.current?.getContext("2d");
+    const buffCtx = buffRef.current?.getContext("2d");
+    if (!renderCtx || !buffCtx) return;
+    const centerX = renderCtx.canvas.width / 2;
+    const centerY = renderCtx.canvas.height - 100;
 
-    const renderCtx = renderCanvas.getContext("2d");
-    if (!renderCtx) return;
-    renderCtx.clearRect(0, 0, renderCanvas.width, renderCanvas.height);
-
-    const centerX = renderCanvas.width / 2;
-    const centerY = renderCanvas.height - 100;
+    renderCtx.clearRect(0, 0, renderCtx.canvas.width, renderCtx.canvas.height);
 
     drawBuff();
     // 渲染缓冲
     renderCtx.save();
     renderCtx.translate(centerX, centerY);
+    renderCtx.scale(scale, scale); // 放大两倍
     renderCtx.rotate((player.angle * Math.PI) / 180);
-    renderCtx.drawImage(buffCanvas, -player.x, -player.y);
+    renderCtx.drawImage(buffCtx.canvas, -player.x, -player.y);
     renderCtx.restore();
 
     const image = buffImages["ManBlue"];
@@ -318,11 +338,17 @@ const RenderCanvas = (props: BoardProps) => {
         player,
         image,
         legOffsetX,
-        legOffsetY
+        legOffsetY,
+        scale
       );
     }
     drawWeapon(renderCtx, centerX, centerY);
-  }, [player]);
+  }, [player, scale, buffImages, legOffsetX, legOffsetY]);
+
+  useEffect(() => {
+    const animationFrameId = requestAnimationFrame(render);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [render]);
 
   const drawWeapon = (
     renderCtx: CanvasRenderingContext2D,
@@ -385,15 +411,10 @@ const RenderCanvas = (props: BoardProps) => {
         weaponState.soundPlayed = false; // 重置声音播放标记
       } else {
         const progress = elapsed / weapon.reloadTime;
-        drawReloadAnimation(renderCtx, x, y, progress);
+        drawReloadAnimation(renderCtx, x, y, progress, scale);
       }
     }
   };
-
-  useEffect(() => {
-    const animationFrameId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [render]);
 
   // 绘制缓冲区
   const drawBuff = () => {
@@ -418,22 +439,60 @@ const RenderCanvas = (props: BoardProps) => {
   const drawEnemy = (buffCtx: CanvasRenderingContext2D) => {
     // 绘制敌人
     if (enemyList.length > 0) {
-      const showEnemy = enemyList.filter((enemy) =>
-        isEnemyInSector(
+      const showEnemy = enemyList.filter((enemy) => {
+        // 检查敌人是否在玩家的可见范围内
+        const isInPlayerSector = isEnemyInSector(
           enemy,
           player.x,
           player.y,
           userAttributes.visibleRadius,
           userAttributes.visibleAngle,
           -(player.angle * Math.PI) / 180 - Math.PI / 2
-        )
-      );
+        );
 
+        if (
+          isInPlayerSector ||
+          isEnemyInCircle(
+            enemy,
+            player.x,
+            player.y,
+            userAttributes.visibleRadius / 5
+          )
+        ) {
+          return true;
+        }
+
+        // 如果敌人不在玩家的可见范围内，检查光源
+        for (const light of lightList) {
+          if (
+            light.type === "circular" &&
+            isEnemyInCircle(enemy, light.x, light.y, light.radius)
+          ) {
+            return true; // 敌人被圆形光源命中
+          } else if (
+            light.type === "sector" &&
+            isEnemyInSector(
+              enemy,
+              light.x,
+              light.y,
+              light.radius,
+              light.angle,
+              light.direction
+            )
+          ) {
+            return true; // 敌人被扇形光源命中
+          }
+        }
+
+        return false;
+      });
+      enemyList.forEach((enemy) =>
+        enemy.update([{ x: player.x, y: player.y }], GeometryList)
+      );
       showEnemy.forEach((enemy) => {
         const image = buffImages[enemy.code];
 
         if (!image) return;
-        enemy.update(player.x, player.y);
 
         const dashLength = 10; // 虚线长度
         const color = "rgba(210, 210, 210, 0.5)"; // 颜色
@@ -492,7 +551,7 @@ const RenderCanvas = (props: BoardProps) => {
     const lightCtx = lightCanvas.getContext("2d");
     if (!lightCtx) return;
     // 绘制遮罩
-    lightCtx.fillStyle = "rgba(0, 0, 0, 0.97)";
+    lightCtx.fillStyle = "rgba(0, 0, 0, 0.95)";
     lightCtx.clearRect(0, 0, lightCanvas.width, lightCanvas.height);
     lightCtx.fillRect(0, 0, lightCanvas.width, lightCanvas.height);
     // 绘制角色视线
@@ -508,6 +567,7 @@ const RenderCanvas = (props: BoardProps) => {
       // -Math.PI / 2,
       -(player.angle * Math.PI) / 180 - Math.PI / 2
     );
+    drawViewpointsList(lightCtx, GeometryList, lightList);
     buffCtx.drawImage(lightCanvas, 0, 0);
   };
 
@@ -610,7 +670,7 @@ const RenderCanvas = (props: BoardProps) => {
         </div>
         <Button
           isIconOnly
-          onClick={() => setBgmPlaying(!bgmPlaying)}
+          onClick={() => setBgmPlaying((prev) => !prev)}
           variant="light"
           className="text-[#6B7280] hover:bg-[#f0f0f0] mt-1"
         >

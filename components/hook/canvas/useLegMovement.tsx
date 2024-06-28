@@ -1,15 +1,15 @@
 import { Character } from "@/types/CanvasTypes";
 import { useEffect, useState } from "react";
 
-export const useLegMovement = (keys: any, player: Character) => {
+export const useLegMovement = (keys: any, player: Character, scale: number) => {
   const [legOffsetY, setLegOffsetY] = useState(0);
   const [legOffsetX, setLegOffsetX] = useState(0);
   const [swingDirection, setSwingDirection] = useState(1);
 
   useEffect(() => {
-    const LEG_OFFSET = player.radius * 0.5; // Adjust the initial leg offset based on player radius
-    const LEG_SWING_RANGE = player.speed * 3; // Adjust the swing range based on player speed
-    const LEG_SWING_SPEED = player.speed * 0.3; // Adjust the swing speed based on player speed
+    const LEG_OFFSET = player.radius * 0.5 * scale; // Adjust the initial leg offset based on player radius
+    const LEG_SWING_RANGE = player.speed * 4 * scale; // Adjust the swing range based on player speed
+    const LEG_SWING_SPEED = player.speed * 0.4 * scale; // Adjust the swing speed based on player speed
 
     setLegOffsetX(LEG_OFFSET); // Set the initial leg offset
 

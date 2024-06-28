@@ -1,4 +1,4 @@
-import { Geometry, Point, Ray, Segment } from "@/types/CanvasTypes";
+import { Geometry, LightType, Point, Ray, Segment } from "@/types/CanvasTypes";
 import { resetGeometry } from "@/components/canvas/helpers/PhysicsDraw";
 
 // 判断点是否在线段范围内
@@ -229,19 +229,19 @@ export function drawCharacterViewpoints(
   attackAngle: number,
   direction: number
 ) {
-    // const fileList = filterSegments(
-    //   geometryList,
-    //   {
-    //     x: x,
-    //     y: y,
-    //   },
-    //   visibleRadius * 2
-    // );
+  // const fileList = filterSegments(
+  //   geometryList,
+  //   {
+  //     x: x,
+  //     y: y,
+  //   },
+  //   visibleRadius * 2
+  // );
   const fileList = geometryList;
 
   const fuzzyRadius = 5;
   const polygons = [getSightPolygon(fileList, x, y)];
-  for (var angle = 0; angle < Math.PI * 2; angle += (Math.PI * 2)) {
+  for (var angle = 0; angle < Math.PI * 2; angle += Math.PI * 2) {
     const dx = Math.cos(angle) * fuzzyRadius;
     const dy = Math.sin(angle) * fuzzyRadius;
     polygons.push(getSightPolygon(fileList, x + dx, y + dy));
@@ -275,3 +275,36 @@ export function drawCharacterViewpoints(
   );
 }
 
+export function drawViewpointsList(
+  lightCtx: CanvasRenderingContext2D,
+  geometryList: Geometry[],
+  lightList: LightType[]
+) {
+  const fileList = geometryList;
+
+  const fuzzyRadius = 5;
+
+  lightList.forEach((light) => {
+    const polygons = [getSightPolygon(fileList, light.x, light.y)];
+    for (var angle = 0; angle < Math.PI * 2; angle += Math.PI * 2) {
+      const dx = Math.cos(angle) * fuzzyRadius;
+      const dy = Math.sin(angle) * fuzzyRadius;
+      polygons.push(getSightPolygon(fileList, light.x + dx, light.y + dy));
+    }
+    if (light.type === "circular") {
+      drawViewpoints(lightCtx, polygons, "circular", {
+        x: light.x,
+        y: light.y,
+        radius: light.radius,
+      });
+    } else if (light.type === "sector") {
+      drawViewpoints(lightCtx, polygons, "sector", {
+        x: light.x,
+        y: light.y,
+        radius: light.radius,
+        angle: light.angle,
+        direction: light.direction,
+      });
+    }
+  });
+}

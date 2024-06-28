@@ -47,6 +47,17 @@ type FloatingStains = {
     alpha: number;
     life: number;
 };
+
+type LightType = {
+    id: string;
+    type: "circular" | "sector";
+    x: number;
+    y: number;
+    radius: number;
+    angle?: number;
+    direction?: number;
+};
+
 interface Character {
     x: number; // 角色在地图的x坐标
     y: number; // 角色在地图的y坐标
@@ -134,7 +145,7 @@ type Enemy = {
     damage: number; // 伤害
     active: boolean; // 敌人是否激活
     imageSrc: string; // 敌人图片
-    update: (playerX: number, playerY: number) => void;
+    update: (targetList: Point[], obstacleList: Geometry[]) => void;
     attack: () => void;
 };
 
@@ -147,4 +158,4 @@ interface Sector {
 }
 
 
-export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray, Geometry, CanvasInfo, Bullet, Weapon, Enemy, Particle, FloatingStains, Sector };
+export type { Position, CssSize, BoardProps, Character, Point, Segment, Ray, Geometry, CanvasInfo, Bullet, Weapon, Enemy, Particle, FloatingStains, Sector, LightType };

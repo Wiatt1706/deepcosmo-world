@@ -1,4 +1,9 @@
-import { Enemy, Sector } from "@/types/CanvasTypes";
+import { Enemy, Geometry, Point } from "@/types/CanvasTypes";
+import { handleCollision } from "./PhysicsDraw";
+
+function distance(x1: number, y1: number, x2: number, y2: number): number {
+  return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+}
 
 // 敌人数据库
 export const enemyDatabase: { [key: string]: Enemy } = {
@@ -8,7 +13,7 @@ export const enemyDatabase: { [key: string]: Enemy } = {
     y: 0,
     radius: 25,
     angle: 0,
-    speed: 2,
+    speed: 0.7,
     health: 3000,
     maxHealth: 3000,
     attackRange: 10,
@@ -16,11 +21,52 @@ export const enemyDatabase: { [key: string]: Enemy } = {
     damage: 5,
     active: true,
     imageSrc: "/images/Zombie/zoimbie1_hold.png",
-    update(playerX, playerY) {
+    update(targetList: Point[], obstacleList: Geometry[]) {
       // 追踪玩家
-      const dx = playerX - this.x;
-      const dy = playerY - this.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
+      // 查找最近的目标
+      let closestTarget = null;
+      let minDist = Infinity;
+      for (const target of targetList) {
+        const dist = distance(this.x, this.y, target.x, target.y);
+
+        if (dist < minDist) {
+          minDist = dist;
+          closestTarget = target;
+        }
+      }
+
+      if (closestTarget) {
+        // 计算前往目标的方向
+        const dx = closestTarget.x - this.x;
+        const dy = closestTarget.y - this.y;
+        const distanceToTarget = Math.sqrt(dx * dx + dy * dy);
+        const moveX = (dx / distanceToTarget) * this.speed;
+        const moveY = (dy / distanceToTarget) * this.speed;
+
+        const checkedNewX = this.x + moveX;
+        const checkedNewY = this.y + moveY;
+        // 检查与障碍物的碰撞
+        const {
+          collided,
+          x: newX,
+          y: newY,
+        } = handleCollision(
+          obstacleList,
+          this.radius,
+          checkedNewX,
+          checkedNewY
+        );
+
+        // 如果不会碰撞则移动，否则尝试避让
+        if (!collided) {
+          this.x = checkedNewX;
+          this.y = checkedNewY;
+        } else {
+          // 简单的避让逻辑，尝试绕过障碍物
+          this.x = newX;
+          this.y = newY;
+        }
+      }
     },
     attack() {
       console.log("Gyonshi attacks with melee!");
@@ -56,14 +102,32 @@ const isAngleInRange = (angle: number, start: number, end: number): boolean => {
   }
 };
 
+export const isEnemyInCircle = (
+  enemy: Enemy,
+  playerX: number,
+  playerY: number,
+  circleRadius: number
+): boolean => {
+  // 计算敌人到玩家的距离
+  const dx = enemy.x - playerX;
+  const dy = enemy.y - playerY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  // 判断是否在圆形的半径内
+  return distance <= circleRadius + enemy.radius;
+};
+
 export const isEnemyInSector = (
   enemy: Enemy,
   playerX: number,
   playerY: number,
   sectorRadius: number,
-  sectorAngle: number,
-  sectorDirection: number
+  sectorAngle?: number,
+  sectorDirection?: number
 ): boolean => {
+  if (!sectorAngle || !sectorDirection) {
+    return isEnemyInCircle(enemy, playerX, playerY, sectorRadius);
+  }
   // 计算敌人到玩家的距离
   const dx = enemy.x - playerX;
   const dy = enemy.y - playerY;
