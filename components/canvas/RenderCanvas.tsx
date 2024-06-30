@@ -519,6 +519,7 @@ const RenderCanvas = (props: BoardProps) => {
 
         buffCtx.save();
         buffCtx.translate(enemy.x, enemy.y);
+        buffCtx.rotate((-(player.angle * Math.PI) / 180 - Math.PI / 2) as any);
         buffCtx.drawImage(
           image,
           -image.width / 2,
