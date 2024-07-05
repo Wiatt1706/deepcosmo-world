@@ -74,12 +74,11 @@ const CanvasBoard: React.FC<CanvasModuleProps> = observer((props) => {
     // 清晰度调整
     _.adaptDPR({
       canvas,
-      dpr,
       cssWidth: containerWidth,
       cssHeight: containerHeight,
     });
 
-    _.adaptDPR({ canvas: buffer, dpr, cssWidth: ocWidth, cssHeight: ocHeight });
+    _.adaptDPR({ canvas: buffer, cssWidth: ocWidth, cssHeight: ocHeight });
 
     canvasStore.setScale(1);
     bufferCtx.drawImage(props.imageFile, 0, 0);

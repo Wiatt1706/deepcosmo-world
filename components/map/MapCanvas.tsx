@@ -1,52 +1,158 @@
 "use client";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import styles from "@/styles/canvas/map-canvas.module.css";
-import { BoardProps, Position } from "@/types/CanvasTypes";
 import useScale from "../hook/canvas/useScale";
 import useDraggable from "../hook/canvas/useDraggable";
+import { drawRuler, getMouseupPixel } from "./helpers/BaseDraw";
+import { useEvent } from "../utils/GeneralEvent";
+import { useMapStore } from "./SocketManager";
+import { PixelBlock } from "@/types/MapTypes";
+import algorithm from "./helpers/algorithm";
+
+// 模拟数据库
+const mockDatabase: PixelBlock[] = [
+  {
+    x: 0,
+    y: 0,
+    width: 20,
+    height: 20,
+    color: "red",
+    imgSrc:
+      "https://mazrpbjakqosxybtccqi.supabase.co/storage/v1/object/public/deepcosmo_img/public/bannerImg/1180b77a-6589-4ea4-859e-47bceafc02cb.jpg",
+  },
+  {
+    x: 60,
+    y: 60,
+    width: 20,
+    height: 20,
+    color: "blue",
+  },
+  {
+    x: 120,
+    y: 120,
+    width: 20,
+    height: 20,
+    color: "green",
+  },
+  // 添加更多数据以供测试
+];
+
+// 模拟从数据库获取数据的函数
+const fetchCoordinates = async (viewport: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}): Promise<PixelBlock[]> => {
+  return mockDatabase.filter(
+    (coord) =>
+      coord.x >= viewport.x &&
+      coord.x <= viewport.x + viewport.width &&
+      coord.y >= viewport.y &&
+      coord.y <= viewport.y + viewport.height
+  );
+};
 
 const MapCanvas = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const renderRef = useRef<HTMLCanvasElement | null>(null);
-  const buffRef = useRef<HTMLCanvasElement | null>(null);
+  const [toolInfo] = useMapStore((state) => [state.toolInfo]);
 
-  const scale = useScale(1.5, 0.5, 30);
-  const mapCenter = useDraggable(renderRef, { x: 10, y: 10 }, scale);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buffRef = useRef<HTMLCanvasElement | null>(null);
+  const imagesRef = useRef<{ [key: string]: HTMLImageElement }>({});
+
+  const [coordinates, setCoordinates] = useState<PixelBlock[]>([]);
+  const [showCoordinates, setShowCoordinates] = useState<PixelBlock[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const scale = useScale(1, 0.5, 5);
+  const mapCenter = useDraggable(buffRef, { x: 0, y: 0 }, scale);
 
   useEffect(() => {
     const initializeCanvasSize = () => {
       const container = containerRef.current;
-      const renderCanvas = renderRef.current;
-      const buffCanvas = buffRef.current;
-      if (!container || !renderCanvas || !buffCanvas) return;
-      const buffCtx = buffCanvas.getContext("2d");
+      const buffCtx = buffRef?.current?.getContext("2d");
 
-      if (!buffCtx) return;
+      if (!container || !buffCtx) return;
 
-      renderCanvas.width = container.clientWidth;
-      renderCanvas.height = container.clientHeight;
+      const dpr = window.devicePixelRatio;
+      buffCtx.canvas.width = Math.round(container.clientWidth * dpr);
+      buffCtx.canvas.height = Math.round(container.clientHeight * dpr);
+
+      buffCtx.canvas.style.width = `${container.clientWidth}px`;
+      buffCtx.canvas.style.height = `${container.clientHeight}px`;
+      buffCtx.scale(dpr, dpr);
+      const initialTerrain = algorithm.TerrainRenderer({
+        detail: 7,
+        roughness: 5,
+        pixelSize: 10,
+        terrainType: "land",
+      });
+      setShowCoordinates(initialTerrain);
+      console.log(initialTerrain);
     };
 
     initializeCanvasSize();
   }, []);
 
+  useEvent(
+    "mouseup",
+    (e: MouseEvent) => {
+      if (!isDragging) {
+        handleMouseUp(e);
+      }
+      setIsDragging(false);
+    },
+    containerRef.current
+  );
+
+  useEvent(
+    "mousedown",
+    () => {
+      setIsDragging(false);
+    },
+    containerRef.current
+  );
+
+  useEvent(
+    "mousemove",
+    () => {
+      setIsDragging(true);
+    },
+    containerRef.current
+  );
+
+  const handleMouseUp = (e: MouseEvent) => {
+    e.preventDefault();
+    const buffCanvas = buffRef.current;
+    const buffCtx = buffCanvas?.getContext("2d");
+    if (!buffCanvas || !buffCtx) return;
+    const buffPosition = getMouseupPixel(e, buffCanvas, scale, mapCenter);
+    const coord = {
+      x: Math.floor(buffPosition.x / toolInfo.pixelSize) * toolInfo.pixelSize,
+      y: Math.floor(buffPosition.y / toolInfo.pixelSize) * toolInfo.pixelSize,
+    };
+
+    let width = toolInfo.pixelSize * toolInfo.brushSize;
+    let height = toolInfo.pixelSize * toolInfo.brushSize;
+    const pixel: PixelBlock = {
+      x: coord.x,
+      y: coord.y,
+      width,
+      height,
+      color: toolInfo.editColor,
+    };
+    setCoordinates((prev) => [...prev, pixel]);
+    // 同步到模拟数据库
+    mockDatabase.push(pixel);
+  };
+
   // 渲染
   const render = useCallback(() => {
-    const renderCtx = renderRef.current?.getContext("2d");
     const buffCtx = buffRef.current?.getContext("2d");
-    if (!renderCtx || !buffCtx) return;
-    const centerX = renderCtx.canvas.width / 2;
-    const centerY = renderCtx.canvas.height / 2;
-
-    renderCtx.clearRect(0, 0, renderCtx.canvas.width, renderCtx.canvas.height);
+    if (!buffCtx) return;
+    buffCtx.clearRect(0, 0, buffCtx.canvas.width, buffCtx.canvas.height);
     drawBuff();
-    // 渲染缓冲
-    renderCtx.save();
-    renderCtx.translate(centerX, centerY);
-    renderCtx.scale(scale, scale); // 放大两倍
-    renderCtx.drawImage(buffCtx.canvas, -mapCenter.x, -mapCenter.y);
-    renderCtx.restore();
-  }, [scale, mapCenter, buffRef, renderRef]);
+  }, [scale, mapCenter, showCoordinates]);
 
   useEffect(() => {
     const animationFrameId = requestAnimationFrame(render);
@@ -56,60 +162,94 @@ const MapCanvas = () => {
   // 绘制缓冲区
   const drawBuff = () => {
     const buffCanvas = buffRef.current;
-
+    const dpr = window.devicePixelRatio;
     if (!buffCanvas) return;
     const buffCtx = buffCanvas.getContext("2d");
     if (!buffCtx) return;
-    // 绘制缓冲图层
     buffCtx.clearRect(0, 0, buffCanvas.width, buffCanvas.height);
-    buildGrids(buffCanvas, 20, 10, "#fff", "#d9d9d9");
+
+    const canvasWidth = buffCtx.canvas.width / dpr;
+    const canvasHeight = buffCtx.canvas.height / dpr;
+
+    // 绘制辅助线
+    drawRuler(
+      buffCtx,
+      mapCenter,
+      scale,
+      toolInfo.pixelSize,
+      canvasWidth,
+      canvasHeight
+    );
+
+    // 绘制像素块
+    showCoordinates.forEach((coord) => {
+      const scaledX = (coord.x - mapCenter.x) * scale + canvasWidth / 2;
+      const scaledY = (coord.y - mapCenter.y) * scale + canvasHeight / 2;
+      const scaledWidth = coord.width * scale;
+      const scaledHeight = coord.height * scale;
+      buffCtx.fillStyle = coord.color;
+      buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
+      if (coord.imgSrc && imagesRef.current[coord.imgSrc]) {
+        const img = imagesRef.current[coord.imgSrc];
+        buffCtx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
+      }
+    });
   };
 
-  const buildGrids = (
-    cvs: HTMLCanvasElement,
-    gridPixelSize: number,
-    gridGap: number,
-    gridColor: string,
-    fillColor: string
-  ): void => {
-    const bufferCtx = cvs.getContext("2d") as CanvasRenderingContext2D;
-    const width = cvs.width;
-    const height = cvs.height;
-
-    console.log("width", width, height);
-
-    bufferCtx.fillStyle = fillColor;
-    bufferCtx.fillRect(0, 0, width, height);
-    bufferCtx.strokeStyle = gridColor;
-
-    for (let i = 0; i <= width; i += gridPixelSize) {
-      bufferCtx.beginPath();
-      bufferCtx.moveTo(Math.floor(i), Math.floor(0));
-      bufferCtx.lineTo(Math.floor(i), Math.floor(height));
-      bufferCtx.lineWidth = 0 === i % gridGap ? 2 : 3;
-      bufferCtx.closePath();
-      bufferCtx.stroke();
-    }
-
-    for (let j = 0; j <= height; j += gridPixelSize) {
-      bufferCtx.beginPath();
-      bufferCtx.moveTo(Math.floor(0), Math.floor(j));
-      bufferCtx.lineTo(Math.floor(width), Math.floor(j));
-      bufferCtx.lineWidth = 0 === j % gridGap ? 2 : 3;
-      bufferCtx.closePath();
-      bufferCtx.stroke();
-    }
+  // 节流函数，用于限制fetchData调用频率
+  const throttle = (func: Function, limit: number) => {
+    let inThrottle: boolean;
+    return function (this: any) {
+      const args = arguments;
+      const context = this;
+      if (!inThrottle) {
+        func.apply(context, args);
+        inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
+      }
+    };
   };
+
+  const fetchData = async () => {
+    const buffCtx = buffRef.current?.getContext("2d");
+    if (!buffCtx) return;
+
+    // 计算当前视口的范围
+    const viewport = {
+      x: mapCenter.x - buffCtx.canvas.width / (2 * scale),
+      y: mapCenter.y - buffCtx.canvas.height / (2 * scale),
+      width: buffCtx.canvas.width / scale,
+      height: buffCtx.canvas.height / scale,
+    };
+
+    // 根据视口范围请求数据
+    const newCoordinates = await fetchCoordinates(viewport);
+
+    // 预加载图片
+    for (const coord of newCoordinates) {
+      if (coord.imgSrc && !imagesRef.current[coord.imgSrc]) {
+        const img = new Image();
+        img.src = coord.imgSrc;
+        imagesRef.current[coord.imgSrc] = img;
+      }
+    }
+
+    // 更新显示的坐标数据
+    setShowCoordinates(newCoordinates);
+  };
+
+  const throttledFetchData = useCallback(throttle(fetchData, 500), [
+    mapCenter,
+    scale,
+  ]);
+
+  useEffect(() => {
+    // throttledFetchData();
+  }, [mapCenter, scale]);
 
   return (
     <div className={styles["canvas-container"]} ref={containerRef}>
-      <canvas ref={renderRef} />
-      <canvas
-        style={{ display: "none" }}
-        ref={buffRef}
-        width={1000}
-        height={1000}
-      />
+      <canvas ref={buffRef} />
     </div>
   );
 };
