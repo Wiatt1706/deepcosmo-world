@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 
-const useScale = (initialScale = 1.5, minScale = 0.5, maxScale = 3) => {
+const useScale = (
+  initialScale = 1.5,
+  minScale = 0.5,
+  maxScale = 3,
+  target?: HTMLDivElement | null
+) => {
   const [scale, setScale] = useState(initialScale);
 
   useEffect(() => {
@@ -13,12 +18,13 @@ const useScale = (initialScale = 1.5, minScale = 0.5, maxScale = 3) => {
       });
     };
 
-    window.addEventListener("wheel", handleWheel);
+    const eventTarget = target || window;
+    eventTarget.addEventListener("wheel", handleWheel as EventListener);
 
     return () => {
-      window.removeEventListener("wheel", handleWheel);
+      eventTarget.removeEventListener("wheel", handleWheel as EventListener);
     };
-  }, [minScale, maxScale]);
+  }, [minScale, maxScale, target]);
 
   return scale;
 };

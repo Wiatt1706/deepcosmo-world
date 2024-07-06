@@ -5,60 +5,22 @@ import useScale from "../hook/canvas/useScale";
 import useDraggable from "../hook/canvas/useDraggable";
 import { drawRuler, getMouseupPixel } from "./helpers/BaseDraw";
 import { useEvent } from "../utils/GeneralEvent";
-import { useMapStore } from "./SocketManager";
 import { PixelBlock } from "@/types/MapTypes";
-import algorithm from "./helpers/algorithm";
-import { BottomToolView } from "./tool-layout";
 
-// 模拟数据库
-const mockDatabase: PixelBlock[] = [
-  {
-    x: 0,
-    y: 0,
-    width: 20,
-    height: 20,
-    color: "red",
-    imgSrc:
-      "https://mazrpbjakqosxybtccqi.supabase.co/storage/v1/object/public/deepcosmo_img/public/bannerImg/1180b77a-6589-4ea4-859e-47bceafc02cb.jpg",
-  },
-  {
-    x: 60,
-    y: 60,
-    width: 20,
-    height: 20,
-    color: "blue",
-  },
-  {
-    x: 120,
-    y: 120,
-    width: 20,
-    height: 20,
-    color: "green",
-  },
-  // 添加更多数据以供测试
-];
-
-// 模拟从数据库获取数据的函数
-const fetchCoordinates = async (viewport: {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}): Promise<PixelBlock[]> => {
-  return mockDatabase.filter(
-    (coord) =>
-      coord.x >= viewport.x &&
-      coord.x <= viewport.x + viewport.width &&
-      coord.y >= viewport.y &&
-      coord.y <= viewport.y + viewport.height
-  );
-};
-
-const MapCanvas = () => {
-  const [toolInfo, pixelBlocks] = useMapStore((state: any) => [
-    state.toolInfo,
-    state.pixelBlocks,
-  ]);
+const ShowMapCanvas = ({
+  initData,
+  containerWidth,
+  containerHeight,
+}: {
+  initData?: PixelBlock[];
+  containerWidth?: number;
+  containerHeight?: number;
+}) => {
+  const [toolInfo, setToolInfo] = useState({
+    pixelSize: 20,
+    brushSize: 1,
+    editColor: "#000",
+  });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const buffRef = useRef<HTMLCanvasElement | null>(null);
@@ -68,7 +30,7 @@ const MapCanvas = () => {
   const [showCoordinates, setShowCoordinates] = useState<PixelBlock[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
-  const scale = useScale(1, 0.5, 5);
+  const scale = useScale(1, 0.5, 5, containerRef.current);
   const mapCenter = useDraggable(buffRef, { x: 0, y: 0 }, scale);
 
   useEffect(() => {
@@ -85,19 +47,15 @@ const MapCanvas = () => {
       buffCtx.canvas.style.width = `${container.clientWidth}px`;
       buffCtx.canvas.style.height = `${container.clientHeight}px`;
       buffCtx.scale(dpr, dpr);
-      const initialTerrain = algorithm.TerrainRenderer({
-        detail: 7,
-        roughness: 5,
-        pixelSize: 20,
-        terrainType: "ocean",
-        maxPixels: 4000,
-      });
-      setShowCoordinates(initialTerrain);
-      console.log(initialTerrain);
+
+      if (initData) {
+        setCoordinates(initData);
+        setShowCoordinates(initData);
+      }
     };
 
     initializeCanvasSize();
-  }, []);
+  }, [initData]);
 
   useEvent(
     "mouseup",
@@ -110,21 +68,13 @@ const MapCanvas = () => {
     containerRef.current
   );
 
-  useEvent(
-    "mousedown",
-    () => {
-      setIsDragging(false);
-    },
-    containerRef.current
-  );
+  useEvent("mousedown", () => {
+    setIsDragging(false);
+  });
 
-  useEvent(
-    "mousemove",
-    () => {
-      setIsDragging(true);
-    },
-    containerRef.current
-  );
+  useEvent("mousemove", () => {
+    setIsDragging(true);
+  });
 
   const handleMouseUp = (e: MouseEvent) => {
     e.preventDefault();
@@ -146,9 +96,7 @@ const MapCanvas = () => {
       height,
       color: toolInfo.editColor,
     };
-    setCoordinates((prev) => [...prev, pixel]);
-    // 同步到模拟数据库
-    mockDatabase.push(pixel);
+    // setCoordinates((prev) => [...prev, pixel]);
   };
 
   // 渲染
@@ -215,6 +163,22 @@ const MapCanvas = () => {
     };
   };
 
+  // 模拟从数据库获取数据的函数
+  const fetchCoordinates = async (viewport: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }): Promise<PixelBlock[]> => {
+    return coordinates.filter(
+      (coord) =>
+        coord.x >= viewport.x &&
+        coord.x <= viewport.x + viewport.width &&
+        coord.y >= viewport.y &&
+        coord.y <= viewport.y + viewport.height
+    );
+  };
+
   const fetchData = async () => {
     const buffCtx = buffRef.current?.getContext("2d");
     if (!buffCtx) return;
@@ -249,20 +213,21 @@ const MapCanvas = () => {
   ]);
 
   useEffect(() => {
-    // throttledFetchData();
+    throttledFetchData();
   }, [mapCenter, scale]);
 
-  useEffect(() => {
-    console.log("pixelBlocks", pixelBlocks);
-    setShowCoordinates((prev) => [...prev, ...pixelBlocks]);
-  }, [pixelBlocks]);
-
   return (
-    <div className={styles["canvas-container"]} ref={containerRef}>
+    <div
+      className={styles["show-canvas-container"]}
+      ref={containerRef}
+      style={{
+        width: containerWidth || "100%",
+        height: containerHeight || "100%",
+      }}
+    >
       <canvas ref={buffRef} />
-      <BottomToolView />
     </div>
   );
 };
 
-export default MapCanvas;
+export default ShowMapCanvas;

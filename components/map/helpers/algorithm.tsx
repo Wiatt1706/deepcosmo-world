@@ -14,7 +14,7 @@ algorithm.createDiamondSquareTerrain = function ({
 }): Uint8Array {
   roughness = roughness || 6;
 
-  //初始化网格，并设置默认最大高度
+  // 初始化网格，并设置默认最大高度
   const size = Math.pow(2, detail || 6) + 1;
   const max = size - 1;
   const maxAlt = 255; // always.
@@ -29,7 +29,7 @@ algorithm.createDiamondSquareTerrain = function ({
     grid[x + size * y] = val;
   }
 
-  //初始设置正方形四个角落
+  // 初始设置正方形四个角落
   set(0, 0, Math.round((Math.random() * maxAlt) / 2));
   set(max, 0, Math.round((Math.random() * maxAlt) / 2));
   set(max, max, Math.round((Math.random() * maxAlt) / 2));
@@ -38,24 +38,24 @@ algorithm.createDiamondSquareTerrain = function ({
   divide(max);
   return grid;
 
-  //分形递归
+  // 分形递归
   function divide(size: number): void {
     const half = size / 2;
     const scale = roughness * size;
 
-    //无法续分，终止循环
+    // 无法续分，终止循环
     if (half < 1) return;
 
     for (let y = half; y < max; y += size) {
       for (let x = half; x < max; x += size) {
-        //正方形处理
+        // 正方形处理
         square(x, y, half, Math.random() * scale * 2 - scale);
       }
     }
 
     for (let y = 0; y <= max; y += half) {
       for (let x = (y + half) % size; x <= max; x += size) {
-        //菱形处理
+        // 菱形处理
         diamond(x, y, half, Math.random() * scale * 2 - scale);
       }
     }
@@ -69,7 +69,7 @@ algorithm.createDiamondSquareTerrain = function ({
     return total / valid.length;
   }
 
-  //正方形处理
+  // 正方形处理
   function square(x: number, y: number, size: number, offset: number): void {
     const ave = average([
       get(x - size, y - size), // upper left
@@ -80,7 +80,7 @@ algorithm.createDiamondSquareTerrain = function ({
     set(x, y, ave + offset);
   }
 
-  //菱形处理
+  // 菱形处理
   function diamond(x: number, y: number, size: number, offset: number): void {
     const ave = average([
       get(x, y - size), // top
@@ -101,17 +101,23 @@ enum TerrainType {
 /**
  * 渲染地形图
  */
-algorithm.TerrainRenderer = function ({
+algorithm.TerrainRenderer = ({
   detail,
   roughness,
   pixelSize,
   terrainType = TerrainType.ALL,
+  maxPixels,
+  exclusionWidth,
+  exclusionHeight,
 }: {
   detail: number;
   roughness: number;
   pixelSize: number;
   terrainType?: TerrainType;
-}): PixelBlock[] {
+  maxPixels?: number;
+  exclusionWidth?: number;
+  exclusionHeight?: number;
+}): PixelBlock[] => {
   const terrain = algorithm.createDiamondSquareTerrain({
     detail,
     roughness,
@@ -121,6 +127,23 @@ algorithm.TerrainRenderer = function ({
   const max = size - 1;
   const maxAlt = 255;
   const seaLevel = 140;
+
+  const centerX = Math.floor(size / 2);
+  const centerY = Math.floor(size / 2);
+
+  const exclusionMinX = centerX - Math.floor((exclusionWidth || 0) / 2);
+  const exclusionMaxX = centerX + Math.floor((exclusionWidth || 0) / 2);
+  const exclusionMinY = centerY - Math.floor((exclusionHeight || 0) / 2);
+  const exclusionMaxY = centerY + Math.floor((exclusionHeight || 0) / 2);
+
+  const isInExclusionZone = (x: number, y: number) => {
+    return (
+      x >= exclusionMinX &&
+      x <= exclusionMaxX &&
+      y >= exclusionMinY &&
+      y <= exclusionMaxY
+    );
+  };
 
   const getAltitude = (x: number, y: number): number => {
     if (x < 0 || x > max || y < 0 || y > max) return -1;
@@ -184,26 +207,68 @@ algorithm.TerrainRenderer = function ({
   };
 
   let pixelBlocks: PixelBlock[] = [];
-  for (let x = 0; x < size; x++) {
-    for (let y = 0; y < size; y++) {
-      const { hue, sat, lux } = getColour(x, y);
-      const alt = getAltitude(x, y);
+  let checked = new Set<string>();
 
-      if (
-        (terrainType === TerrainType.OCEAN && alt > seaLevel) ||
-        (terrainType === TerrainType.LAND && alt <= seaLevel)
-      ) {
-        continue;
-      }
+  const addPixelBlock = (x: number, y: number) => {
+    const { hue, sat, lux } = getColour(x, y);
+    const alt = getAltitude(x, y);
 
-      pixelBlocks.push({
-        x: x * pixelSize,
-        y: y * pixelSize,
-        width: pixelSize,
-        height: pixelSize,
-        color: `hsl(${hue}, ${sat}%, ${lux}%)`,
-      });
+    if (
+      (terrainType === TerrainType.OCEAN && alt > seaLevel) ||
+      (terrainType === TerrainType.LAND && alt <= seaLevel) ||
+      isInExclusionZone(x, y)
+    ) {
+      return;
     }
+
+    pixelBlocks.push({
+      x: (x - centerX) * pixelSize,
+      y: (y - centerY) * pixelSize,
+      width: pixelSize,
+      height: pixelSize,
+      color: `hsl(${hue}, ${sat}%, ${lux}%)`,
+    });
+
+    checked.add(`${x},${y}`);
+  };
+
+  const inBounds = (x: number, y: number) => {
+    return x >= 0 && x <= max && y >= 0 && y <= max;
+  };
+
+  const shuffleArray = (array: any[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  };
+
+  let radius = 0;
+  while (!maxPixels || pixelBlocks.length < maxPixels) {
+    let newPixels = false;
+    let coords: { dx: number; dy: number }[] = [];
+
+    for (let dx = -radius; dx <= radius; dx++) {
+      for (let dy = -radius; dy <= radius; dy++) {
+        if (Math.abs(dx) !== radius && Math.abs(dy) !== radius) continue;
+        coords.push({ dx, dy });
+      }
+    }
+
+    shuffleArray(coords);
+
+    for (let { dx, dy } of coords) {
+      const x = centerX + dx;
+      const y = centerY + dy;
+      if (inBounds(x, y) && !checked.has(`${x},${y}`)) {
+        addPixelBlock(x, y);
+        newPixels = true;
+        if (maxPixels && pixelBlocks.length >= maxPixels) break;
+      }
+    }
+
+    if (!newPixels) break;
+    radius++;
   }
 
   return pixelBlocks;

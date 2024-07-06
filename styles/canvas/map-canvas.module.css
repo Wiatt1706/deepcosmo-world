@@ -3,9 +3,14 @@
   bottom: 0;
   left: 0;
   right: 0;
-  top: 50px;
+  top: 0;
   overflow: hidden;
-  background: #f5f5f5;;
+  background: #f5f5f5;
+}
+
+.show-canvas-container {
+  overflow: hidden;
+  background: #f5f5f5;
 }
 
 .bottom-container {
@@ -42,4 +47,51 @@
   font-size: 14px;
   color: #fff;
   padding: 20px;
+}
+
+
+.bottom-tool {
+  position: absolute;
+  width: 500px;
+  bottom: 10px;
+  left: calc(50% - 250px);
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  border-radius: 15px;
+  border: rgba(0, 0, 0, 0.1) 1px solid;
+  z-index: 9;
+}
+
+.bottom-tool-box {
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: rgba(0, 0, 0, 0.1) 1px solid;
+  border-radius: 5px;
+}
+
+
+@keyframes cloudAnimation {
+  0% {
+    filter: blur(0px);
+    opacity: 0.5;
+  }
+
+  50% {
+    filter: blur(10px);
+    opacity: 0.7;
+  }
+
+  100% {
+    filter: blur(0px);
+    opacity: 0.5;
+  }
+}
+
+.cloud-animation {
+  animation: cloudAnimation 3s infinite ease-in-out;
 }
