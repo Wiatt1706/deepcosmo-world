@@ -11,12 +11,17 @@ interface CssSize {
 
 // 像素块存储实体
 interface PixelBlock {
+    id: string;
     x: number;
     y: number;
     width: number;
     height: number;
     color: string | CanvasGradient | CanvasPattern;
+    type: string;
+    name?: string;
     imgSrc?: string;
+    groupId?: string;
+    skipUrl?: string;
 }
 
 // 图片块存储实体

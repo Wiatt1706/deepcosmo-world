@@ -106,9 +106,9 @@ export const drawRuler = (
   ctx.globalAlpha = alpha;
 
   ctx.beginPath();
-  ctx.strokeStyle = "rgba(0,0,0,0.3)";
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
   ctx.font = `${10 * dpr}px Arial`;
-  ctx.fillStyle = "rgba(0,0,0,0.3)";
+  ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   ctx.lineWidth = dpr;
 
   // Draw horizontal lines and labels

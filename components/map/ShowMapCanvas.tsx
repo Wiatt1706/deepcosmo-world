@@ -2,36 +2,84 @@
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import styles from "@/styles/canvas/map-canvas.module.css";
 import useScale from "../hook/canvas/useScale";
-import useDraggable from "../hook/canvas/useDraggable";
 import { drawRuler, getMouseupPixel } from "./helpers/BaseDraw";
 import { useEvent } from "../utils/GeneralEvent";
 import { PixelBlock } from "@/types/MapTypes";
+import { Position } from "@/types/CanvasTypes";
+import { useEditMapStore } from "./SocketManager";
 
 const ShowMapCanvas = ({
   initData,
+  handleActClick,
   containerWidth,
   containerHeight,
 }: {
   initData?: PixelBlock[];
+  handleActClick?: (pixel: PixelBlock | null) => void;
   containerWidth?: number;
   containerHeight?: number;
 }) => {
-  const [toolInfo, setToolInfo] = useState({
-    pixelSize: 20,
-    brushSize: 1,
-    editColor: "#000",
-  });
-
   const containerRef = useRef<HTMLDivElement>(null);
   const buffRef = useRef<HTMLCanvasElement | null>(null);
   const imagesRef = useRef<{ [key: string]: HTMLImageElement }>({});
 
-  const [coordinates, setCoordinates] = useState<PixelBlock[]>([]);
+  const [
+    toolInfo,
+    terrainInfo,
+    setTerrainInfo,
+    pixelBlocks,
+    setPixelBlocks,
+    setInitData,
+  ] = useEditMapStore((state: any) => [
+    state.toolInfo,
+    state.terrainInfo,
+    state.setTerrainInfo,
+    state.pixelBlocks,
+    state.setPixelBlocks,
+    state.setInitData,
+  ]);
+
   const [showCoordinates, setShowCoordinates] = useState<PixelBlock[]>([]);
   const [isDragging, setIsDragging] = useState(false);
-
+  const [isDrag, setIsDrag] = useState<boolean>(false);
   const scale = useScale(1, 0.5, 5, containerRef.current);
-  const mapCenter = useDraggable(buffRef, { x: 0, y: 0 }, scale);
+
+  const [mapCenter, setMapCenter] = useState<Position>({ x: 0, y: 0 });
+  const dragStartRef = useRef<Position | null>(null);
+
+  useEvent("mouseup", (e: MouseEvent) => {
+    if (!isDragging) {
+      handleMouseUp(e);
+    }
+    setIsDragging(false);
+    setIsDrag(false);
+    dragStartRef.current = null;
+  });
+
+  useEvent(
+    "mousedown",
+    (e: MouseEvent) => {
+      setIsDrag(true);
+      setIsDragging(false);
+      dragStartRef.current = { x: e.clientX, y: e.clientY };
+    },
+    containerRef.current
+  );
+
+  useEvent("mousemove", (e: MouseEvent) => {
+    setIsDragging(true);
+    if (!isDrag || !dragStartRef.current) return;
+
+    const deltaX = (e.clientX - dragStartRef.current.x) / scale;
+    const deltaY = (e.clientY - dragStartRef.current.y) / scale;
+
+    setMapCenter((prev) => ({
+      x: prev.x - deltaX,
+      y: prev.y - deltaY,
+    }));
+
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+  });
 
   useEffect(() => {
     const initializeCanvasSize = () => {
@@ -49,7 +97,8 @@ const ShowMapCanvas = ({
       buffCtx.scale(dpr, dpr);
 
       if (initData) {
-        setCoordinates(initData);
+        setInitData(initData);
+        setPixelBlocks(initData);
         setShowCoordinates(initData);
       }
     };
@@ -57,48 +106,32 @@ const ShowMapCanvas = ({
     initializeCanvasSize();
   }, [initData]);
 
-  useEvent(
-    "mouseup",
-    (e: MouseEvent) => {
-      if (!isDragging) {
-        handleMouseUp(e);
-      }
-      setIsDragging(false);
-    },
-    containerRef.current
-  );
-
-  useEvent("mousedown", () => {
-    setIsDragging(false);
-  });
-
-  useEvent("mousemove", () => {
-    setIsDragging(true);
-  });
-
   const handleMouseUp = (e: MouseEvent) => {
     e.preventDefault();
+
     const buffCanvas = buffRef.current;
     const buffCtx = buffCanvas?.getContext("2d");
     if (!buffCanvas || !buffCtx) return;
+
+    // 获取鼠标点击的像素位置
     const buffPosition = getMouseupPixel(e, buffCanvas, scale, mapCenter);
-    const coord = {
-      x: Math.floor(buffPosition.x / toolInfo.pixelSize) * toolInfo.pixelSize,
-      y: Math.floor(buffPosition.y / toolInfo.pixelSize) * toolInfo.pixelSize,
-    };
 
-    let width = toolInfo.pixelSize * toolInfo.brushSize;
-    let height = toolInfo.pixelSize * toolInfo.brushSize;
-    const pixel: PixelBlock = {
-      x: coord.x,
-      y: coord.y,
-      width,
-      height,
-      color: toolInfo.editColor,
-    };
-    // setCoordinates((prev) => [...prev, pixel]);
+    // 确定点击的像素块
+    const clickedPixelBlock = showCoordinates.find(
+      (block) =>
+        buffPosition.x >= block.x &&
+        buffPosition.x < block.x + block.width &&
+        buffPosition.y >= block.y &&
+        buffPosition.y < block.y + block.height
+    );
+
+    if (clickedPixelBlock) {
+      // 在这里处理找到的像素块，例如高亮显示或编辑
+      handleActClick?.(clickedPixelBlock);
+    } else {
+      handleActClick?.(null);
+    }
   };
-
   // 渲染
   const render = useCallback(() => {
     const buffCtx = buffRef.current?.getContext("2d");
@@ -134,14 +167,22 @@ const ShowMapCanvas = ({
       canvasHeight
     );
 
+    const padding = (-0.5 * scale) / dpr;
     // 绘制像素块
     showCoordinates.forEach((coord) => {
-      const scaledX = (coord.x - mapCenter.x) * scale + canvasWidth / 2;
-      const scaledY = (coord.y - mapCenter.y) * scale + canvasHeight / 2;
-      const scaledWidth = coord.width * scale;
-      const scaledHeight = coord.height * scale;
+      // Calculate scaled position and size with padding
+      const scaledX =
+        (coord.x - mapCenter.x) * scale + canvasWidth / 2 + padding;
+      const scaledY =
+        (coord.y - mapCenter.y) * scale + canvasHeight / 2 + padding;
+      const scaledWidth = coord.width * scale - 2 * padding;
+      const scaledHeight = coord.height * scale - 2 * padding;
+
+      // Set fill style and draw rectangle
       buffCtx.fillStyle = coord.color;
       buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
+
+      // Draw image if available
       if (coord.imgSrc && imagesRef.current[coord.imgSrc]) {
         const img = imagesRef.current[coord.imgSrc];
         buffCtx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
@@ -170,8 +211,8 @@ const ShowMapCanvas = ({
     width: number;
     height: number;
   }): Promise<PixelBlock[]> => {
-    return coordinates.filter(
-      (coord) =>
+    return pixelBlocks.filter(
+      (coord: PixelBlock) =>
         coord.x >= viewport.x &&
         coord.x <= viewport.x + viewport.width &&
         coord.y >= viewport.y &&
@@ -210,11 +251,12 @@ const ShowMapCanvas = ({
   const throttledFetchData = useCallback(throttle(fetchData, 500), [
     mapCenter,
     scale,
+    pixelBlocks,
   ]);
 
   useEffect(() => {
     throttledFetchData();
-  }, [mapCenter, scale]);
+  }, [mapCenter, scale, pixelBlocks]);
 
   return (
     <div

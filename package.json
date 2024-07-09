@@ -69,6 +69,7 @@
     "slate": "^0.103.0",
     "slate-hyperscript": "^0.100.0",
     "slate-react": "^0.104.0",
+    "slick-carousel": "^1.8.1",
     "tailwind-variants": "^0.1.18",
     "tailwindcss": "3.3.5",
     "three": "^0.161.0",
@@ -81,6 +82,7 @@
   "devDependencies": {
     "@types/multiparty": "^0.0.36",
     "@types/prismjs": "^1.26.4",
+    "@types/react-slick": "^0.23.13",
     "@types/three": "^0.164.0",
     "@types/uuid": "^9.0.8",
     "supabase": "^1.165.0"

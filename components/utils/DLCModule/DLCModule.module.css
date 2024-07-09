@@ -1,0 +1,270 @@
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.btnRotate svg {
+    animation: rotate 2s linear infinite;
+    /* 旋转动画名称、持续时间、线性动画以及无限循环 */
+}
+
+.col-input {
+    margin: 5px;
+    padding: 8px;
+    width: 100%;
+    height: 30px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.col-input.editable {
+    background-color: var(--input-color);
+}
+
+.col-input input {
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--text-color);
+    outline: medium;
+}
+
+.col-input label {
+    margin-left: 5px;
+    color: #242424;
+    font-size: 11px;
+    outline: medium
+}
+
+.col-select {
+    margin: 5px;
+    width: 100%;
+    height: 30px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    padding-right: 5px;
+}
+
+/* 自定义 option 样式 */
+.col-select option {
+    font-size: 14px;
+    color: #555;
+    background-color: #fff;
+    padding: 8px;
+}
+
+.col-select.editable {
+    background-color: var(--input-color);
+}
+
+.col-select select {
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--text-color);
+    height: 100%;
+    outline: medium;
+}
+
+.col-select label {
+    margin-left: 5px;
+    color: #b6cce2;
+    font-size: 11px;
+    outline: medium
+}
+
+.col-switch {
+    margin: 5px;
+    position: relative;
+    height: 26px;
+    width: 100px;
+    background-color: var(--input-color);
+    border-radius: 5px;
+}
+
+.switch-label {
+    position: relative;
+    z-index: 2;
+    float: left;
+    width: 48px;
+    line-height: 26px;
+    font-size: 11px;
+    color: #aaaaaa;
+    text-align: center;
+    cursor: pointer;
+}
+
+.switch-label-off {
+    padding-left: 2px;
+}
+
+.switch-label-on {
+    padding-right: 2px;
+}
+
+.switch-input {
+    display: none;
+}
+
+.switch-input:checked+label {
+    font-weight: bold;
+    color: #343434;
+    text-shadow: 0 1px rgba(255, 255, 255, 0.25);
+    transition: 0.15s ease-out;
+}
+
+.switch-input:checked+.switch-label-on~.switch-selection {
+    /* Note: left: 50% doesn't transition in WebKit */
+    left: 50px;
+}
+
+.switch-selection {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 48px;
+    height: 22px;
+    background: #98F576;
+    border-radius: 3px;
+    transition: left 0.15s ease-out;
+}
+
+.button {
+    min-width: 30px;
+    min-height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: rippleAnimation 1s linear;
+}
+
+@keyframes rippleAnimation {
+    to {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.col-checkbox {
+    margin: 5px;
+}
+
+.col-checkbox input {
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+}
+
+.col-checkbox input+label span {
+    font-size: 10px;
+    color: #aaaaaa;
+}
+
+.col-checkbox input+label {
+    position: relative;
+    font-size: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    height: 17px;
+}
+
+.col-checkbox input+label::before {
+    content: " ";
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    width: 15px;
+    height: 15px;
+    border: #343434 1px solid;
+    border-radius: 2px;
+    box-shadow: none;
+}
+
+.col-checkbox input:checked+label::before {
+    background-color: #98F576;
+}
+
+.col-checkbox input:checked+label::after {
+    content: " ";
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjMzMzMjMwIiBkPSJNMTczLjg5OCA0MzkuNDA0bC0xNjYuNC0xNjYuNGMtOS45OTctOS45OTctOS45OTctMjYuMjA2IDAtMzYuMjA0bDM2LjIwMy0zNi4yMDRjOS45OTctOS45OTggMjYuMjA3LTkuOTk4IDM2LjIwNCAwTDE5MiAzMTIuNjkgNDMyLjA5NSA3Mi41OTZjOS45OTctOS45OTcgMjYuMjA3LTkuOTk3IDM2LjIwNCAwbDM2LjIwMyAzNi4yMDRjOS45OTcgOS45OTcgOS45OTcgMjYuMjA2IDAgMzYuMjA0bC0yOTQuNCAyOTQuNDAxYy05Ljk5OCA5Ljk5Ny0yNi4yMDcgOS45OTctMzYuMjA0LS4wMDF6Ii8+PC9zdmc+");
+    background-repeat: no-repeat;
+    background-size: 10px 10px;
+    background-position: center center;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 0px;
+    left: 0px;
+    top: 0px;
+    text-align: center;
+    background-color: transparent;
+    font-size: 12px;
+    height: 16px;
+    width: 16px;
+}
+
+
+/* RippleEffect.module.css */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: rippleAnimation 1s linear;
+}
+
+@keyframes rippleAnimation {
+    to {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.tooltip-icon-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tooltip-icon-button svg {
+    width: 20px;
+    height: 20px;
+
+}
+
+.tooltip-icon-button:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.btnRotate svg {
+    animation: rotate 2s linear infinite;
+    /* 旋转动画名称、持续时间、线性动画以及无限循环 */
+}

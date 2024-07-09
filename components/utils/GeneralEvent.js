@@ -27,17 +27,16 @@ export function useKeyboardEvent(keys,
 
 export function useEvent(eventName, callback, target) {
     useEffect(() => {
-        if (!target) {
-            target = window
-        }
+        const eventTarget = target || window;
         const eventHandler = (event) => {
+            event.preventDefault();
             callback(event);
         };
 
-        target.addEventListener(eventName, eventHandler);
+        eventTarget.addEventListener(eventName, eventHandler);
 
         return () => {
-            target.removeEventListener(eventName, eventHandler);
+            eventTarget.removeEventListener(eventName, eventHandler);
         };
     }, [eventName, callback, target]);
 }

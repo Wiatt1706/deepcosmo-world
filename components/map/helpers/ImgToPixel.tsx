@@ -25,7 +25,6 @@ export const ImgToPixel = (
 
       ctx.drawImage(img, 0, 0);
 
-
       let pxMap = createPxMap(ctx, width, height, pixelSize);
       const centerX = Math.floor(width / pixelSize / 2);
       const centerY = Math.floor(height / pixelSize / 2);
@@ -53,9 +52,9 @@ export const ImgToPixel = (
       for (let i = 0; i < width; i += pixelSize) {
         for (let j = 0; j < height; j += pixelSize) {
           let pixel = ctx.getImageData(i, j, 1, 1).data;
-          let color = `rgba(${pixel[0]},${pixel[1]},${pixel[2]},${
-            pixel[3] / 255
-          })`;
+          let alpha = pixel[3] / 255;
+          if (alpha === 0) continue; // Skip transparent pixels
+          let color = `rgba(${pixel[0]},${pixel[1]},${pixel[2]},${alpha})`;
           pxMap.push({ x: i / pixelSize, y: j / pixelSize, color });
         }
       }

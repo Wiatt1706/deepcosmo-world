@@ -87,6 +87,8 @@ const MapCanvas = () => {
     let width = toolInfo.pixelSize * toolInfo.brushSize;
     let height = toolInfo.pixelSize * toolInfo.brushSize;
     const pixel: PixelBlock = {
+      id: `${coord.x}-${coord.y}`,
+      type: "pixel",
       x: coord.x,
       y: coord.y,
       width,

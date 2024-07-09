@@ -222,6 +222,8 @@ algorithm.TerrainRenderer = ({
     }
 
     pixelBlocks.push({
+      id: `${x},${y}`,
+      type: "land",
       x: (x - centerX) * pixelSize,
       y: (y - centerY) * pixelSize,
       width: pixelSize,

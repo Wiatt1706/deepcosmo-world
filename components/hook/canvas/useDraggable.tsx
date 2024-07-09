@@ -1,24 +1,23 @@
 import { Position } from "@/types/CanvasTypes";
 import { useState, useEffect, useRef, MutableRefObject } from "react";
 
-
 const useDraggable = (
   ref: MutableRefObject<HTMLElement | null>,
   initialPosition: Position,
   scale: number
 ): Position => {
   const [position, setPosition] = useState<Position>(initialPosition);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isDrag, setIsDrag] = useState<boolean>(false);
   const dragStartRef = useRef<Position | null>(null);
 
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
-      setIsDragging(true);
+      setIsDrag(true);
       dragStartRef.current = { x: e.clientX, y: e.clientY };
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !dragStartRef.current) return;
+      if (!isDrag || !dragStartRef.current) return;
 
       const deltaX = (e.clientX - dragStartRef.current.x) / scale;
       const deltaY = (e.clientY - dragStartRef.current.y) / scale;
@@ -32,7 +31,7 @@ const useDraggable = (
     };
 
     const handleMouseUp = () => {
-      setIsDragging(false);
+      setIsDrag(false);
       dragStartRef.current = null;
     };
 
@@ -52,7 +51,7 @@ const useDraggable = (
         element.removeEventListener("mouseleave", handleMouseUp);
       }
     };
-  }, [ref, isDragging, scale]);
+  }, [ref, isDrag, scale]);
 
   return position;
 };
