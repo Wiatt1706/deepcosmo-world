@@ -88,12 +88,6 @@ export const drawRuler = (
   canvasHeight: number
 ) => {
   const dpr = window.devicePixelRatio;
-
-  // 绘制刻度尺
-  ctx.save();
-  ctx.scale(1 / dpr, 1 / dpr);
-
-  // Adjusting the starting point based on the center, scale, and offset
   const scaledPixelSize = pixelSize * scale * dpr;
   const halfWidth = (canvasWidth / 2) * dpr;
   const halfHeight = (canvasHeight / 2) * dpr;
@@ -101,17 +95,55 @@ export const drawRuler = (
   const startX = (halfWidth - offsetPoint.x * dpr * scale) % scaledPixelSize;
   const startY = (halfHeight - offsetPoint.y * dpr * scale) % scaledPixelSize;
 
-  // Adjust alpha value based on scale to create a fade effect
-  const alpha = Math.max((scale - 0.5) * 2, 0);
-  ctx.globalAlpha = alpha;
+  ctx.save();
+  ctx.scale(1 / dpr, 1 / dpr);
 
-  ctx.beginPath();
+  // 绘制网格线
   ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
-  ctx.font = `${10 * dpr}px Arial`;
-  ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   ctx.lineWidth = dpr;
+  ctx.globalAlpha = Math.max((scale - 0.5) * 2, 0);
+  ctx.beginPath();
 
-  // Draw horizontal lines and labels
+  for (
+    let x = startX - scaledPixelSize;
+    x < canvasWidth * dpr;
+    x += scaledPixelSize
+  ) {
+    ctx.moveTo(x, 20 * dpr);
+    ctx.lineTo(x, canvasHeight * dpr);
+  }
+  for (
+    let y = startY - scaledPixelSize;
+    y < canvasHeight * dpr;
+    y += scaledPixelSize
+  ) {
+    ctx.moveTo(20 * dpr, y);
+    ctx.lineTo(canvasWidth * dpr, y);
+  }
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // 绘制标尺背景
+  ctx.fillStyle = "#f5f5f5";
+  ctx.fillRect(0, 0, canvasWidth * dpr, 15 * dpr);
+  ctx.fillRect(0, 0, 15 * dpr, canvasHeight * dpr);
+
+  // 绘制标尺边框
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(15 * dpr, 0);
+  ctx.lineTo(15 * dpr, canvasHeight * dpr);
+  ctx.moveTo(0, 15 * dpr);
+  ctx.lineTo(canvasWidth * dpr, 15 * dpr);
+  ctx.stroke();
+  // 绘制刻度和标签
+  ctx.strokeStyle = "#808080";
+  ctx.fillStyle = "#808080";
+  ctx.font = `${10 * dpr}px Arial`;
+  ctx.lineWidth = 1 * dpr;
+
+  // 绘制横轴刻度和标签
   for (
     let x = startX - scaledPixelSize;
     x < canvasWidth * dpr;
@@ -120,14 +152,20 @@ export const drawRuler = (
     const label = Math.round(
       (x - halfWidth + offsetPoint.x * dpr * scale) / scaledPixelSize
     );
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvasHeight * dpr);
-    if (label % 10 === 0) {
-      ctx.fillText(label.toString(), x + 2, 20 * dpr);
+    if (x > 20 * dpr && x % scaledPixelSize !== 0) {
+      // 避免覆盖网格线
+      ctx.beginPath();
+      ctx.moveTo(x, 15 * dpr);
+      ctx.lineTo(x, 10 * dpr);
+      if (label % 10 === 0) {
+        ctx.lineTo(x, 0);
+        ctx.fillText(label.toString(), x + 5, 10 * dpr);
+      }
+      ctx.stroke();
     }
   }
 
-  // Draw vertical lines and labels
+  // 绘制纵轴刻度和标签
   for (
     let y = startY - scaledPixelSize;
     y < canvasHeight * dpr;
@@ -136,13 +174,24 @@ export const drawRuler = (
     const label = Math.round(
       (y - halfHeight + offsetPoint.y * dpr * scale) / scaledPixelSize
     );
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvasWidth * dpr, y);
-    if (label % 10 === 0) {
-      ctx.fillText(label.toString(), 12 * dpr, y + 10);
+    if (y > 20 * dpr && y % scaledPixelSize !== 0) {
+      // 避免覆盖网格线
+      ctx.beginPath();
+      ctx.moveTo(15 * dpr, y);
+      ctx.lineTo(10 * dpr, y);
+      if (label % 10 === 0) {
+        ctx.lineTo(0, y);
+
+        // 保存上下文，旋转并绘制标签
+        ctx.save();
+        ctx.translate(15 * dpr, y);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(label.toString(), 5 * dpr, -6 * dpr);
+        ctx.restore();
+      }
+      ctx.stroke();
     }
   }
 
-  ctx.stroke();
   ctx.restore();
 };

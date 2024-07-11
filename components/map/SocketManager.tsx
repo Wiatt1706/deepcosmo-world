@@ -1,22 +1,22 @@
 import { temporal } from "zundo";
 import { create } from "zustand";
-import { PixelBlock } from "@/types/MapTypes"; // 确保正确导入 PixelBlock 类型
+import { MODEL_LIST, PixelBlock } from "@/types/MapTypes"; // 确保正确导入 PixelBlock 类型
 import { TerrainType } from "./helpers/algorithm";
 
 export const useEditMapStore = create(
   temporal(
     (set) => ({
       toolInfo: {
+        model: "OBSERVE",
         pixelSize: 20,
         brushSize: 5,
+        pixelPadding: 0,
         editColor: "#000",
-      },
-      terrainInfo: {
-        maxPixels: 1000,
-        detail: 5,
-        roughness: 5,
-        color: "#000",
-        type: TerrainType.ALL,
+        terrain_maxPixels: 1000,
+        terrain_detail: 5,
+        terrain_roughness: 5,
+        terrain_color: "#000",
+        terrain_type: TerrainType.ALL,
       },
       pixelBlocks: [] as PixelBlock[], // 初始化 pixelBlocks
       initData: [] as PixelBlock[],

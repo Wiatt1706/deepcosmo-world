@@ -8,6 +8,7 @@ import { Slider } from "@nextui-org/react";
 import algorithm from "@/components/map/helpers/algorithm";
 import LeftToolView from "./View_LeftTool";
 import RightActView from "./View_RightAct";
+import TopToolView from "./View_TopTool";
 
 export default function NewMapIndex({ initData }: { initData?: PixelBlock[] }) {
   const [actPixelBlock, setActPixelBlock] = useState<PixelBlock | null>(null);
@@ -21,12 +22,17 @@ export default function NewMapIndex({ initData }: { initData?: PixelBlock[] }) {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <LeftToolView />
+      <TopToolView />
+
       <RightActView
         actPixelBlock={actPixelBlock}
         isAct={isAct}
         setIsAct={setIsAct}
       />
-      <ShowMapCanvas initData={initData} handleActClick={handleActClick} />
+
+      <div className="absolute bottom-0 right-0 w-[calc(100%-250px)] h-[calc(100%-46px)]">
+        <ShowMapCanvas initData={initData} handleActClick={handleActClick} />
+      </div>
     </div>
   );
 }

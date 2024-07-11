@@ -67,7 +67,7 @@ interface PixelBoardProps {
 
 export const SAVE_LOCATE_LIST_KEY = "SAVE_LOCATE_LIST_KEY"; // 测试像素块缓存
 export const SAVE_IMG_LIST_KEY = "SAVE_IMG_LIST_KEY"; // 测试图片块缓存
-export const TYPE = ["OBSERVE", "EDIT", "FIXED"]; // 定义类型：观察模式、编辑模式、固定模式
+export const MODEL_LIST = ["OBSERVE", "EDIT", "FIXED"]; // 定义类型：观察模式、编辑模式、固定模式
 export const DEF_SIZE: CssSize = { width: 300, height: 300 }; // 定义默认地图寸尺
 export const ZOOM_LEVELS = [0.15, 0.25, 0.5, 1, 2]; // 定义缩放档次
 export const COLOR_LEVELS = ['#2e4065', '#0080ff', '#f9721f', '#c0d3e8', '#0d2235']; // 定义颜色档次

@@ -4,13 +4,8 @@
     display: flex;
     align-items: center;
     user-select: none;
-    border-top: 1px solid transparent;
 }
 
-.numInput:not(:first-child) {
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    /* 除了第一个以外的设置实际颜色的上边框 */
-}
 
 .numInput:hover .btn {
     opacity: 1;

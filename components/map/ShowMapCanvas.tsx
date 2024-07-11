@@ -42,7 +42,7 @@ const ShowMapCanvas = ({
   const [showCoordinates, setShowCoordinates] = useState<PixelBlock[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isDrag, setIsDrag] = useState<boolean>(false);
-  const scale = useScale(1, 0.5, 5, containerRef.current);
+  const scale = useScale(1, 0.3, 5, containerRef.current);
 
   const [mapCenter, setMapCenter] = useState<Position>({ x: 0, y: 0 });
   const dragStartRef = useRef<Position | null>(null);
@@ -157,17 +157,7 @@ const ShowMapCanvas = ({
     const canvasWidth = buffCtx.canvas.width / dpr;
     const canvasHeight = buffCtx.canvas.height / dpr;
 
-    // 绘制辅助线
-    drawRuler(
-      buffCtx,
-      mapCenter,
-      scale,
-      toolInfo.pixelSize,
-      canvasWidth,
-      canvasHeight
-    );
-
-    const padding = (-0.5 * scale) / dpr;
+    const padding = (toolInfo.pixelPadding * scale) / dpr;
     // 绘制像素块
     showCoordinates.forEach((coord) => {
       // Calculate scaled position and size with padding
@@ -188,6 +178,15 @@ const ShowMapCanvas = ({
         buffCtx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
       }
     });
+    // 绘制辅助线
+    drawRuler(
+      buffCtx,
+      mapCenter,
+      scale,
+      toolInfo.pixelSize,
+      canvasWidth,
+      canvasHeight
+    );
   };
 
   // 节流函数，用于限制fetchData调用频率
@@ -256,7 +255,7 @@ const ShowMapCanvas = ({
 
   useEffect(() => {
     throttledFetchData();
-  }, [mapCenter, scale, pixelBlocks]);
+  }, [mapCenter, scale, pixelBlocks, toolInfo]);
 
   return (
     <div
