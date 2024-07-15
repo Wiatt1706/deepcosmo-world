@@ -98,10 +98,10 @@ export const drawRuler = (
   ctx.save();
   ctx.scale(1 / dpr, 1 / dpr);
 
-  // 绘制网格线
+  // Draw grid lines
   ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
   ctx.lineWidth = dpr;
-  ctx.globalAlpha = Math.max((scale - 0.5) * 2, 0);
+  ctx.globalAlpha = Math.max((scale - 0.3) * 2, 0);
   ctx.beginPath();
 
   for (
@@ -109,7 +109,7 @@ export const drawRuler = (
     x < canvasWidth * dpr;
     x += scaledPixelSize
   ) {
-    ctx.moveTo(x, 20 * dpr);
+    ctx.moveTo(x, 15 * dpr);
     ctx.lineTo(x, canvasHeight * dpr);
   }
   for (
@@ -117,18 +117,18 @@ export const drawRuler = (
     y < canvasHeight * dpr;
     y += scaledPixelSize
   ) {
-    ctx.moveTo(20 * dpr, y);
+    ctx.moveTo(15 * dpr, y);
     ctx.lineTo(canvasWidth * dpr, y);
   }
   ctx.stroke();
   ctx.globalAlpha = 1;
 
-  // 绘制标尺背景
+  // Draw ruler background
   ctx.fillStyle = "#f5f5f5";
   ctx.fillRect(0, 0, canvasWidth * dpr, 15 * dpr);
   ctx.fillRect(0, 0, 15 * dpr, canvasHeight * dpr);
 
-  // 绘制标尺边框
+  // Draw ruler border
   ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -137,61 +137,59 @@ export const drawRuler = (
   ctx.moveTo(0, 15 * dpr);
   ctx.lineTo(canvasWidth * dpr, 15 * dpr);
   ctx.stroke();
-  // 绘制刻度和标签
+
+  // Draw ticks and labels
   ctx.strokeStyle = "#808080";
   ctx.fillStyle = "#808080";
   ctx.font = `${10 * dpr}px Arial`;
   ctx.lineWidth = 1 * dpr;
 
-  // 绘制横轴刻度和标签
-  for (
-    let x = startX - scaledPixelSize;
-    x < canvasWidth * dpr;
-    x += scaledPixelSize
-  ) {
-    const label = Math.round(
-      (x - halfWidth + offsetPoint.x * dpr * scale) / scaledPixelSize
-    );
-    if (x > 20 * dpr && x % scaledPixelSize !== 0) {
-      // 避免覆盖网格线
-      ctx.beginPath();
-      ctx.moveTo(x, 15 * dpr);
-      ctx.lineTo(x, 10 * dpr);
-      if (label % 10 === 0) {
-        ctx.lineTo(x, 0);
-        ctx.fillText(label.toString(), x + 5, 10 * dpr);
+  const drawTicksAndLabels = (
+    start = 0,
+    end = 0,
+    half = 0,
+    offset = 0,
+    axis = "x"
+  ) => {
+    for (let pos = start - scaledPixelSize; pos < end; pos += scaledPixelSize) {
+      const label = Math.round(
+        (pos - half + offset * dpr * scale) / scaledPixelSize
+      );
+      if (pos > 20 * dpr && pos % scaledPixelSize !== 0) {
+        ctx.beginPath();
+        if (axis === "x") {
+          ctx.moveTo(pos, 15 * dpr);
+          ctx.lineTo(pos, 10 * dpr);
+        } else {
+          ctx.moveTo(15 * dpr, pos);
+          ctx.lineTo(10 * dpr, pos);
+        }
+        if (label % 10 === 0) {
+          if (axis === "x") {
+            ctx.lineTo(pos, 0);
+            ctx.fillText(label.toString(), pos + 5, 10 * dpr);
+          } else {
+            ctx.lineTo(0, pos);
+            ctx.save();
+            ctx.translate(15 * dpr, pos);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText(label.toString(), 5 * dpr, -6 * dpr);
+            ctx.restore();
+          }
+        }
+        ctx.stroke();
       }
-      ctx.stroke();
     }
-  }
+  };
 
-  // 绘制纵轴刻度和标签
-  for (
-    let y = startY - scaledPixelSize;
-    y < canvasHeight * dpr;
-    y += scaledPixelSize
-  ) {
-    const label = Math.round(
-      (y - halfHeight + offsetPoint.y * dpr * scale) / scaledPixelSize
-    );
-    if (y > 20 * dpr && y % scaledPixelSize !== 0) {
-      // 避免覆盖网格线
-      ctx.beginPath();
-      ctx.moveTo(15 * dpr, y);
-      ctx.lineTo(10 * dpr, y);
-      if (label % 10 === 0) {
-        ctx.lineTo(0, y);
-
-        // 保存上下文，旋转并绘制标签
-        ctx.save();
-        ctx.translate(15 * dpr, y);
-        ctx.rotate(-Math.PI / 2);
-        ctx.fillText(label.toString(), 5 * dpr, -6 * dpr);
-        ctx.restore();
-      }
-      ctx.stroke();
-    }
-  }
+  drawTicksAndLabels(startX, canvasWidth * dpr, halfWidth, offsetPoint.x, "x");
+  drawTicksAndLabels(
+    startY,
+    canvasHeight * dpr,
+    halfHeight,
+    offsetPoint.y,
+    "y"
+  );
 
   ctx.restore();
 };

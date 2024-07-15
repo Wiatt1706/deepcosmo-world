@@ -1,0 +1,30 @@
+.right-view {
+    position: absolute;
+    z-index: 9;
+    right: 0;
+    top: 46px;
+    bottom: 0;
+    width: 340px;
+    background: #fff;
+    border-left: rgba(0, 0, 0, 0.1) 1px solid;
+    overflow-y: auto;
+}
+
+.title {
+    font-size: medium;
+    color: #20272c;
+    font-weight: 600;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.col-title {
+    font-size: 14px;
+    color: #3d4853;
+    font-weight: 600;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}

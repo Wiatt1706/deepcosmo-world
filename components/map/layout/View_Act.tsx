@@ -2,7 +2,7 @@
 "use client";
 import { Input, Select } from "@/components/utils/DLCModule";
 import PhotoSlider from "@/components/utils/PhotoGallery";
-import styles from "@/styles/canvas/ViewRightAct.module.css";
+import styles from "@/styles/canvas/ViewAct.module.css";
 import { OPTION_TEST_LIST, PixelBlock } from "@/types/MapTypes";
 import { clsx } from "clsx";
 import { TbLink, TbMapPin, TbX } from "react-icons/tb";
@@ -19,7 +19,7 @@ export default function RightActView({
   return (
     actPixelBlock &&
     isAct && (
-      <div className={styles["right-view"] + " m-4 rounded shadow"}>
+      <div className={styles["act-view"] + " m-4 rounded shadow"}>
         <div className={styles["columnGgroup"]}>
           <div className={styles["colRow"]}>
             <div className={styles["col-title"]}>

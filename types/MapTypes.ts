@@ -18,6 +18,7 @@ interface PixelBlock {
     height: number;
     color: string | CanvasGradient | CanvasPattern;
     type: string;
+    status?: number;
     name?: string;
     imgSrc?: string;
     groupId?: string;

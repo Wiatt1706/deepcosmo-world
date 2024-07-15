@@ -8,3 +8,11 @@
     height: 46px;
     border-bottom: rgba(0, 0, 0, 0.1) 1px solid;
 }
+
+.title {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+    color: #4c5863
+}

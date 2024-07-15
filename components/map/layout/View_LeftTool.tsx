@@ -1,7 +1,7 @@
 // pages/NewMapPage.tsx
 "use client";
 import styles from "@/styles/canvas/ViewLeftTool.module.css";
-import { RadioGroup, Slider, cn } from "@nextui-org/react";
+import { RadioGroup, cn } from "@nextui-org/react";
 import { TbRefresh } from "react-icons/tb";
 import algorithm, { TerrainType } from "../helpers/algorithm";
 import { PixelBlock } from "@/types/MapTypes";
@@ -59,6 +59,26 @@ export default function LeftToolView() {
 
   return (
     <div className={styles["left-view"] + " shadow"}>
+      <div className={styles["left-tool-box"] + " p-4"}>
+        <div className="flex items-center justify-between mb-4">
+          <h4>概览</h4>
+          <TbRefresh size={18} />
+        </div>
+
+        <div className="bg-[#fff] py-4 my-2 w-full">
+          <div className="flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center w-1/2 text-center ">
+              <span>1000</span>
+              <span className="text-xs">土块容量</span>
+            </div>
+            <div className="flex flex-col items-center justify-center w-1/2 text-center ">
+              <span>{pixelBlocks.length}</span>
+              <span className="text-xs">当前已用</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className={styles["left-tool-box"] + " p-4"}>
         <div className="flex items-center justify-between mb-4">
           <h4>编辑属性</h4>
