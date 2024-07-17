@@ -10,11 +10,13 @@ import { useEditMapStore } from "./SocketManager";
 
 const ShowMapCanvas = ({
   initData,
+  scale,
   handleActClick,
   containerWidth,
   containerHeight,
 }: {
   initData?: PixelBlock[];
+  scale: number;
   handleActClick?: (pixel: PixelBlock | null) => void;
   containerWidth?: number;
   containerHeight?: number;
@@ -42,7 +44,6 @@ const ShowMapCanvas = ({
   const [showCoordinates, setShowCoordinates] = useState<PixelBlock[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isDrag, setIsDrag] = useState<boolean>(false);
-  const scale = useScale(1, 0.3, 5, containerRef.current);
 
   const [mapCenter, setMapCenter] = useState<Position>({ x: 0, y: 0 });
   const dragStartRef = useRef<Position | null>(null);
@@ -81,129 +82,21 @@ const ShowMapCanvas = ({
     dragStartRef.current = { x: e.clientX, y: e.clientY };
   });
 
-  useEffect(() => {
-    const initializeCanvasSize = () => {
-      const container = containerRef.current;
-      const buffCtx = buffRef?.current?.getContext("2d");
+  const initializeCanvasSize = useCallback(() => {
+    const container = containerRef.current;
+    const buffCtx = buffRef?.current?.getContext("2d");
 
-      if (!container || !buffCtx) return;
+    if (!container || !buffCtx) return;
 
-      const dpr = window.devicePixelRatio;
-      buffCtx.canvas.width = Math.round(container.clientWidth * dpr);
-      buffCtx.canvas.height = Math.round(container.clientHeight * dpr);
-
-      buffCtx.canvas.style.width = `${container.clientWidth}px`;
-      buffCtx.canvas.style.height = `${container.clientHeight}px`;
-      buffCtx.scale(dpr, dpr);
-
-      if (initData) {
-        setInitData(initData);
-        setPixelBlocks(initData);
-        setShowCoordinates(initData);
-      }
-    };
-
-    initializeCanvasSize();
-  }, [initData]);
-
-  const handleMouseUp = (e: MouseEvent) => {
-    e.preventDefault();
-
-    const buffCanvas = buffRef.current;
-    const buffCtx = buffCanvas?.getContext("2d");
-    if (!buffCanvas || !buffCtx) return;
-
-    // 获取鼠标点击的像素位置
-    const buffPosition = getMouseupPixel(e, buffCanvas, scale, mapCenter);
-
-    // 确定点击的像素块
-    const clickedPixelBlock = showCoordinates.find(
-      (block) =>
-        buffPosition.x >= block.x &&
-        buffPosition.x < block.x + block.width &&
-        buffPosition.y >= block.y &&
-        buffPosition.y < block.y + block.height
-    );
-
-    if (clickedPixelBlock) {
-      // 在这里处理找到的像素块，例如高亮显示或编辑
-      handleActClick?.(clickedPixelBlock);
-    } else {
-      handleActClick?.(null);
-    }
-  };
-  // 渲染
-  const render = useCallback(() => {
-    const buffCtx = buffRef.current?.getContext("2d");
-    if (!buffCtx) return;
-    buffCtx.clearRect(0, 0, buffCtx.canvas.width, buffCtx.canvas.height);
-    drawBuff();
-  }, [scale, mapCenter, showCoordinates]);
-
-  useEffect(() => {
-    const animationFrameId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [render]);
-
-  // 绘制缓冲区
-  const drawBuff = () => {
-    const buffCanvas = buffRef.current;
     const dpr = window.devicePixelRatio;
-    if (!buffCanvas) return;
-    const buffCtx = buffCanvas.getContext("2d");
-    if (!buffCtx) return;
-    buffCtx.clearRect(0, 0, buffCanvas.width, buffCanvas.height);
+    buffCtx.canvas.width = Math.round(container.clientWidth * dpr);
+    buffCtx.canvas.height = Math.round(container.clientHeight * dpr);
 
-    const canvasWidth = buffCtx.canvas.width / dpr;
-    const canvasHeight = buffCtx.canvas.height / dpr;
+    buffCtx.canvas.style.width = `${container.clientWidth}px`;
+    buffCtx.canvas.style.height = `${container.clientHeight}px`;
+    buffCtx.scale(dpr, dpr);
+  }, []);
 
-    const padding = (toolInfo.pixelPadding * scale) / dpr;
-    // 绘制像素块
-    showCoordinates.forEach((coord) => {
-      // Calculate scaled position and size with padding
-      const scaledX =
-        (coord.x - mapCenter.x) * scale + canvasWidth / 2 + padding;
-      const scaledY =
-        (coord.y - mapCenter.y) * scale + canvasHeight / 2 + padding;
-      const scaledWidth = coord.width * scale - 2 * padding;
-      const scaledHeight = coord.height * scale - 2 * padding;
-
-      // Set fill style and draw rectangle
-      buffCtx.fillStyle = coord.color;
-      buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
-
-      // Draw image if available
-      if (coord.imgSrc && imagesRef.current[coord.imgSrc]) {
-        const img = imagesRef.current[coord.imgSrc];
-        buffCtx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
-      }
-    });
-    // 绘制辅助线
-    drawRuler(
-      buffCtx,
-      mapCenter,
-      scale,
-      toolInfo.pixelSize,
-      canvasWidth,
-      canvasHeight
-    );
-  };
-
-  // 节流函数，用于限制fetchData调用频率
-  const throttle = (func: Function, limit: number) => {
-    let inThrottle: boolean;
-    return function (this: any) {
-      const args = arguments;
-      const context = this;
-      if (!inThrottle) {
-        func.apply(context, args);
-        inThrottle = true;
-        setTimeout(() => (inThrottle = false), limit);
-      }
-    };
-  };
-
-  // 模拟从数据库获取数据的函数
   const fetchCoordinates = async (viewport: {
     x: number;
     y: number;
@@ -223,7 +116,6 @@ const ShowMapCanvas = ({
     const buffCtx = buffRef.current?.getContext("2d");
     if (!buffCtx) return;
 
-    // 计算当前视口的范围
     const viewport = {
       x: mapCenter.x - buffCtx.canvas.width / (2 * scale),
       y: mapCenter.y - buffCtx.canvas.height / (2 * scale),
@@ -231,10 +123,8 @@ const ShowMapCanvas = ({
       height: buffCtx.canvas.height / scale,
     };
 
-    // 根据视口范围请求数据
     const newCoordinates = await fetchCoordinates(viewport);
 
-    // 预加载图片
     for (const coord of newCoordinates) {
       if (coord.imgSrc && !imagesRef.current[coord.imgSrc]) {
         const img = new Image();
@@ -243,8 +133,20 @@ const ShowMapCanvas = ({
       }
     }
 
-    // 更新显示的坐标数据
     setShowCoordinates(newCoordinates);
+  };
+
+  const throttle = (func: Function, limit: number) => {
+    let inThrottle: boolean;
+    return function (this: any) {
+      const args = arguments;
+      const context = this;
+      if (!inThrottle) {
+        func.apply(context, args);
+        inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
+      }
+    };
   };
 
   const throttledFetchData = useCallback(throttle(fetchData, 500), [
@@ -253,9 +155,114 @@ const ShowMapCanvas = ({
     pixelBlocks,
   ]);
 
+  const render = useCallback(() => {
+    const buffCtx = buffRef.current?.getContext("2d");
+    if (!buffCtx) return;
+    buffCtx.clearRect(0, 0, buffCtx.canvas.width, buffCtx.canvas.height);
+    drawBuff();
+  }, [scale, mapCenter, showCoordinates]);
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      initializeCanvasSize();
+      throttledFetchData(); // Fetch data after resizing
+      render(); // Render after fetching data
+    });
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    // Initial render
+    initializeCanvasSize();
+    throttledFetchData();
+    render();
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [initializeCanvasSize, throttledFetchData, render]);
+
+  useEffect(() => {
+    if (initData) {
+      setInitData(initData);
+      setPixelBlocks(initData);
+      setShowCoordinates(initData);
+    }
+  }, [initData]);
+
+  const handleMouseUp = (e: MouseEvent) => {
+    e.preventDefault();
+
+    const buffCanvas = buffRef.current;
+    const buffCtx = buffCanvas?.getContext("2d");
+    if (!buffCanvas || !buffCtx) return;
+
+    const buffPosition = getMouseupPixel(e, buffCanvas, scale, mapCenter);
+
+    const clickedPixelBlock = showCoordinates.find(
+      (block) =>
+        buffPosition.x >= block.x &&
+        buffPosition.x < block.x + block.width &&
+        buffPosition.y >= block.y &&
+        buffPosition.y < block.y + block.height
+    );
+
+    if (clickedPixelBlock) {
+      handleActClick?.(clickedPixelBlock);
+    } else {
+      handleActClick?.(null);
+    }
+  };
+
+  const drawBuff = () => {
+    const buffCanvas = buffRef.current;
+    const dpr = window.devicePixelRatio;
+    if (!buffCanvas) return;
+    const buffCtx = buffCanvas.getContext("2d");
+    if (!buffCtx) return;
+    buffCtx.clearRect(0, 0, buffCanvas.width, buffCanvas.height);
+
+    const canvasWidth = buffCtx.canvas.width / dpr;
+    const canvasHeight = buffCtx.canvas.height / dpr;
+
+    const padding = (toolInfo.pixelPadding * scale) / dpr;
+    showCoordinates.forEach((coord) => {
+      const scaledX =
+        (coord.x - mapCenter.x) * scale + canvasWidth / 2 + padding;
+      const scaledY =
+        (coord.y - mapCenter.y) * scale + canvasHeight / 2 + padding;
+      const scaledWidth = coord.width * scale - 2 * padding;
+      const scaledHeight = coord.height * scale - 2 * padding;
+
+      buffCtx.fillStyle = coord.color;
+      buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
+
+      if (coord.imgSrc && imagesRef.current[coord.imgSrc]) {
+        const img = imagesRef.current[coord.imgSrc];
+        buffCtx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
+      }
+    });
+    if (toolInfo.isGrid) {
+      drawRuler(
+        buffCtx,
+        mapCenter,
+        scale,
+        toolInfo.pixelSize,
+        canvasWidth,
+        canvasHeight
+      );
+    }
+  };
+
   useEffect(() => {
     throttledFetchData();
-  }, [mapCenter, scale, pixelBlocks, toolInfo]);
+  }, [mapCenter, scale, pixelBlocks, toolInfo, throttledFetchData]);
+
+  useEffect(() => {
+    const animationFrameId = requestAnimationFrame(render);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [render]);
 
   return (
     <div

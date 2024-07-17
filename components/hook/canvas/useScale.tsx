@@ -26,7 +26,7 @@ const useScale = (
     };
   }, [minScale, maxScale, target]);
 
-  return scale;
+  return { scale, setScale };
 };
 
 export default useScale;

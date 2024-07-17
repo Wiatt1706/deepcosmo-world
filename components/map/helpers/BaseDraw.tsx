@@ -124,7 +124,7 @@ export const drawRuler = (
   ctx.globalAlpha = 1;
 
   // Draw ruler background
-  ctx.fillStyle = "#f5f5f5";
+  ctx.fillStyle = "#f8fafc";
   ctx.fillRect(0, 0, canvasWidth * dpr, 15 * dpr);
   ctx.fillRect(0, 0, 15 * dpr, canvasHeight * dpr);
 

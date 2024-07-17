@@ -65,7 +65,7 @@ export default function LeftToolView() {
           <TbRefresh size={18} />
         </div>
 
-        <div className="bg-[#fff] py-4 my-2 w-full">
+        <div className="bg-[#f3f6f8] py-4 my-2 w-full">
           <div className="flex items-center justify-center">
             <div className="flex flex-col items-center justify-center w-1/2 text-center ">
               <span>1000</span>
@@ -103,7 +103,7 @@ export default function LeftToolView() {
           </div>
         </RadioGroup>
 
-        <div className="bg-[#fff] py-4 my-2 w-full">
+        <div className="bg-[#f3f6f8] py-4 my-2 w-full rounded-xl">
           <NumInput
             className="mb-4"
             value={toolInfo.pixelSize}
@@ -168,7 +168,7 @@ export default function LeftToolView() {
             <CustomRadio value={TerrainType.OCEAN}>Ocean</CustomRadio>
           </div>
         </RadioGroup>
-        <div className="bg-[#fff] py-4 my-2 w-full">
+        <div className="bg-[#f3f6f8] py-4 my-2 w-full rounded-xl">
           <NumInput
             className="mb-4"
             value={toolInfo.terrain_detail}

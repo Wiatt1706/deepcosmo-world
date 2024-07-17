@@ -12,6 +12,7 @@ export const useEditMapStore = create(
         brushSize: 5,
         pixelPadding: 0,
         editColor: "#000",
+        isGrid: true,
         terrain_maxPixels: 1000,
         terrain_detail: 5,
         terrain_roughness: 5,

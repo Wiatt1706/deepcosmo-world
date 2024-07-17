@@ -9,12 +9,15 @@ interface ColorPickerProps {
   readOnly?: boolean;
 }
 
-const normalizeColor = (color: string) => {
-  const ctx = document.createElement("canvas").getContext("2d");
-  if (ctx) {
-    ctx.fillStyle = color;
-    return ctx.fillStyle;
+const normalizeColor = (color?: string) => {
+  if (color) {
+    const ctx = document.createElement("canvas").getContext("2d");
+    if (ctx) {
+      ctx.fillStyle = color;
+      return ctx.fillStyle;
+    }
   }
+
   return "#000000"; // 默认颜色，避免异常
 };
 
@@ -55,7 +58,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
       className={clsx(className, "w-full flex items-center justify-between")}
     >
       <span className="ml-[14px]">{label}</span>
-      <div className="flex p-1 bg-[#f8fafc] rounded-[50px]">
+      <div className="flex p-1 bg-[#f3f6f8] rounded-[50px]">
         <input
           aria-label="Color picker"
           className="bg-transparent text-overflow-ellipsis border-none w-[80px] pl-2 focus:outline-none focus:ring-0"

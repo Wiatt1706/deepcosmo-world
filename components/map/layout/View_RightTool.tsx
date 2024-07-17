@@ -2,6 +2,7 @@
 import styles from "@/styles/canvas/ViewRightTool.module.css";
 import {
   Button,
+  ButtonGroup,
   Chip,
   ChipProps,
   Dropdown,
@@ -10,7 +11,6 @@ import {
   DropdownTrigger,
   Input,
   Selection,
-  SortDescriptor,
   Table,
   TableBody,
   TableCell,
@@ -23,12 +23,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   TbCaretDownFilled,
   TbDotsVertical,
-  TbPlus,
+  TbDownload,
   TbSearch,
+  TbUpload,
   TbX,
 } from "react-icons/tb";
 import { useEditMapStore } from "../SocketManager";
 import { PixelBlock } from "@/types/MapTypes";
+
 const statusColorMap: Record<number, ChipProps["color"]> = {
   0: "success",
   1: "danger",
@@ -65,10 +67,8 @@ const columns: {
 ];
 
 export default function RightToolView({
-  isRightAct,
   setIsRightAct,
 }: {
-  isRightAct: boolean;
   setIsRightAct: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [pixelBlocks, setPixelBlocks] = useEditMapStore((state: any) => [
@@ -79,27 +79,20 @@ export default function RightToolView({
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
-  const [statusFilter, setStatusFilter] = useState<Selection>("all");
-
   const [displayedItems, setDisplayedItems] = useState<PixelBlock[]>([]);
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setDisplayedItems(pixelBlocks.slice(0, 20));
+    setDisplayedItems(pixelBlocks.slice(0, 10));
   }, [pixelBlocks]);
 
-  const handleScroll = () => {
-    console.log("handleScroll");
-
-    if (tableContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } =
-        tableContainerRef.current;
-      if (scrollTop + clientHeight >= scrollHeight - 5) {
-        setDisplayedItems((prev) => [
-          ...prev,
-          ...pixelBlocks.slice(prev.length, prev.length + 20),
-        ]);
-      }
+  const loadMore = () => {
+    const nextItems = pixelBlocks.slice(
+      displayedItems.length,
+      displayedItems.length + 10
+    );
+    if (nextItems.length > 0) {
+      setDisplayedItems((prev) => [...prev, ...nextItems]);
     }
   };
 
@@ -113,14 +106,9 @@ export default function RightToolView({
         value.name?.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
-    if (statusFilter !== "all") {
-      filteredItems = filteredItems.filter((value: PixelBlock) =>
-        Array.from(statusFilter).includes(value.status || 0)
-      );
-    }
 
     return filteredItems;
-  }, [displayedItems, filterValue, statusFilter]);
+  }, [displayedItems, filterValue]);
 
   const renderCell = useCallback((value: PixelBlock, columnKey: React.Key) => {
     const cellValue = value[columnKey as keyof PixelBlock] as string;
@@ -189,7 +177,8 @@ export default function RightToolView({
         <Input
           isClearable
           classNames={{
-            inputWrapper: "border-1 h-[32px] border-default-200 bg-[#fff]",
+            inputWrapper:
+              "border-1 h-[32px] border-default-200 bg-[#fff] shadow-none",
           }}
           placeholder="Search by name..."
           size="sm"
@@ -201,27 +190,19 @@ export default function RightToolView({
         />
         <div className="flex gap-3">
           <Button
-            className="bg-foreground text-background"
-            endContent={<TbPlus />}
+            className="bg-[#fff] text-[#00ddb3]"
+            endContent={<TbDownload />}
             size="sm"
-          >
-            Add New
-          </Button>
+            isIconOnly
+          />
         </div>
       </div>
     );
-  }, [
-    filterValue,
-    statusFilter,
-    onSearchChange,
-    pixelBlocks.length,
-    hasSearchFilter,
-  ]);
+  }, [filterValue, onSearchChange, pixelBlocks.length, hasSearchFilter]);
 
   const classNames = useMemo(
     () => ({
       base: "max-h-[382px] overflow-y-auto",
-      th: ["text-default-500", "border-none", "rounded-none,", "bg-[#f3f6f8]"],
     }),
     []
   );
@@ -232,7 +213,13 @@ export default function RightToolView({
         <div className={styles["colRow"]}>
           <div className="flex items-center justify-between p-4">
             <h4 className={clsx([styles["col"], styles["title"]])}>数据概览</h4>
-            <TbX size={18} />
+            <Button
+              variant="light"
+              isIconOnly
+              endContent={<TbX />}
+              size="sm"
+              onClick={() => setIsRightAct(false)}
+            />
           </div>
           <div className=" px-4">
             <h4 className={clsx([styles["col"], styles["col-title"]])}>
@@ -240,16 +227,28 @@ export default function RightToolView({
               <TbCaretDownFilled size={18} className="ml-2" />
             </h4>
 
-            <div className="bg-[#f3f6f8] rounded-2xl p-2">
+            <div className="bg-[#f3f6f8] rounded-xl p-2 my-2">
+              <div className="bg-[#fff] py-2 mb-2 w-full rounded-xl">
+                <div className="flex items-center justify-center">
+                  <div className="flex flex-col items-center justify-center w-1/2 text-center ">
+                    <span>1000</span>
+                    <span className="text-xs">土块容量</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center w-1/2 text-center ">
+                    <span>{pixelBlocks.length}</span>
+                    <span className="text-xs">当前已用</span>
+                  </div>
+                </div>
+              </div>
+
               {topContent}
-              <div className="flex justify-between gap-2 text-[#637171] px-2 py-1 font-semibold text-[12px] border-b">
+              <div className="flex justify-between gap-2 text-[#20272c] px-2 py-1 font-semibold text-[12px] border-b">
                 {columns.map((column) => (
                   <div
-                    className="flex justify-between items-center"
+                    className="flex justify-between items-center "
                     key={column.key}
                   >
                     <p className=" capitalize">{column.name}</p>
-                    <p className=" capitalize"></p>
                   </div>
                 ))}
               </div>
@@ -264,6 +263,21 @@ export default function RightToolView({
                 classNames={classNames}
                 selectedKeys={selectedKeys}
                 onSelectionChange={setSelectedKeys}
+                bottomContent={
+                  filteredItems.length > 0 &&
+                  displayedItems.length < pixelBlocks.length ? (
+                    <div className="flex w-full justify-center mb-4">
+                      <Button
+                        size="sm"
+                        className=" text-[#00ddb3]"
+                        variant="flat"
+                        onPress={loadMore}
+                      >
+                        加载更多
+                      </Button>
+                    </div>
+                  ) : null
+                }
               >
                 <TableHeader columns={columns}>
                   {(column) => (
