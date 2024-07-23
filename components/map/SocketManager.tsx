@@ -3,6 +3,14 @@ import { create } from "zustand";
 import { MODEL_LIST, PixelBlock } from "@/types/MapTypes"; // 确保正确导入 PixelBlock 类型
 import { TerrainType } from "./helpers/algorithm";
 
+export const useBaseStore = create((set) => ({
+  model: "OBSERVE",
+  selectedPixelBlock: null as PixelBlock | null,
+  setModel: (model: "OBSERVE" | "EDIT" | "FIXED") => set({ model }),
+  setSelectedPixelBlock: (selectedPixelBlock: PixelBlock | null) =>
+    set({ selectedPixelBlock }),
+}));
+
 export const useEditMapStore = create(
   temporal(
     (set) => ({
@@ -44,7 +52,7 @@ export const useEditMapStore = create(
           initData: blocks,
         })),
     }),
-    { limit: 100 }
+    { limit: 1000 }
   )
 );
 

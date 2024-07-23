@@ -110,3 +110,27 @@
 .cloud-animation {
   animation: cloudAnimation 3s infinite ease-in-out;
 }
+
+/* Add this to your CSS file */
+.transition-all {
+  transition: all 0.3s ease-in-out;
+}
+
+.right-view-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.right-view-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.right-view-exit {
+  transform: translateX(0);
+}
+
+.right-view-exit-active {
+  transform: translateX(100%);
+}

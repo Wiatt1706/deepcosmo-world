@@ -190,7 +190,7 @@ export default function RightToolView({
         />
         <div className="flex gap-3">
           <Button
-            className="bg-[#fff] text-[#00ddb3]"
+            className="bg-[#fff] text-[#006fef]"
             endContent={<TbDownload />}
             size="sm"
             isIconOnly
@@ -222,12 +222,12 @@ export default function RightToolView({
             />
           </div>
           <div className=" px-4">
-            <h4 className={clsx([styles["col"], styles["col-title"]])}>
+            {/* <h4 className={clsx([styles["col"], styles["col-title"]])}>
               现存数据
               <TbCaretDownFilled size={18} className="ml-2" />
-            </h4>
+            </h4> */}
 
-            <div className="bg-[#f3f6f8] rounded-xl p-2 my-2">
+            <div className="bg-[#fff] rounded-xl p-2 ">
               <div className="bg-[#fff] py-2 mb-2 w-full rounded-xl">
                 <div className="flex items-center justify-center">
                   <div className="flex flex-col items-center justify-center w-1/2 text-center ">
@@ -269,7 +269,7 @@ export default function RightToolView({
                     <div className="flex w-full justify-center mb-4">
                       <Button
                         size="sm"
-                        className=" text-[#00ddb3]"
+                        className=" text-[#006fef]"
                         variant="flat"
                         onPress={loadMore}
                       >

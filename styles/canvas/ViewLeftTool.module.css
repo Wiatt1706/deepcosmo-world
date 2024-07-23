@@ -4,10 +4,37 @@
     left: 0;
     top: 0;
     bottom: 0;
-    width: 250px;
+    width: 64px;
     background: #fff;
     border-right: rgba(0, 0, 0, 0.1) 1px solid;
     overflow-y: auto;
+}
+
+.left-tool-log {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 16px;
+    cursor: pointer;
+    color: #4c5863;
+}
+
+.left-tool-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+    color: #4c5863;
+    width: 38px;
+    height: 38px;
+    margin: auto;
+    border-radius: 50%;
+}
+
+.left-tool-box:hover {
+    background: #f3f6f8;
 }
 
 .left-tool-box h4 {

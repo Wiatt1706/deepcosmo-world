@@ -57,11 +57,11 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
     <div
       className={clsx(className, "w-full flex items-center justify-between")}
     >
-      <span className="ml-[14px]">{label}</span>
-      <div className="flex p-1 bg-[#f3f6f8] rounded-[50px]">
+      <span className="px-[5px] mr-1">{label}</span>
+      <div className="flex p-1 bg-[#f3f6f8] rounded-[50px] items-center w-full text-[12px] font-[400] ">
         <input
           aria-label="Color picker"
-          className="bg-transparent text-overflow-ellipsis border-none w-[80px] pl-2 focus:outline-none focus:ring-0"
+          className="bg-transparent text-overflow-ellipsis border-none w-full pl-2 focus:outline-none focus:ring-0"
           type="text"
           readOnly={readOnly}
           value={internalValue}
@@ -70,7 +70,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
         />
         <input
           aria-label="Color picker"
-          className="color-picker w-[24px] h-[24px] border-none cursor-pointer p-0 rounded-[32px]"
+          className="color-picker min-w-[24px] min-h-[24px]  w-[24px] h-[24px]  border-none cursor-pointer p-0 rounded-[32px]"
           type="color"
           value={internalValue}
           onChange={handleColorChange}

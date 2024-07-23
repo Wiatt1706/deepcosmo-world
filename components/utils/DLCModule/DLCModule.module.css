@@ -18,13 +18,14 @@
     padding: 8px;
     width: 100%;
     height: 30px;
-    border-radius: 5px;
+    border-radius: 8px;
     display: inline-flex;
     align-items: center;
+    background: #f4f4f5;
 }
 
 .col-input.editable {
-    background-color: var(--input-color);
+    background-color: #f4f4f5;
 }
 
 .col-input input {
@@ -48,7 +49,6 @@
     border-radius: 5px;
     display: inline-flex;
     align-items: center;
-    padding-right: 5px;
 }
 
 /* 自定义 option 样式 */
@@ -60,7 +60,7 @@
 }
 
 .col-select.editable {
-    background-color: var(--input-color);
+    background-color: #f4f4f5;
 }
 
 .col-select select {
@@ -83,7 +83,7 @@
     position: relative;
     height: 26px;
     width: 100px;
-    background-color: var(--input-color);
+    background-color: #f2f2f3;
     border-radius: 5px;
 }
 

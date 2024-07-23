@@ -24,3 +24,44 @@
     flex-direction: column
 }
 
+
+/* 针对Webkit内核浏览器 (如Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 8px;
+    /* 设置滚动条宽度 */
+    height: 8px;
+    /* 设置水平滚动条高度 */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    /* 滚动条的颜色 */
+    border-radius: 10px;
+    /* 滚动条圆角 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 滚动条在鼠标悬停时的颜色 */
+}
+
+::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.1);
+    /* 滚动条轨道的颜色 */
+    border-radius: 10px;
+    /* 滚动条轨道圆角 */
+}
+
+/* 针对Firefox浏览器 */
+html {
+    scrollbar-width: thin;
+    /* 设置滚动条宽度 */
+    scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
+    /* 设置滚动条颜色和轨道颜色 */
+}
+
+/* 针对IE 10+和Edge (旧版) */
+body {
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+    /* 自动隐藏滚动条 */
+}

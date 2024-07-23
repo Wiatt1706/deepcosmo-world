@@ -1,15 +1,16 @@
 .gallery-photo {
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 200px;
     margin: auto;
-
+    object-fit: cover;
+    /* 确保图片填满容器并裁剪多余部分 */
 }
 
 .gallery-div {
-    background-color: rgba(0, 0, 0, 0.5);
     position: relative;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 .col-nextArrow {

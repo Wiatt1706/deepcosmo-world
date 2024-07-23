@@ -262,63 +262,17 @@ export const LogoSvg = ({
       height={size || height}
       width={size || width}
       {...props}
-      viewBox="0 0 392 392"
+      viewBox="0 0 42 42"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g filter="url(#filter0_bd_139_385)">
-        <path
-          d="M46 42V342L196 192M46 42C46 42 91.7107 87.7107 121 117M46 42L121 117M346 42C346 42 300.289 87.7107 271 117M346 342C316.711 312.711 271 267 271 267C271 267 225.289 221.289 196 192M196 192C166.711 162.711 150.289 146.289 121 117M196 192L121 117"
-          stroke="#0070F0"
-          stroke-width="84"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          shape-rendering="crispEdges"
-        />
-      </g>
-      <defs>
-        <filter
-          id="filter0_bd_139_385"
-          x="0"
-          y="-4.00122"
-          width="392"
-          height="396.002"
-          filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
-        >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
-          <feGaussianBlur in="BackgroundImageFix" stdDeviation="2" />
-          <feComposite
-            in2="SourceAlpha"
-            operator="in"
-            result="effect1_backgroundBlur_139_385"
-          />
-          <feColorMatrix
-            in="SourceAlpha"
-            type="matrix"
-            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-            result="hardAlpha"
-          />
-          <feOffset dy="4" />
-          <feGaussianBlur stdDeviation="2" />
-          <feComposite in2="hardAlpha" operator="out" />
-          <feColorMatrix
-            type="matrix"
-            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
-          />
-          <feBlend
-            mode="normal"
-            in2="effect1_backgroundBlur_139_385"
-            result="effect2_dropShadow_139_385"
-          />
-          <feBlend
-            mode="normal"
-            in="SourceGraphic"
-            in2="effect2_dropShadow_139_385"
-            result="shape"
-          />
-        </filter>
-      </defs>
+      <path
+        d="M5 5V37L13 29L21 21M5 5C5 5 9.87581 9.87581 13 13M5 5L13 13M37 5C37 5 32.1242 9.87581 29 13M37 37C33.8758 33.8758 29 29 29 29C29 29 24.1242 24.1242 21 21M21 21C17.8758 17.8758 16.1242 16.1242 13 13M21 21L13 13"
+        stroke="#0070F0"
+        stroke-width="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </svg>
   );
 };

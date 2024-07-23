@@ -72,7 +72,7 @@ const PhotoSlider: React.FC<PhotoSliderProps> = ({ photos }) => {
           height: "10px",
           borderRadius: "50%",
           backgroundColor:
-            currentSlide === i ? "#98f576" : "rgba(100,100,100,0.5)", // 设置激活状态和非激活状态的颜色
+            currentSlide === i ? "#98f576" : "rgba(200,200,200,0.5)", // 设置激活状态和非激活状态的颜色
           display: "inline-block",
         }}
       ></div>
@@ -85,13 +85,11 @@ const PhotoSlider: React.FC<PhotoSliderProps> = ({ photos }) => {
     <div className={styles["gallery-div"]}>
       <Slider {...settings}>
         {photos.map((photo) => (
-          <div key={photo.id}>
-            <img
-              src={photo.url}
-              alt={photo.alt || ""}
-              className={styles["gallery-photo"]}
-            />
-          </div>
+          <img
+            src={photo.url}
+            alt={photo.alt || ""}
+            className={styles["gallery-photo"]}
+          />
         ))}
       </Slider>
     </div>

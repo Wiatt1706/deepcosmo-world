@@ -193,3 +193,49 @@ export const drawRuler = (
 
   ctx.restore();
 };
+
+export const drawAim = (
+  ctx: CanvasRenderingContext2D,
+  lineLength: number,
+  mouseScaledX: number,
+  mouseScaledY: number,
+  mouseScaledWidth: number,
+  mouseScaledHeight: number
+) => {
+  ctx.save();
+  ctx.strokeStyle = "rgba(0, 111, 239, 0.8)";
+  ctx.lineWidth = 2; // 调整线宽
+
+  // 绘制中心十字线
+  ctx.beginPath();
+  ctx.moveTo(mouseScaledX + mouseScaledWidth / 2, mouseScaledY);
+  ctx.lineTo(
+    mouseScaledX + mouseScaledWidth / 2,
+    mouseScaledY + mouseScaledHeight
+  );
+  ctx.moveTo(mouseScaledX, mouseScaledY + mouseScaledHeight / 2);
+  ctx.lineTo(
+    mouseScaledX + mouseScaledWidth,
+    mouseScaledY + mouseScaledHeight / 2
+  );
+  ctx.stroke();
+
+  // 绘制四个角的短线段
+  const corners = [
+    [mouseScaledX, mouseScaledY],
+    [mouseScaledX + mouseScaledWidth, mouseScaledY],
+    [mouseScaledX, mouseScaledY + mouseScaledHeight],
+    [mouseScaledX + mouseScaledWidth, mouseScaledY + mouseScaledHeight],
+  ];
+
+  corners.forEach(([x, y]) => {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (x === mouseScaledX ? lineLength : -lineLength), y);
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y + (y === mouseScaledY ? lineLength : -lineLength));
+    ctx.stroke();
+  });
+
+  ctx.restore();
+};

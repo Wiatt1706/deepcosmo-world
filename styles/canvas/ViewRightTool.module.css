@@ -8,6 +8,7 @@
     background: #fff;
     border-left: rgba(0, 0, 0, 0.1) 1px solid;
     overflow-y: auto;
+    transition: all 0.3s ease-in-out;
 }
 
 .title {

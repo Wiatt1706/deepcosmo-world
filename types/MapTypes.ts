@@ -17,12 +17,13 @@ interface PixelBlock {
     width: number;
     height: number;
     color: string | CanvasGradient | CanvasPattern;
-    type: string;
+    type: number;
     status?: number;
     name?: string;
     imgSrc?: string;
     groupId?: string;
     skipUrl?: string;
+    borderSize?: number;
 }
 
 // 图片块存储实体
@@ -76,10 +77,24 @@ export const SIZE_LEVELS = [[30, 30], [60, 60], [90, 90], [120, 120], [150, 150]
 export const PROB_LEVELS = [0.90, 0.05, 0.025, 0.015, 0.01]; // 定义概率档次
 
 export const OPTION_TEST_LIST = [
-    { value: "1", name: "空置状态" },
-    { value: "2", name: "树洞" },
-    { value: "3", name: "空间" },
-    { value: "4", name: "展示" },
+    { value: "1", name: "像素块" },
+    { value: "2", name: "地图块" },
+    { value: "3", name: "展示块" },
+    { value: "4", name: "Game" },
+];
+export const OPTION_TEST_LIST4 = [
+    { value: "1", name: "空置", color: "#0d2235" },
+    { value: "2", name: "预公开", color: "#f9721f" },
+    { value: "3", name: "公开", color: "#0080ff" },
+    { value: "4", name: "上架", color: "#2e4065" },
+    { value: "5", name: "停止", color: "#c0d3e8" },
+];
+export const OPTION_TEST_LIST5 = [
+    { value: "1", name: "小组1号", color: "#0d2235" },
+    { value: "2", name: "小组2号", color: "#f9721f" },
+    { value: "3", name: "小组3号", color: "#0080ff" },
+    { value: "4", name: "小组4号", color: "#2e4065" },
+    { value: "5", name: "小组5号", color: "#c0d3e8" },
 ];
 export const OPTION_TEST_LIST_2 = [
     { value: "1", name: "已发布内容" },

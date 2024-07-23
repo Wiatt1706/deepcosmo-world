@@ -1,7 +1,7 @@
 .act-view {
     position: absolute;
     z-index: 9;
-    left: 250px;
+    left: 64px;
     top: 46px;
     bottom: 0;
     width: 400px;
@@ -34,8 +34,8 @@
 }
 
 .columnGgroup {
-    padding: 20px;
-    border-bottom: rgba(0, 0, 0, 0.1) 1px solid;
+    padding: 16px;
+    /* border-bottom: rgba(0, 0, 0, 0.1) 1px solid; */
 }
 
 .colRow {
@@ -43,6 +43,9 @@
     font-size: small;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    margin: 5px 0;
+    padding: 0 5px;
 }
 
 .col {
@@ -52,6 +55,11 @@
     border-radius: 5px;
     display: inline-flex;
     align-items: center;
+}
+
+.col-group {
+    overflow-y: auto;
+    height: calc(100% - 158px);
 }
 
 .col-text {
@@ -70,7 +78,7 @@
 }
 
 .actInput {
-    background-color: rgba(200, 200, 200, 0.1);
+    background-color: #f3f6f8;
 }
 
 .col-title {
@@ -102,19 +110,45 @@
 .editBtn {
     cursor: pointer;
     text-align: center;
-    width: 100%;
+    width: 50px;
     background-color: rgba(200,
             200,
             200, 0.2);
     color: #000;
     border-radius: 5px;
     padding: 1rem;
-    margin-bottom: 0.5rem;
 }
 
 .fixed-bottom {
     position: absolute;
+    background: #fff;
     bottom: 0;
     border-top: rgba(0, 0, 0, 0.1) 1px solid;
     width: 100%;
+}
+
+.photoSlider {
+    position: relative;
+    max-height: 200px;
+}
+
+.photoSliderContainer {
+    position: relative;
+}
+
+.manageButton {
+    font-size: small;
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.photoSliderContainer:hover .manageButton {
+    display: block;
 }

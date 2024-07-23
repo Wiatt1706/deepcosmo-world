@@ -31,11 +31,16 @@ export const ImgToPixel = (
 
       pxMap.forEach((px) => {
         const { color, x, y } = px;
+        const adjustedX = (x - centerX) * pixelSize;
+        const adjustedY = (y - centerY) * pixelSize;
         pixelBlocks.push({
-          x: (x - centerX) * pixelSize,
-          y: (y - centerY) * pixelSize,
+          id: adjustedX + "," + adjustedY,
+          type: 0,
+          x: adjustedX,
+          y: adjustedY,
           width: pixelSize,
           height: pixelSize,
+          imgSrc: img.src,
           color: color,
         });
       });

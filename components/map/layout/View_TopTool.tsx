@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
+  Switch,
   cn,
 } from "@nextui-org/react";
 import {
@@ -17,16 +18,33 @@ import {
   TbCaretDown,
   TbCaretDownFilled,
   TbChevronDown,
+  TbCircle,
+  TbCirclePlus,
+  TbCirclePlus2,
+  TbCode,
   TbDownload,
   TbEdit,
+  TbEye,
+  TbEyeFilled,
   TbHelp,
+  TbPencil,
+  TbPencilPlus,
   TbPhoto,
   TbPhotoAi,
+  TbSquarePlus,
+  TbSquarePlus2,
+  TbSquareRoundedPlusFilled,
   TbTrash,
   TbUpload,
 } from "react-icons/tb";
+import { useBaseStore } from "../SocketManager";
 
 export default function TopToolView() {
+  const [model, setModel] = useBaseStore((state: any) => [
+    state.model,
+    state.setModel,
+  ]);
+
   const iconClasses =
     "text-xl text-default-500 pointer-events-none flex-shrink-0";
 
@@ -79,11 +97,24 @@ export default function TopToolView() {
 
         <div className="flex items-center h-full">
           <div className="flex items-center px-4">
+            <Switch
+              isSelected={model === "EDIT"}
+              onValueChange={() =>
+                setModel(model === "EDIT" ? "OBSERVE" : "EDIT")
+              }
+              aria-label="model-switch"
+              thumbIcon={({ isSelected, className }) =>
+                isSelected ? (
+                  <TbCode className={className} />
+                ) : (
+                  <TbEye className={className} />
+                )
+              }
+            />
+          </div>
+          <div className="flex items-center px-4">
             <div className="flex items-center justify-center w-[38px] h-[38px] rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
               <TbUpload size={24} strokeWidth={1.1} />
-            </div>
-            <div className="flex items-center justify-center w-[38px] h-[38px] rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
-              <TbDownload size={24} strokeWidth={1.1} />
             </div>
           </div>
           <Divider orientation="vertical" />

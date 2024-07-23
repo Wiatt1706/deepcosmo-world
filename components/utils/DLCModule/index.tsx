@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useId } from "react";
 import styles from "./DLCModule.module.css";
 import { clsx } from "clsx";
+import { Select as NextSelect, SelectItem } from "@nextui-org/react";
 
 interface BlockButtonProps {
   btnRef?: React.RefObject<HTMLButtonElement>;
@@ -263,7 +264,7 @@ interface SelectProps
   > {
   selectRef?: React.RefObject<HTMLSelectElement>;
   options: Option[];
-  value?: string;
+  value: string;
   onChange?: (value: string) => void;
   width?: string;
   readOnly?: boolean;
@@ -305,19 +306,26 @@ export const Select: React.FC<SelectProps> = ({
       )}
       style={selectStyle}
     >
-      <select
-        {...rest}
+      <NextSelect
+        key={value}
+        classNames={{
+          trigger: "shadow-none bg-[#f3f6f8]",
+        }}
         onChange={handleSelectChange}
         ref={selectRef}
         style={selectStyle}
-        value={value || ""}
+        value={value}
+        defaultSelectedKeys={[value]}
+        placeholder="请选择"
+        labelPlacement="outside"
+        size="sm"
       >
         {options.map((option) => (
-          <option key={option.value} value={option.value || ""}>
+          <SelectItem key={option.value} value={option.value}>
             {option.name}
-          </option>
+          </SelectItem>
         ))}
-      </select>
+      </NextSelect>
     </div>
   );
 };

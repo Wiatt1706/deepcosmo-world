@@ -221,11 +221,13 @@ algorithm.TerrainRenderer = ({
       return;
     }
 
+    const adjustedX = (x - centerX) * pixelSize;
+    const adjustedY = (y - centerY) * pixelSize;
     pixelBlocks.push({
-      id: `${x},${y}`,
-      type: "land",
-      x: (x - centerX) * pixelSize,
-      y: (y - centerY) * pixelSize,
+      id: adjustedX + "," + adjustedY,
+      type: 0,
+      x: adjustedX,
+      y: adjustedY,
       width: pixelSize,
       height: pixelSize,
       color: `hsl(${hue}, ${sat}%, ${lux}%)`,
