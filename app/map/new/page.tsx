@@ -5,18 +5,15 @@ import { useState, useEffect } from "react";
 import styles from "@/styles/canvas/map-canvas.module.css";
 import { TbPhoto, TbPlus, TbUpload } from "react-icons/tb";
 import { ImgToPixel } from "@/components/map/helpers/ImgToPixel";
-import ShowMapCanvas from "@/components/map/ShowMapCanvas";
 import { PixelBlock } from "@/types/MapTypes";
 import { Button } from "@nextui-org/button";
-import { Slider } from "@nextui-org/react";
-import algorithm from "@/components/map/helpers/algorithm";
 import NewMapIndex from "@/components/map/layout/NewMapIndex";
 import { Step } from "@/components/utils/Step";
 
 // Constants for controlling the image resolution range
-const MIN_WIDTH = 480;
+const MIN_WIDTH = 280;
 const MAX_WIDTH = 980;
-const MIN_HEIGHT = 480;
+const MIN_HEIGHT = 280;
 const MAX_HEIGHT = 980;
 
 export default function NewMapPage() {

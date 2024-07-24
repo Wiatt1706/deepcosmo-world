@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { clsx } from "clsx";
 
 interface ColorPickerProps {
-  label?: string;
+  label?: string | React.ReactNode;
   value?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;

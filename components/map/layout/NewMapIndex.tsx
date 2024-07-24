@@ -8,6 +8,7 @@ import RightToolView from "./View_RightTool";
 import RightActView from "./View_Act";
 import TopToolView from "./View_TopTool";
 import {
+  TbBoxPadding,
   TbGrid4X4,
   TbInfoHexagon,
   TbMinus,
@@ -17,6 +18,14 @@ import {
 import useScale from "@/components/hook/canvas/useScale";
 import { useBaseStore, useEditMapStore } from "../SocketManager";
 import { CSSTransition } from "react-transition-group";
+import EditToolView from "./View_EditTool";
+import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@nextui-org/react";
+import { NumInput } from "@/components/utils/NumInput";
 
 export default function NewMapIndex({ initData }: { initData?: PixelBlock[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -67,7 +76,6 @@ export default function NewMapIndex({ initData }: { initData?: PixelBlock[] }) {
       </CSSTransition>
 
       <div
-        ref={containerRef}
         className={`absolute bottom-0 h-[calc(100%-46px)] ${
           styles["transition-all"]
         } ${
@@ -76,62 +84,94 @@ export default function NewMapIndex({ initData }: { initData?: PixelBlock[] }) {
             : "right-0 w-[calc(100%-64px)] bg-white"
         }`}
       >
-        <div className={styles["right-tool-view"]}>
-          <div>
-            <div
-              onClick={() => setIsRightAct(!isRightAct)}
-              className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] ${
-                isRightAct && "text-[#006fef]"
-              }`}
-            >
-              <TbTable size={20} />
+        {model === "EDIT" && <EditToolView />}
+
+        <div ref={containerRef} className="w-full h-full">
+          <div
+            className={`${styles["right-tool-view"]} ${
+              model === "EDIT" ? "mt-[46px]" : ""
+            }`}
+          >
+            <div>
+              <div
+                onClick={() => setIsRightAct(!isRightAct)}
+                className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] ${
+                  isRightAct && "text-[#006fef]"
+                }`}
+              >
+                <TbTable size={20} />
+              </div>
+              <div
+                onClick={() => setIsRightAct(!isRightAct)}
+                className={`bg-[#fff] shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e]`}
+              >
+                <TbInfoHexagon size={20} />
+              </div>
             </div>
-            <div
-              onClick={() => setIsRightAct(!isRightAct)}
-              className={`bg-[#fff] shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e]`}
-            >
-              <TbInfoHexagon size={20} />
+            <div>
+              <div
+                onClick={() => setToolInfo("isGrid", !toolInfo.isGrid)}
+                className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] ${
+                  toolInfo.isGrid && "text-[#006fef]"
+                }`}
+              >
+                <TbGrid4X4 size={20} />
+              </div>
+              <Popover placement="left" showArrow={true}>
+                <PopoverTrigger>
+                  <div
+                    className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e]`}
+                  >
+                    <TbBoxPadding size={20} />
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <div className="px-1 py-2 ">
+                    Pixel Padding
+                    <NumInput
+                      value={toolInfo.pixelPadding}
+                      onUpdate={(value) => {
+                        setToolInfo("pixelPadding", value);
+                      }}
+                      maxValue={20}
+                      minValue={-1}
+                    />
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <div
+                className={`bg-[#fff] shadow justify-center items-center w-[40px] rounded`}
+              >
+                <div
+                  onClick={handleIncreaseScale}
+                  className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-tl rounded-tr border-b`}
+                >
+                  <TbPlus size={20} />
+                </div>
+                <div
+                  className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px]`}
+                >
+                  <span className="text-[#000] text-[10px]">{`${(
+                    scale * 100
+                  ).toFixed(0)}%`}</span>
+                </div>
+                <div
+                  onClick={handleDecreaseScale}
+                  className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-bl rounded-br border-t`}
+                >
+                  <TbMinus size={20} />
+                </div>
+              </div>
             </div>
           </div>
-          <div>
-            <div
-              onClick={() => setToolInfo("isGrid", !toolInfo.isGrid)}
-              className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] ${
-                toolInfo.isGrid && "text-[#006fef]"
-              }`}
-            >
-              <TbGrid4X4 size={20} />
-            </div>
-            <div
-              className={`bg-[#fff] shadow justify-center items-center w-[40px] rounded`}
-            >
-              <div
-                onClick={handleIncreaseScale}
-                className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-tl rounded-tr border-b`}
-              >
-                <TbPlus size={20} />
-              </div>
-              <div
-                className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px]`}
-              >
-                <span className="text-[#000] text-[10px]">{`${(
-                  scale * 100
-                ).toFixed(0)}%`}</span>
-              </div>
-              <div
-                onClick={handleDecreaseScale}
-                className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-bl rounded-br border-t`}
-              >
-                <TbMinus size={20} />
-              </div>
-            </div>
-          </div>
+          <ShowMapCanvas
+            scale={scale}
+            initData={initData}
+            onSelectedPixelBlockChange={handleSelectedPixelBlockChange}
+            rectSize={100 * 20}
+          />
         </div>
-        <ShowMapCanvas
-          scale={scale}
-          initData={initData}
-          onSelectedPixelBlockChange={handleSelectedPixelBlockChange}
-        />
       </div>
     </div>
   );

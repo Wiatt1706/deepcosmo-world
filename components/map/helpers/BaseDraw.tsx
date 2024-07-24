@@ -85,7 +85,8 @@ export const drawRuler = (
   scale: number,
   pixelSize: number,
   canvasWidth: number,
-  canvasHeight: number
+  canvasHeight: number,
+  rectSize?: number
 ) => {
   const dpr = window.devicePixelRatio;
   const scaledPixelSize = pixelSize * scale * dpr;
@@ -98,6 +99,34 @@ export const drawRuler = (
   ctx.save();
   ctx.scale(1 / dpr, 1 / dpr);
 
+  // Calculate center and rectangle half size if rectSize is provided
+  const centerX = halfWidth - offsetPoint.x * dpr * scale;
+  const centerY = halfHeight - offsetPoint.y * dpr * scale;
+  const rectHalfSize = rectSize ? (rectSize / 2) * dpr * scale : 0;
+
+  // Draw range rectangle if rectSize is provided
+  if (rectSize) {
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+    ctx.lineWidth = 1 * dpr;
+    ctx.strokeRect(
+      centerX - rectHalfSize,
+      centerY - rectHalfSize,
+      rectSize * dpr * scale,
+      rectSize * dpr * scale
+    );
+
+    // Clip the drawing area to within the rectangle
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(
+      centerX - rectHalfSize,
+      centerY - rectHalfSize,
+      rectSize * dpr * scale,
+      rectSize * dpr * scale
+    );
+    ctx.clip();
+  }
+
   // Draw grid lines
   ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
   ctx.lineWidth = dpr;
@@ -109,19 +138,25 @@ export const drawRuler = (
     x < canvasWidth * dpr;
     x += scaledPixelSize
   ) {
-    ctx.moveTo(x, 15 * dpr);
-    ctx.lineTo(x, canvasHeight * dpr);
+    ctx.moveTo(x, rectSize ? centerY - rectHalfSize : 0);
+    ctx.lineTo(x, rectSize ? centerY + rectHalfSize : canvasHeight * dpr);
   }
+
   for (
     let y = startY - scaledPixelSize;
     y < canvasHeight * dpr;
     y += scaledPixelSize
   ) {
-    ctx.moveTo(15 * dpr, y);
-    ctx.lineTo(canvasWidth * dpr, y);
+    ctx.moveTo(rectSize ? centerX - rectHalfSize : 0, y);
+    ctx.lineTo(rectSize ? centerX + rectHalfSize : canvasWidth * dpr, y);
   }
+
   ctx.stroke();
   ctx.globalAlpha = 1;
+
+  if (rectSize) {
+    ctx.restore(); // Restore from clipping
+  }
 
   // Draw ruler background
   ctx.fillStyle = "#f8fafc";
@@ -145,11 +180,11 @@ export const drawRuler = (
   ctx.lineWidth = 1 * dpr;
 
   const drawTicksAndLabels = (
-    start = 0,
-    end = 0,
-    half = 0,
-    offset = 0,
-    axis = "x"
+    start: number,
+    end: number,
+    half: number,
+    offset: number,
+    axis: "x" | "y"
   ) => {
     for (let pos = start - scaledPixelSize; pos < end; pos += scaledPixelSize) {
       const label = Math.round(

@@ -359,7 +359,7 @@ export default function RightActView({
                 isIconOnly
                 size="sm"
                 aria-label="plus"
-                className="bg-[#f3f6f8] hover:bg-[#e4e4e7]"
+                className="bg-[#f3f6f8] hover:bg-[#e4e4e7] mr-1"
               >
                 <TbPlus />
               </Button>

@@ -26,6 +26,7 @@ import {
   TbEdit,
   TbEye,
   TbEyeFilled,
+  TbGeometry,
   TbHelp,
   TbPencil,
   TbPencilPlus,
@@ -113,8 +114,11 @@ export default function TopToolView() {
             />
           </div>
           <div className="flex items-center px-4">
-            <div className="flex items-center justify-center w-[38px] h-[38px] rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
+            <div className="flex items-center justify-center w-[38px] h-[38px] rounded-full hover:bg-[#f3f6f8] text-[#4c5863] mr-1">
               <TbUpload size={24} strokeWidth={1.1} />
+            </div>
+            <div className="flex items-center justify-center w-[38px] h-[38px] rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
+              <TbGeometry size={24} strokeWidth={1.1} />
             </div>
           </div>
           <Divider orientation="vertical" />

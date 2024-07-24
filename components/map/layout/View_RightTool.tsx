@@ -30,6 +30,7 @@ import {
 } from "react-icons/tb";
 import { useEditMapStore } from "../SocketManager";
 import { PixelBlock } from "@/types/MapTypes";
+import { handleExport } from "@/components/utils/ExcelUtil";
 
 const statusColorMap: Record<number, ChipProps["color"]> = {
   0: "success",
@@ -190,6 +191,7 @@ export default function RightToolView({
         />
         <div className="flex gap-3">
           <Button
+            onClick={() => handleExport(pixelBlocks, "pixelBlocks")}
             className="bg-[#fff] text-[#006fef]"
             endContent={<TbDownload />}
             size="sm"

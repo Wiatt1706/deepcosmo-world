@@ -10,15 +10,13 @@ import { useBaseStore, useEditMapStore } from "./SocketManager";
 const ShowMapCanvas = ({
   initData,
   scale,
-  containerWidth,
-  containerHeight,
   onSelectedPixelBlockChange, // Add this prop
+  rectSize,
 }: {
   initData?: PixelBlock[];
   scale: number;
-  containerWidth?: number;
-  containerHeight?: number;
-  onSelectedPixelBlockChange?: (block: PixelBlock | null) => void; // Define the type
+  onSelectedPixelBlockChange?: (block: PixelBlock | null) => void;
+  rectSize?: number; // Define the type
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const buffRef = useRef<HTMLCanvasElement | null>(null);
@@ -252,7 +250,18 @@ const ShowMapCanvas = ({
             )
           );
 
-          if (!isOverlapping) {
+          // Check if the position is within the rectSize range
+          const isInRectSizeRange = rectSize
+            ? checkInRectSizeRange(
+                adjustedX,
+                adjustedY,
+                brushSizeInPixels,
+                brushSizeInPixels,
+                rectSize
+              )
+            : true;
+
+          if (!isOverlapping && isInRectSizeRange) {
             const newPixelBlock: PixelBlock = {
               id: adjustedX + "," + adjustedY,
               type: 1,
@@ -260,7 +269,7 @@ const ShowMapCanvas = ({
               y: adjustedY,
               width: brushSizeInPixels,
               height: brushSizeInPixels,
-              color: toolInfo.editColor, // or any color property from toolInfo
+              color: toolInfo.editColor,
             };
             setPixelBlocks([...pixelBlocks, newPixelBlock]);
           } else {
@@ -287,6 +296,26 @@ const ShowMapCanvas = ({
       x + width > block.x &&
       y < block.y + block.height &&
       y + height > block.y
+    );
+  };
+
+  const checkInRectSizeRange = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    rectSize: number
+  ) => {
+    const leftBoundary = -rectSize / 2;
+    const rightBoundary = rectSize / 2;
+    const topBoundary = -rectSize / 2;
+    const bottomBoundary = rectSize / 2;
+
+    return (
+      x >= leftBoundary &&
+      x + width <= rightBoundary &&
+      y >= topBoundary &&
+      y + height <= bottomBoundary
     );
   };
 
@@ -425,7 +454,8 @@ const ShowMapCanvas = ({
         scale,
         toolInfo.pixelSize,
         canvasWidth,
-        canvasHeight
+        canvasHeight,
+        rectSize
       );
     }
   };
@@ -446,15 +476,10 @@ const ShowMapCanvas = ({
     return () => cancelAnimationFrame(animationFrameId);
   }, [render]);
 
-
   return (
     <div
-      className={styles["show-canvas-container"]}
+      className={styles["show-canvas-container"] + " h-full w-full"}
       ref={containerRef}
-      style={{
-        width: containerWidth || "100%",
-        height: containerHeight || "100%",
-      }}
     >
       <canvas ref={buffRef} />
     </div>
