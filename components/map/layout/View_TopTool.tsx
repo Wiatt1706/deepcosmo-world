@@ -10,6 +10,11 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
+  Listbox,
+  ListboxItem,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Switch,
   cn,
 } from "@nextui-org/react";
@@ -39,6 +44,7 @@ import {
   TbUpload,
 } from "react-icons/tb";
 import { useBaseStore } from "../SocketManager";
+import { NotificationList } from "@/components/utils/NotificationBar";
 
 export default function TopToolView() {
   const [model, setModel] = useBaseStore((state: any) => [
@@ -126,9 +132,19 @@ export default function TopToolView() {
             <div className="flex items-center justify-center w-[38px] h-[38px] mr-1 rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
               <TbHelp size={24} strokeWidth={1.1} />
             </div>
-            <div className="flex items-center justify-center w-[38px] h-[38px] mr-1 rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
-              <TbBell size={24} strokeWidth={1.1} />
-            </div>
+
+            <Popover placement="bottom-end" showArrow={true}>
+              <PopoverTrigger>
+                <div className="flex items-center justify-center w-[38px] h-[38px] mr-1 rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
+                  <TbBell size={24} strokeWidth={1.1} />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent>
+                <div className=" overflow-auto max-h-[300px] px-2">
+                  <NotificationList />
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
           <Dropdown placement="bottom-end">
             <DropdownTrigger>

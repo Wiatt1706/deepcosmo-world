@@ -100,6 +100,76 @@ const NotificationBar = () => {
   );
 };
 
+export const NotificationList = () => {
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  // 处理点击 ListboxItem
+  const handleListboxItemClick = (notification) => {
+    setSelectedNotification(notification);
+    onOpen();
+  };
+
+  const [historyList] = useNotification((state) => [state.historyList]);
+
+  return (
+    <>
+      <Listbox variant="flat" aria-label="Listbox menu with sections">
+        {historyList
+          .slice()
+          .reverse()
+          .map((notification, index) => (
+            <ListboxItem
+              key={index}
+              description={
+                <DateComponent
+                  dateString={notification.time}
+                  label={"时间"}
+                  dateFormat="yyyy-MM-dd HH:mm:ss"
+                />
+              }
+              onPress={() => handleListboxItemClick(notification)}
+              className={getColorClass(notification.type)}
+              color={getColor(notification.type)}
+              startContent={getIcon(notification.type)}
+            >
+              {getShortenedMessage(notification.message, 250)}
+            </ListboxItem>
+          ))}
+      </Listbox>
+
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        isDismissable={false}
+        isKeyboardDismissDisabled={true}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex items-center text-sm">
+                <label className="mr-2">
+                  {getIcon(selectedNotification?.type)}
+                </label>
+                {selectedNotification?.title}
+              </ModalHeader>
+              <ModalBody>
+                {selectedNotification?.message}
+                <div className="text-sm text-gray-500">
+                  <DateComponent
+                    dateString={selectedNotification?.time}
+                    dateFormat="yyyy-MM-dd HH:mm:ss"
+                  />
+                </div>
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
+
 // 通知栏组件
 export const NotificationInfo = () => {
   const [isOpenPopup, setOpenPopup] = useState(false);

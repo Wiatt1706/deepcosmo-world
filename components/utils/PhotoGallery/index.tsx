@@ -33,10 +33,11 @@ function SamplePrevArrow(props: ArrowProps) {
   );
 }
 
-interface Photo {
+export interface Photo {
   id: string;
-  url: string;
+  src: string;
   alt?: string;
+  type?: string;
 }
 
 interface PhotoSliderProps {
@@ -86,7 +87,7 @@ const PhotoSlider: React.FC<PhotoSliderProps> = ({ photos }) => {
       <Slider {...settings}>
         {photos.map((photo) => (
           <img
-            src={photo.url}
+            src={photo.src}
             alt={photo.alt || ""}
             className={styles["gallery-photo"]}
           />
