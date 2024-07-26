@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PhotoSlider, { Photo } from "@/components/utils/PhotoGallery";
 import styles from "@/styles/canvas/ViewAct.module.css";
 import { clsx } from "clsx";
@@ -21,12 +21,22 @@ import {
 import Cropper, { Area } from "react-easy-crop";
 import { v4 as uuidv4 } from "uuid";
 
-export default function PhotosModel({ landImgs }: { landImgs?: Photo[] }) {
+export default function PhotosModel({
+  landCoverImg,
+  showCoverImgs,
+  setLandCoverImg,
+}: {
+  landCoverImg?: Photo;
+  showCoverImgs?: Photo[];
+  setLandCoverImg: (photos: Photo[]) => void;
+}) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [selectedLandCover, setSelectedLandCover] = useState<Photo | null>(
-    null
+  const [selectedLandCover, setSelectedLandCover] = useState<
+    Photo | null | undefined
+  >(landCoverImg);
+  const [selectedShowCover, setSelectedShowCover] = useState<Photo[]>(
+    showCoverImgs || []
   );
-  const [selectedShowCover, setSelectedShowCover] = useState<Photo[]>([]);
   const [cropping, setCropping] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -36,6 +46,11 @@ export default function PhotosModel({ landImgs }: { landImgs?: Photo[] }) {
   >(null);
   const [cropAspect, setCropAspect] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
+  useEffect(() => {
+    setSelectedLandCover(landCoverImg);
+    setSelectedShowCover(showCoverImgs || []);
+  }, [landCoverImg, showCoverImgs]);
 
   const handlePhotoBtn = (id: string) => {
     document.getElementById(id)!.click();
@@ -102,11 +117,14 @@ export default function PhotosModel({ landImgs }: { landImgs?: Photo[] }) {
         );
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob!);
-          const newPhoto = { src: url, id: uuidv4() };
+          const newPhoto = { src: url, id: uuidv4(), type: croppingType! };
           if (croppingType === "landCover") {
             setSelectedLandCover(newPhoto);
+            setLandCoverImg([newPhoto, ...selectedShowCover]);
           } else if (croppingType === "showCover") {
-            setSelectedShowCover((prev) => [...prev, newPhoto]);
+            const newSelectedShowCover = [...selectedShowCover, newPhoto];
+            setSelectedShowCover(newSelectedShowCover);
+            setLandCoverImg([selectedLandCover!, ...newSelectedShowCover]);
           }
           setCropping(false);
           setCropSrc(null);
@@ -123,8 +141,17 @@ export default function PhotosModel({ landImgs }: { landImgs?: Photo[] }) {
   const handleDelete = (id: string, type: "landCover" | "showCover") => {
     if (type === "landCover") {
       setSelectedLandCover(null);
+      setLandCoverImg(selectedShowCover);
     } else if (type === "showCover") {
-      setSelectedShowCover((prev) => prev.filter((photo) => photo.id !== id));
+      const newSelectedShowCover = selectedShowCover.filter(
+        (photo) => photo.id !== id
+      );
+      setSelectedShowCover(newSelectedShowCover);
+      setLandCoverImg(
+        selectedLandCover
+          ? [selectedLandCover, ...newSelectedShowCover]
+          : newSelectedShowCover
+      );
     }
   };
 
@@ -138,6 +165,9 @@ export default function PhotosModel({ landImgs }: { landImgs?: Photo[] }) {
           newArr[index],
         ];
       }
+      setLandCoverImg(
+        selectedLandCover ? [selectedLandCover, ...newArr] : newArr
+      );
       return newArr;
     });
   };
@@ -147,13 +177,10 @@ export default function PhotosModel({ landImgs }: { landImgs?: Photo[] }) {
       <div
         className={clsx(styles["photoSliderContainer"], styles["photoSlider"])}
       >
-        {landImgs && landImgs.length > 0 ? (
+        {selectedShowCover.length > 0 ? (
           <>
-            <PhotoSlider photos={landImgs} />
-            <button
-              className={styles["manageButton"]}
-              onClick={() => console.log("Manage images clicked")}
-            >
+            <PhotoSlider photos={selectedShowCover} />
+            <button className={styles["manageButton"]} onClick={onOpen}>
               管理图片
             </button>
           </>
@@ -168,14 +195,13 @@ export default function PhotosModel({ landImgs }: { landImgs?: Photo[] }) {
       </div>
 
       <Modal
-        backdrop="blur"
         radius="sm"
         size="lg"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         scrollBehavior="inside"
         classNames={{
-          backdrop: "backdrop-blur-sm bg-opacity-70 bg-[#63727e]",
+          backdrop: "backdrop-blur-lg bg-opacity-80 bg-[#010E18]",
         }}
       >
         <ModalContent>

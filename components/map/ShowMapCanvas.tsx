@@ -131,10 +131,10 @@ const ShowMapCanvas = ({
     const newCoordinates = await fetchCoordinates(viewport);
 
     for (const coord of newCoordinates) {
-      if (coord.imgSrc && !imagesRef.current[coord.imgSrc]) {
+      if (coord.landCoverImg && !imagesRef.current[coord.landCoverImg.src]) {
         const img = new Image();
-        img.src = coord.imgSrc;
-        imagesRef.current[coord.imgSrc] = img;
+        img.src = coord.landCoverImg.src;
+        imagesRef.current[coord.landCoverImg.src] = img;
       }
     }
 
@@ -388,8 +388,8 @@ const ShowMapCanvas = ({
       buffCtx.fillStyle = coord.color;
       buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
 
-      if (coord.imgSrc && imagesRef.current[coord.imgSrc]) {
-        const img = imagesRef.current[coord.imgSrc];
+      if (coord.landCoverImg && imagesRef.current[coord.landCoverImg.src]) {
+        const img = imagesRef.current[coord.landCoverImg.src];
         buffCtx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
       }
     });

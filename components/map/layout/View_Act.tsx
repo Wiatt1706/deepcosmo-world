@@ -6,6 +6,7 @@ import {
   OPTION_TEST_LIST,
   OPTION_TEST_LIST4,
   OPTION_TEST_LIST5,
+  Photo,
   PixelBlock,
 } from "@/types/MapTypes";
 import styles from "@/styles/canvas/ViewAct.module.css";
@@ -73,9 +74,17 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
     setIsAct,
   ]);
 
+  const handleLandCoverImg = (photos: Photo[]) => {
+    setSelectedPixelBlock({
+      ...selectedPixelBlock,
+      showCoverImgList:
+        photos?.filter((photo) => photo.type === "showCover") || [],
+      landCoverImg: photos?.find((photo) => photo.type === "landCover"),
+    });
+  };
   return (
     selectedPixelBlock && (
-      <div className={styles["act-view"] + " m-4 rounded shadow"}>
+      <div className={styles["act-view"] + " m-4 rounded shadow border"}>
         <div className={styles["columnGgroup"] + " border-b"}>
           <div className={styles["col-title"]}>
             <h2 className={clsx([styles["col"], styles["title"]])}>
@@ -90,7 +99,11 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
           </div>
         </div>
         <div className={clsx([styles["col-group"]])}>
-          <PhotosModel landImgs={selectedPixelBlock.landImgs} />
+          <PhotosModel
+            landCoverImg={selectedPixelBlock.landCoverImg}
+            showCoverImgs={selectedPixelBlock.showCoverImgList}
+            setLandCoverImg={handleLandCoverImg}
+          />
           <div className={styles["columnGgroup"]}>
             <InfoSection
               selectedPixelBlock={selectedPixelBlock}

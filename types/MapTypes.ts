@@ -20,10 +20,18 @@ interface PixelBlock {
     type: number;
     status?: number;
     name?: string;
-    imgSrc?: string;
+    landCoverImg?: Photo;
+    showCoverImgList?: Photo[];
     groupId?: string;
     skipUrl?: string;
     borderSize?: number;
+}
+
+export interface Photo {
+    id: string;
+    src: string;
+    alt?: string;
+    type?: string;
 }
 
 // 图片块存储实体
