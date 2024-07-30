@@ -25,6 +25,9 @@ interface PixelBlock {
     groupId?: string;
     skipUrl?: string;
     borderSize?: number;
+    useExternalLink?: boolean; // 是否使用外部链接
+    externalLinkType?: string; // 外部链接类型
+    externalLink?: string; // 外部链接
 }
 
 export interface Photo {
@@ -98,11 +101,11 @@ export const OPTION_TEST_LIST4 = [
     { value: "5", name: "停止", color: "#c0d3e8" },
 ];
 export const OPTION_TEST_LIST5 = [
-    { value: "1", name: "小组1号", color: "#0d2235" },
-    { value: "2", name: "小组2号", color: "#f9721f" },
-    { value: "3", name: "小组3号", color: "#0080ff" },
-    { value: "4", name: "小组4号", color: "#2e4065" },
-    { value: "5", name: "小组5号", color: "#c0d3e8" },
+    { value: "1", name: "小组1号", color: "#2e4065" },
+    { value: "2", name: "小组2号", color: "#0080ff" },
+    { value: "3", name: "小组3号", color: "#f9721f" },
+    { value: "4", name: "小组4号", color: "#c0d3e8" },
+    { value: "5", name: "小组5号", color: "#0d2235" },
 ];
 export const OPTION_TEST_LIST_2 = [
     { value: "1", name: "已发布内容" },

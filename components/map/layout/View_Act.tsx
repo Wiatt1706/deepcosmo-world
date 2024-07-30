@@ -74,14 +74,6 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
     setIsAct,
   ]);
 
-  const handleLandCoverImg = (photos: Photo[]) => {
-    setSelectedPixelBlock({
-      ...selectedPixelBlock,
-      showCoverImgList:
-        photos?.filter((photo) => photo.type === "showCover") || [],
-      landCoverImg: photos?.find((photo) => photo.type === "landCover"),
-    });
-  };
   return (
     selectedPixelBlock && (
       <div className={styles["act-view"] + " m-4 rounded shadow border"}>
@@ -102,7 +94,6 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
           <PhotosModel
             landCoverImg={selectedPixelBlock.landCoverImg}
             showCoverImgs={selectedPixelBlock.showCoverImgList}
-            setLandCoverImg={handleLandCoverImg}
           />
           <div className={styles["columnGgroup"]}>
             <InfoSection

@@ -9,6 +9,7 @@ import RightActView from "./View_Act";
 import TopToolView from "./View_TopTool";
 import {
   TbBoxPadding,
+  TbCode,
   TbGrid4X4,
   TbInfoHexagon,
   TbMinus,
@@ -36,8 +37,9 @@ export default function NewMapIndex({ initData }: { initData?: PixelBlock[] }) {
   ]);
   const [model] = useBaseStore((state: any) => [state.model]);
   const [isAct, setIsAct] = useState<boolean>(true);
-  const [isRightAct, setIsRightAct] = useState<boolean>(true);
-  const { scale, setScale } = useScale(1, 0.3, 5, containerRef.current);
+  const [isRightAct, setIsRightAct] = useState<boolean>(false);
+  const { scale, setScale } = useScale(1, 0.2, 5, containerRef.current);
+  const [selectedModule, setSelectedModule] = useState<string>("");
 
   useEffect(() => {
     setIsAct(false);
@@ -53,6 +55,15 @@ export default function NewMapIndex({ initData }: { initData?: PixelBlock[] }) {
 
   const handleSelectedPixelBlockChange = (block: PixelBlock | null) => {
     setIsAct(true);
+  };
+
+  const handleModuleClick = (module: string) => {
+    if (isRightAct && selectedModule === module) {
+      setIsRightAct(false);
+    } else {
+      setIsRightAct(true);
+      setSelectedModule(module);
+    }
   };
 
   return (
@@ -72,7 +83,10 @@ export default function NewMapIndex({ initData }: { initData?: PixelBlock[] }) {
         }}
         unmountOnExit
       >
-        <RightToolView setIsRightAct={setIsRightAct} />
+        <RightToolView
+          setIsRightAct={setIsRightAct}
+          selectedModule={selectedModule}
+        />
       </CSSTransition>
 
       <div
@@ -94,18 +108,29 @@ export default function NewMapIndex({ initData }: { initData?: PixelBlock[] }) {
           >
             <div>
               <div
-                onClick={() => setIsRightAct(!isRightAct)}
+                onClick={() => handleModuleClick("table")}
                 className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] ${
-                  isRightAct && "text-[#006fef]"
+                  isRightAct && selectedModule === "table" && "text-[#006fef]"
                 }`}
               >
                 <TbTable size={20} />
               </div>
               <div
-                onClick={() => setIsRightAct(!isRightAct)}
-                className={`bg-[#fff] shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e]`}
+                onClick={() => handleModuleClick("info")}
+                className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] ${
+                  isRightAct && selectedModule === "info" && "text-[#006fef]"
+                }`}
               >
                 <TbInfoHexagon size={20} />
+              </div>
+
+              <div
+                onClick={() => handleModuleClick("code")}
+                className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] ${
+                  isRightAct && selectedModule === "code" && "text-[#006fef]"
+                }`}
+              >
+                <TbCode size={20} />
               </div>
             </div>
             <div>

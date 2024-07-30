@@ -41,14 +41,15 @@ export interface Photo {
 }
 
 interface PhotoSliderProps {
+  iframeSrc?: string;
   photos: Photo[];
 }
 
-const PhotoSlider: React.FC<PhotoSliderProps> = ({ photos }) => {
+const PhotoSlider: React.FC<PhotoSliderProps> = ({ iframeSrc, photos }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const settings: Settings = {
-    className: "",
+    className: "w-full h-full",
     dots: true,
     infinite: true,
     slidesToShow: 1,
@@ -85,11 +86,14 @@ const PhotoSlider: React.FC<PhotoSliderProps> = ({ photos }) => {
   return (
     <div className={styles["gallery-div"]}>
       <Slider {...settings}>
+        {iframeSrc && (
+          <iframe className={styles["gallery-iframe"]} src={iframeSrc} />
+        )}
         {photos.map((photo) => (
           <img
             src={photo.src}
             alt={photo.alt || ""}
-            className={styles["gallery-photo"]}
+            className={styles["gallery-item"]}
           />
         ))}
       </Slider>

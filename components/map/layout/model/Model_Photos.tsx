@@ -8,6 +8,8 @@ import {
   TbTrash,
   TbArrowUp,
   TbArrowDown,
+  TbBrandBilibili,
+  TbBrandYoutube,
 } from "react-icons/tb";
 import {
   Button,
@@ -16,24 +18,31 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  RadioGroup,
+  Select,
+  SelectItem,
+  Switch,
+  Textarea,
+  cn,
   useDisclosure,
 } from "@nextui-org/react";
 import Cropper, { Area } from "react-easy-crop";
 import { v4 as uuidv4 } from "uuid";
+import { useBaseStore } from "../../SocketManager";
+import { CustomRadio } from "@/components/utils/CustomRadio";
 
 export default function PhotosModel({
   landCoverImg,
   showCoverImgs,
-  setLandCoverImg,
 }: {
   landCoverImg?: Photo;
   showCoverImgs?: Photo[];
-  setLandCoverImg: (photos: Photo[]) => void;
 }) {
+  const [selectedPixelBlock, setSelectedPixelBlock] = useBaseStore(
+    (state: any) => [state.selectedPixelBlock, state.setSelectedPixelBlock]
+  );
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [selectedLandCover, setSelectedLandCover] = useState<
-    Photo | null | undefined
-  >(landCoverImg);
   const [selectedShowCover, setSelectedShowCover] = useState<Photo[]>(
     showCoverImgs || []
   );
@@ -46,11 +55,15 @@ export default function PhotosModel({
   >(null);
   const [cropAspect, setCropAspect] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-
+  const [errorExternalLink, setErrorExternalLink] = useState<string | null>(
+    null
+  );
+  const [externalLinkText, setExternalLinkText] = useState<string | null>(
+    selectedPixelBlock.externalLink
+  );
   useEffect(() => {
-    setSelectedLandCover(landCoverImg);
     setSelectedShowCover(showCoverImgs || []);
-  }, [landCoverImg, showCoverImgs]);
+  }, [showCoverImgs]);
 
   const handlePhotoBtn = (id: string) => {
     document.getElementById(id)!.click();
@@ -119,12 +132,17 @@ export default function PhotosModel({
           const url = URL.createObjectURL(blob!);
           const newPhoto = { src: url, id: uuidv4(), type: croppingType! };
           if (croppingType === "landCover") {
-            setSelectedLandCover(newPhoto);
-            setLandCoverImg([newPhoto, ...selectedShowCover]);
+            setSelectedPixelBlock({
+              ...selectedPixelBlock,
+              landCoverImg: newPhoto,
+            });
           } else if (croppingType === "showCover") {
             const newSelectedShowCover = [...selectedShowCover, newPhoto];
             setSelectedShowCover(newSelectedShowCover);
-            setLandCoverImg([selectedLandCover!, ...newSelectedShowCover]);
+            setSelectedPixelBlock({
+              ...selectedPixelBlock,
+              showCoverImgList: newSelectedShowCover,
+            });
           }
           setCropping(false);
           setCropSrc(null);
@@ -140,18 +158,19 @@ export default function PhotosModel({
 
   const handleDelete = (id: string, type: "landCover" | "showCover") => {
     if (type === "landCover") {
-      setSelectedLandCover(null);
-      setLandCoverImg(selectedShowCover);
+      setSelectedPixelBlock({
+        ...selectedPixelBlock,
+        landCoverImg: null,
+      });
     } else if (type === "showCover") {
       const newSelectedShowCover = selectedShowCover.filter(
         (photo) => photo.id !== id
       );
       setSelectedShowCover(newSelectedShowCover);
-      setLandCoverImg(
-        selectedLandCover
-          ? [selectedLandCover, ...newSelectedShowCover]
-          : newSelectedShowCover
-      );
+      setSelectedPixelBlock({
+        ...selectedPixelBlock,
+        showCoverImgList: newSelectedShowCover,
+      });
     }
   };
 
@@ -165,11 +184,66 @@ export default function PhotosModel({
           newArr[index],
         ];
       }
-      setLandCoverImg(
-        selectedLandCover ? [selectedLandCover, ...newArr] : newArr
-      );
+      setSelectedPixelBlock({
+        ...selectedPixelBlock,
+        showCoverImgList: newArr,
+      });
       return newArr;
     });
+  };
+
+  useEffect(() => {
+    if (externalLinkText) {
+      const url = checkExternalLink(
+        externalLinkText,
+        selectedPixelBlock.externalLinkType
+      );
+
+      if (url) {
+        setSelectedPixelBlock({
+          ...selectedPixelBlock,
+          externalLink: url,
+        });
+      }
+    }
+  }, [selectedPixelBlock.externalLinkType, externalLinkText]);
+  const checkExternalLink = (v: string, type: "Bilibili" | "Youtube") => {
+    const extractSrc = (iframe: string): string | null => {
+      const srcMatch = iframe.match(/src=["']([^"']+)["']/);
+      return srcMatch ? srcMatch[1] : null;
+    };
+
+    const url = extractSrc(v);
+
+    if (!url) {
+      setErrorExternalLink("无效链接");
+      return null;
+    }
+    const absoluteUrl = url.startsWith("//") ? `https:${url}` : url;
+    switch (type) {
+      case "Bilibili":
+        if (absoluteUrl.includes("bilibili.com")) {
+          setErrorExternalLink(null);
+          return url;
+        }
+        setErrorExternalLink("Provided URL is not from Bilibili");
+        break;
+
+      case "Youtube":
+        if (
+          absoluteUrl.includes("youtube.com") ||
+          absoluteUrl.includes("youtu.be")
+        ) {
+          setErrorExternalLink(null);
+          return url;
+        }
+        setErrorExternalLink("Provided URL is not from YouTube");
+        break;
+
+      default:
+        setErrorExternalLink("Unsupported type");
+    }
+    return null;
   };
 
   return (
@@ -179,9 +253,12 @@ export default function PhotosModel({
       >
         {selectedShowCover.length > 0 ? (
           <>
-            <PhotoSlider photos={selectedShowCover} />
+            <PhotoSlider
+              photos={selectedShowCover}
+              iframeSrc={selectedPixelBlock.externalLink}
+            />
             <button className={styles["manageButton"]} onClick={onOpen}>
-              管理图片
+              展示管理
             </button>
           </>
         ) : (
@@ -208,7 +285,7 @@ export default function PhotosModel({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                封面管理
+                展示管理
               </ModalHeader>
               <ModalBody>
                 <input
@@ -232,14 +309,14 @@ export default function PhotosModel({
                 <div className="flex gap-2 mb-2">
                   <div
                     onClick={() => handlePhotoBtn("landCover")}
-                    className="w-[60px] h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center hover:bg-[#f3f6f8] cursor-pointer"
+                    className="w-[60px] h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
                   >
                     <TbUpload size={30} color="#63727e" />
                   </div>
-                  {selectedLandCover && (
-                    <div className="relative w-[200px] h-[200px] border border-conditionalborder-transparent rounded flex items-center justify-center hover:bg-[#f3f6f8] cursor-pointer">
+                  {selectedPixelBlock.landCoverImg && (
+                    <div className="relative w-[200px] h-[200px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer">
                       <img
-                        src={selectedLandCover.src}
+                        src={selectedPixelBlock.landCoverImg.src}
                         alt="Land Cover"
                         className="w-full h-full object-cover"
                       />
@@ -247,7 +324,10 @@ export default function PhotosModel({
                         size={20}
                         className="absolute opacity-50 bottom-2 right-2 text-[#63727e] cursor-pointer hover:text-red-500 hover:opacity-100"
                         onClick={() =>
-                          handleDelete(selectedLandCover.id, "landCover")
+                          handleDelete(
+                            selectedPixelBlock.landCoverImg.id,
+                            "landCover"
+                          )
                         }
                       />
                     </div>
@@ -257,10 +337,10 @@ export default function PhotosModel({
                 <span className="text-sm text-gray-500 font-bold">
                   展示图 {selectedShowCover.length + "/3"}
                 </span>
-                <div className="flex gap-2 mb-2">
+                <div className="flex gap-2 mb-6">
                   <div
                     onClick={() => handlePhotoBtn("showCover")}
-                    className="min-w-[60px] min-h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center hover:bg-[#f3f6f8] cursor-pointer"
+                    className="min-w-[60px] min-h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
                   >
                     <TbUpload size={30} color="#63727e" />
                   </div>
@@ -268,7 +348,7 @@ export default function PhotosModel({
                     {selectedShowCover.map((cover, index) => (
                       <div
                         key={cover.id}
-                        className="relative w-full border border-conditionalborder-transparent rounded flex items-center justify-center hover:bg-[#f3f6f8] cursor-pointer"
+                        className="relative w-full border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
                       >
                         <img
                           src={cover.src}
@@ -296,8 +376,102 @@ export default function PhotosModel({
                     ))}
                   </div>
                 </div>
+                <span className="text-sm text-gray-500 font-bold">
+                  开启外站嵌入
+                </span>
+                <div className="flex flex-col  mb-2 items-center justify-center bg-[#f3f6f8]">
+                  <Switch
+                    defaultSelected={selectedPixelBlock.useExternalLink}
+                    onValueChange={(value) => {
+                      setSelectedPixelBlock({
+                        ...selectedPixelBlock,
+                        useExternalLink: value,
+                      });
+                    }}
+                    classNames={{
+                      base: cn(
+                        "inline-flex flex-row-reverse w-full max-w-md bg-[#f3f6f8] hover:border-primary items-center",
+                        "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
+                        "data-[selected=true]:"
+                      ),
+                      wrapper: "p-0 h-4 overflow-visible",
+                      thumb: cn(
+                        "w-6 h-6 border-2 shadow-lg",
+                        "group-data-[hover=true]:border-primary",
+                        //selected
+                        "group-data-[selected=true]:ml-6",
+                        // pressed
+                        "group-data-[pressed=true]:w-7",
+                        "group-data-[selected]:group-data-[pressed]:ml-4"
+                      ),
+                    }}
+                  >
+                    <div className="flex flex-col gap-1 ">
+                      <p className="text-medium">使用外站链接</p>
+                      <p className="text-tiny text-default-400">
+                        Get access to new features before they are released.
+                      </p>
+                    </div>
+                  </Switch>
+                  {selectedPixelBlock.useExternalLink && (
+                    <div className="w-full px-6">
+                      <RadioGroup
+                        label="提供方"
+                        value={selectedPixelBlock.externalLinkType}
+                        onValueChange={(value) => {
+                          setSelectedPixelBlock({
+                            ...selectedPixelBlock,
+                            externalLinkType: value,
+                          });
+                        }}
+                        className="mb-4"
+                      >
+                        <div className=" w-full flex items-center justify-between">
+                          <CustomRadio
+                            description="Up to 20 items"
+                            value="Bilibili"
+                          >
+                            <TbBrandBilibili size={20} color="#009ccf" />
+                            <span className="ml-2">Bilibili</span>
+                          </CustomRadio>
+                          <CustomRadio
+                            description="Unlimited items. $10 per month."
+                            value="Youtube"
+                          >
+                            <TbBrandYoutube size={20} color="#ff0000" />
+                            <span className="ml-2">YouTube</span>
+                          </CustomRadio>
+                        </div>
+                      </RadioGroup>
+
+                      {selectedPixelBlock.externalLinkType && (
+                        <div>
+                          <span className="text-default-500 text-sm">
+                            其提供 {selectedPixelBlock.externalLinkType}{" "}
+                            的iframe嵌入代码
+                          </span>
+                          <Textarea
+                            isInvalid={errorExternalLink != null}
+                            errorMessage={errorExternalLink}
+                            variant="faded"
+                            placeholder="拷贝嵌入代码"
+                            className="w-full py-2 mb-2"
+                            value={externalLinkText || ""}
+                            onValueChange={(v) => {
+                              setExternalLinkText(v);
+                            }}
+                            size="sm"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </ModalBody>
               <ModalFooter>
+                <Button color="primary" size="sm" onPress={onClose}>
+                  保存
+                </Button>
                 <Button color="danger" size="sm" onPress={onClose}>
                   关闭
                 </Button>
