@@ -1,7 +1,12 @@
 "use client";
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import styles from "@/styles/canvas/map-canvas.module.css";
-import { drawAim, drawRuler, getMouseupPixel } from "./helpers/BaseDraw";
+import {
+  drawAim,
+  drawGrid,
+  drawRuler,
+  getMouseupPixel,
+} from "./helpers/BaseDraw";
 import { useEvent } from "../utils/GeneralEvent";
 import { PixelBlock } from "@/types/MapTypes";
 import { Position } from "@/types/CanvasTypes";
@@ -376,6 +381,18 @@ const ShowMapCanvas = ({
       return height * scale - 2 * p;
     };
 
+    if (toolInfo.isGrid) {
+      drawGrid(
+        buffCtx,
+        mapCenter,
+        scale,
+        toolInfo.pixelSize,
+        canvasWidth,
+        canvasHeight,
+        rectSize
+      );
+    }
+
     showCoordinates.forEach((coord) => {
       const scaledPadding = coord.borderSize
         ? padding + coord.borderSize
@@ -454,8 +471,7 @@ const ShowMapCanvas = ({
         scale,
         toolInfo.pixelSize,
         canvasWidth,
-        canvasHeight,
-        rectSize
+        canvasHeight
       );
     }
   };

@@ -1,43 +1,71 @@
 .menuLeft {
-    width: 250px;
+    position: relative;
+    width: 340px;
     height: 100vh;
-    background-color: #f1f1f1;
+    background-color: #fff;
     font-size: small;
     font-family: Instrument Sans;
+    border-right: 1px solid #d9e0e6;
 }
 
 .menuItem {
     cursor: pointer;
-    color: #838383;
-    font-size: 14px;
+    color: #242424;
+    font-size: 15px;
     font-weight: 400;
     font-family: Instrument Sans;
     width: 100%;
     text-align: left;
-    padding: 13px;
+    padding: 10px;
     display: flex;
     align-items: center;
     transition: all 0.2s ease-in-out;
+    border-radius: 5px;
 }
 
 .menuItemActive {
     cursor: pointer;
     color: black;
     background-color: white;
-    font-size: 14px;
-    font-weight: 400;
+    font-size: 15px;
+    font-weight: 600;
     font-family: Instrument Sans;
     width: 100%;
     text-align: left;
-    padding: 13px;
+    padding: 10px;
     border-radius: 5px;
     display: flex;
     align-items: center;
+    background: #f3f6f8;
+}
+
+.menuItemLight {
+    cursor: pointer;
+    font-weight: 600;
+    color: black;
+    font-size: 15px;
+    font-family: Instrument Sans;
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+    border: #4c58634e solid 1px;
+}
+
+.menuItemLight:hover {
+    border: #4c5863 solid 1px;
 }
 
 .menuItem:hover {
     color: black;
     background-color: white;
+    transition: all 0.2s ease-in-out;
+    background: #f3f6f8;
     transition: all 0.2s ease-in-out;
 }
 

@@ -74,13 +74,14 @@ export default function NewMapIndex({ initData }: { initData?: PixelBlock[] }) {
       {isAct && <RightActView setIsAct={setIsAct} />}
       <CSSTransition
         in={isRightAct}
-        timeout={300}
+        timeout={3000}
         classNames={{
           enter: styles["right-view-enter"],
           enterActive: styles["right-view-enter-active"],
           exit: styles["right-view-exit"],
           exitActive: styles["right-view-exit-active"],
         }}
+        mountOnEnter
         unmountOnExit
       >
         <RightToolView

@@ -617,3 +617,95 @@ export const GeminiSVG = ({
     </svg>
   );
 };
+
+export const BlockCoinsSvg = ({
+  fill = "currentColor",
+  size = 24,
+  height = 24,
+  width = 24,
+  ...props
+}) => {
+  return (
+    <svg
+      {...props}
+      width={width}
+      height={height}
+      viewBox="0 0 392 392"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M196 392C304.248 392 392 304.248 392 196C392 87.7522 304.248 0 196 0C87.7522 0 0 87.7522 0 196C0 304.248 87.7522 392 196 392Z"
+        fill="#D6A200"
+      />
+      <path
+        d="M196 379C297.068 379 379 297.068 379 196C379 94.9319 297.068 13 196 13C94.9319 13 13 94.9319 13 196C13 297.068 94.9319 379 196 379Z"
+        fill="url(#paint0_linear_0_1)"
+      />
+      <path
+        d="M196 353C282.709 353 353 282.709 353 196C353 109.291 282.709 39 196 39C109.291 39 39 109.291 39 196C39 282.709 109.291 353 196 353Z"
+        fill="#EBB200"
+      />
+      <path
+        d="M196 340C275.528 340 340 275.528 340 196C340 116.471 275.528 52 196 52C116.471 52 52 116.471 52 196C52 275.528 116.471 340 196 340Z"
+        fill="url(#paint1_linear_0_1)"
+      />
+      <path
+        d="M91 138.131L192.501 91L294 138.131L197.454 220L91 138.131Z"
+        fill="#FDFF03"
+      />
+      <path d="M194 309V190.95L91 139V252.35L194 309Z" fill="#CB8B03" />
+      <path d="M194 190.942L294 139V252.334L194 309V190.942Z" fill="#EEB902" />
+      <defs>
+        <linearGradient
+          id="paint0_linear_0_1"
+          x1="196"
+          y1="13"
+          x2="196"
+          y2="379"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#FFF901" />
+          <stop offset="1" stop-color="#FCD003" />
+        </linearGradient>
+        <linearGradient
+          id="paint1_linear_0_1"
+          x1="52"
+          y1="340"
+          x2="340"
+          y2="52"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#FFF901" />
+          <stop offset="1" stop-color="#FCD003" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};
+
+export const LandsBoxSvg = ({
+  fill = "currentColor",
+  size = 24,
+  height = 24,
+  width = 24,
+  ...props
+}) => {
+  return (
+    <svg
+      {...props}
+      width={width}
+      height={height}
+      viewBox="0 0 203 218"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M0 47.1312L101.501 0L203 47.1312L106.454 129L0 47.1312Z"
+        fill="#FDFF03"
+      />
+      <path d="M103 218V99.9496L0 48V161.35L103 218Z" fill="#CB8B03" />
+      <path d="M103 99.9422L203 48V161.334L103 218V99.9422Z" fill="#EEB902" />
+    </svg>
+  );
+};

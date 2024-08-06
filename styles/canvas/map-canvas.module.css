@@ -5,13 +5,12 @@
   right: 0;
   top: 0;
   overflow: hidden;
-  background: #f8fafc;
 }
 
 .show-canvas-container {
   overflow: hidden;
-  background: #f8fafc;
- 
+  background: #f3f6f8;
+
 }
 
 .bottom-container {
@@ -108,13 +107,11 @@
   }
 }
 
-.cloud-animation {
-  animation: cloudAnimation 3s infinite ease-in-out;
-}
 
 /* Add this to your CSS file */
 .transition-all {
   transition: all 0.3s ease-in-out;
+  z-index: 1;
 }
 
 .right-view-enter {

@@ -87,6 +87,13 @@ export const COLOR_LEVELS = ['#2e4065', '#0080ff', '#f9721f', '#c0d3e8', '#0d223
 export const SIZE_LEVELS = [[30, 30], [60, 60], [90, 90], [120, 120], [150, 150],]; // 定义尺寸档次
 export const PROB_LEVELS = [0.90, 0.05, 0.025, 0.015, 0.01]; // 定义概率档次
 
+export const LAND_LEVEL = [
+    { value: "1", name: "1x1" },
+    { value: "2", name: "2x2" },
+    { value: "3", name: "3x3" },
+    { value: "4", name: "4x4" },
+];
+
 export const OPTION_TEST_LIST = [
     { value: "1", name: "像素块" },
     { value: "2", name: "地图块" },
