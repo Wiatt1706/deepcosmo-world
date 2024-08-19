@@ -65,6 +65,7 @@ export default async function Home({
       likes: land.likes.length,
     })) ?? [];
 
+
   return (
     <div className="flex relative w-full h-full overflow-hidden">
       <MenuLeft>

@@ -10,105 +10,76 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
-  Listbox,
-  ListboxItem,
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Slider,
   Switch,
-  cn,
 } from "@nextui-org/react";
 import {
   TbBell,
-  TbCaretDown,
-  TbCaretDownFilled,
   TbChevronDown,
-  TbCircle,
-  TbCirclePlus,
-  TbCirclePlus2,
   TbCode,
-  TbDownload,
-  TbEdit,
+  TbDeviceFloppy,
   TbEye,
-  TbEyeFilled,
   TbGeometry,
   TbHelp,
-  TbPencil,
-  TbPencilPlus,
-  TbPhoto,
-  TbPhotoAi,
-  TbSquarePlus,
-  TbSquarePlus2,
-  TbSquareRoundedPlusFilled,
-  TbTrash,
+  TbHelpCircle,
   TbUpload,
 } from "react-icons/tb";
 import { useBaseStore } from "../SocketManager";
 import { NotificationList } from "@/components/utils/NotificationBar";
+import { LiLandsBoxSvg } from "@/components/utils/icons";
 
 export default function TopToolView() {
-  const [model, setModel] = useBaseStore((state: any) => [
+  const [model, setModel, landInfo] = useBaseStore((state: any) => [
     state.model,
     state.setModel,
+    state.landInfo,
   ]);
-
-  const iconClasses =
-    "text-xl text-default-500 pointer-events-none flex-shrink-0";
 
   return (
     <div className={styles["top-view"]}>
       <div className="flex items-center justify-between h-full px-4">
         <div className="flex items-center h-full ">
-          <Dropdown placement="bottom-end" radius="sm">
-            <DropdownTrigger>
-              <Button
-                size="sm"
-                variant="light"
-                endContent={<TbCaretDownFilled />}
-              >
-                TestWorld
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu variant="faded" aria-label="name dropdownMenu">
-              <DropdownSection showDivider>
-                <DropdownItem
-                  key="new"
-                  shortcut="⌘N"
-                  startContent={<TbEdit className={iconClasses} />}
-                >
-                  重命名
-                </DropdownItem>
-                <DropdownItem
-                  key="copy"
-                  shortcut="⌘C"
-                  startContent={<TbPhoto className={iconClasses} />}
-                >
-                  设置封面
-                </DropdownItem>
-              </DropdownSection>
+          <div className="px-2 ">
+            <div className="flex items-center justify-center gap-2 text-[#808e9a] text-xs w-[220px]  ">
+              <p className="flex items-center gap-1 whitespace-nowrap">
+                里土块 <TbHelpCircle size={14} />
+              </p>
 
-              <DropdownItem
-                key="delete"
-                className="text-danger"
-                color="danger"
-                shortcut="⌘⇧D"
-                startContent={
-                  <TbTrash className={cn(iconClasses, "text-danger")} />
-                }
-              >
-                删除地块
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+              <Slider
+                aria-label="Player progress"
+                hideThumb={true}
+                value={landInfo.used_pixel_blocks}
+                maxValue={landInfo.capacity_size}
+                className="max-w-md"
+                isDisabled
+                classNames={{
+                  base: "max-w-md w-[100px] gap-3",
+                  filler: "bg-[#77a6d5] ",
+                }}
+              />
+              <p className="flex items-center gap-1">
+                {landInfo.used_pixel_blocks}/{landInfo.capacity_size}
+              </p>
+              <LiLandsBoxSvg width={14} height={14} />
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center h-full">
-          <div className="flex items-center px-4">
+          <div className="flex items-center pl-4">
             <Switch
+              size="sm"
+              tabIndex={-1} // 使元素可以聚焦
+              style={{ outline: "none" }}
+              data-focus
               isSelected={model === "EDIT"}
-              onValueChange={() =>
-                setModel(model === "EDIT" ? "OBSERVE" : "EDIT")
-              }
+              onValueChange={() => {
+                (document.activeElement as HTMLInputElement)?.blur();
+                setModel(model === "EDIT" ? "OBSERVE" : "EDIT");
+              }}
               aria-label="model-switch"
               thumbIcon={({ isSelected, className }) =>
                 isSelected ? (

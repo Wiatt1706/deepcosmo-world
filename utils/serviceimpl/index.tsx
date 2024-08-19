@@ -5,6 +5,7 @@ import RejectRecordService from "./RejectRecord";
 import UserDetailService from "./UserDetail";
 import UploadService from "./uploadFile";
 import KeywordService from "./Keyword";
+import LandInfoService from "./LandInfo";
 
 export {
   LikeRecordService,
@@ -14,5 +15,6 @@ export {
   UserDetailService,
   KeywordService,
   UploadService,
+  LandInfoService,
   type CommentRecordDTO,
 };

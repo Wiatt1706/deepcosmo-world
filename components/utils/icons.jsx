@@ -709,3 +709,29 @@ export const LandsBoxSvg = ({
     </svg>
   );
 };
+
+export const LiLandsBoxSvg = ({
+  fill = "currentColor",
+  size = 24,
+  height = 24,
+  width = 24,
+  ...props
+}) => {
+  return (
+    <svg
+      {...props}
+      width={width}
+      height={height}
+      viewBox="0 0 536 576"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M0 124.587L268.002 0L536 124.587L281.081 341L0 124.587Z"
+        fill="#80D9E2"
+      />
+      <path d="M272 576V264.208L0 127V426.377L272 576Z" fill="#6D73C7" />
+      <path d="M272 264.188L536 127V426.334L272 576V264.188Z" fill="#77A6D5" />
+    </svg>
+  );
+};

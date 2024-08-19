@@ -17,6 +17,7 @@ interface PixelBlock {
     width: number;
     height: number;
     color: string | CanvasGradient | CanvasPattern;
+    usedBlocks: number;
     type: number;
     status?: number;
     name?: string;
@@ -94,7 +95,7 @@ export const LAND_LEVEL = [
     { value: "4", name: "4x4" },
 ];
 
-export const OPTION_TEST_LIST = [
+export const LAND_TYPE = [
     { value: "1", name: "像素块" },
     { value: "2", name: "地图块" },
     { value: "3", name: "展示块" },

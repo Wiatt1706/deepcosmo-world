@@ -2,12 +2,11 @@ import React from "react";
 import Link from "next/link";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import HomeLandSearch from "@/components/land/home-land-search";
 import MenuLeft from "@/components/layout/menu-left";
 import LandInfoMenu from "@/components/land/land-info-menu";
-import LandInfoDetails from "@/components/land/land-info-detail";
+import NewMapIndex from "@/components/map/layout/NewMapIndex";
 
-export default async function LandInfo({ params }: any) {
+export default async function EditInfo({ params }: any) {
   const landId = params?.id;
 
   const supabase = createServerComponentClient({ cookies });
@@ -31,7 +30,7 @@ export default async function LandInfo({ params }: any) {
 
   let { data: landInfos } = await supabase
     .from("land_info")
-    .select("*,author: profiles(*),ShowCoverImg(*)")
+    .select("*,author: profiles(*)")
     .eq("id", landId);
 
   if (!landInfos || landInfos.length === 0) {
@@ -42,10 +41,10 @@ export default async function LandInfo({ params }: any) {
   return (
     <div className="flex relative w-full h-full overflow-hidden">
       <MenuLeft>
-        <LandInfoMenu landInfo={landInfo} />
+        <LandInfoMenu landInfo={landInfo} menuactive="editor" />
       </MenuLeft>
       <div className="w-full max-h-screen h-full overflow-y-auto inline-block text-center justify-center bg-[#f3f6f8]">
-        <LandInfoDetails initLandInfo={landInfo} />
+        <NewMapIndex initLandInfo={landInfo} session={session} />
       </div>
     </div>
   );

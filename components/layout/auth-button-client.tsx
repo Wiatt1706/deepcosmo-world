@@ -20,7 +20,6 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { GithubSvg, GoogleSvg } from "@/components/utils/icons";
-import { create, useStore } from "zustand";
 import { useUserStore } from "../SocketManager";
 type Provider = "github" | "google";
 

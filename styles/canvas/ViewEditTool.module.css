@@ -8,4 +8,5 @@
     align-items: center;
     color: #313b49;
     font-size: 14px;
+    user-select: none;
 }

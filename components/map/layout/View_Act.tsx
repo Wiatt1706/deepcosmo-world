@@ -3,10 +3,9 @@
 // components/RightActView/InfoSection.tsx
 import { Input, Select } from "@/components/utils/DLCModule";
 import {
-  OPTION_TEST_LIST,
+  LAND_TYPE,
   OPTION_TEST_LIST4,
   OPTION_TEST_LIST5,
-  Photo,
   PixelBlock,
 } from "@/types/MapTypes";
 import styles from "@/styles/canvas/ViewAct.module.css";
@@ -82,12 +81,14 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
             <h2 className={clsx([styles["col"], styles["title"]])}>
               #{selectedPixelBlock?.id}
             </h2>
-            <button
+            <Button
+              variant="light"
+              isIconOnly
+              endContent={<TbX size={20} />}
+              className="text-[#63727E]"
+              size="sm"
               onClick={() => setIsAct(false)}
-              className={clsx([styles["col"], styles["btn"]])}
-            >
-              <TbX />
-            </button>
+            />
           </div>
         </div>
         <div className={clsx([styles["col-group"]])}>
@@ -123,24 +124,46 @@ export function InfoSection({
         <label className={clsx([styles["col"], styles["col-text"]])}>
           Size
         </label>
-        <Input readOnly postfix="W" value={String(selectedPixelBlock.width)} />
-        <Input readOnly postfix="H" value={String(selectedPixelBlock.height)} />
+        <Input
+          aria-label="width"
+          readOnly
+          postfix="W"
+          value={String(selectedPixelBlock.width)}
+        />
+
+        <Input
+          aria-label="height"
+          readOnly
+          postfix="H"
+          value={String(selectedPixelBlock.height)}
+        />
       </div>
       <div className={styles["colRow"]}>
         <label className={clsx([styles["col"], styles["col-text"]])}>
           <TbMapPin />
         </label>
-        <Input readOnly postfix="X" value={String(selectedPixelBlock.x)} />
+        <Input
+          aria-label="x"
+          readOnly
+          postfix="X"
+          value={String(selectedPixelBlock.x)}
+        />
         <label className={clsx([styles["col"], styles["col-label"]])}>
           <TbLink />
         </label>
-        <Input readOnly postfix="Y" value={String(selectedPixelBlock.y)} />
+        <Input
+          aria-label="y"
+          readOnly
+          postfix="Y"
+          value={String(selectedPixelBlock.y)}
+        />
       </div>
       <div className={styles["colRow"]}>
         <label className={clsx([styles["col"], styles["col-text"]])}>
           <span>name</span>
         </label>
         <Input
+          aria-label="name"
           className={styles["actInput"]}
           value={selectedPixelBlock.name}
           onChange={(v) =>
@@ -153,8 +176,13 @@ export function InfoSection({
           <span>Type</span>
         </label>
         <Select
-          options={OPTION_TEST_LIST}
-          value={selectedPixelBlock.type || "1"}
+          aria-label="type_select"
+          options={LAND_TYPE}
+          value={
+            LAND_TYPE.some((option) => option.value === selectedPixelBlock.type)
+              ? selectedPixelBlock.type
+              : LAND_TYPE[0].value
+          }
           onChange={(v) =>
             setSelectedPixelBlock({ ...selectedPixelBlock, type: v })
           }
@@ -167,6 +195,7 @@ export function InfoSection({
         </label>
 
         <NextSelect
+          aria-label="status_select"
           items={OPTION_TEST_LIST4}
           key={selectedPixelBlock.status}
           classNames={{
@@ -246,6 +275,7 @@ export function InfoSection({
         </label>
 
         <NextSelect
+          aria-label="group-select"
           items={OPTION_TEST_LIST5}
           key={selectedPixelBlock.groupId}
           classNames={{
@@ -335,6 +365,7 @@ export function InfoSection({
 
         <div className="w-[140px] bg-[#f3f6f8] p-1 rounded-[8px] m-1">
           <NumInput
+            aria-label="borderSize"
             value={selectedPixelBlock.borderSize}
             onUpdate={(value) => {
               setSelectedPixelBlock({
@@ -350,6 +381,7 @@ export function InfoSection({
       </div>
       <div className={styles["colRow"]}>
         <ColorPicker
+          aria-label="BgColor"
           className="bg-[#fff] p-1 text-[#242424] text-sm font-[600] "
           label="BgColor"
           value={selectedPixelBlock.color}

@@ -92,15 +92,10 @@ export default function LandInfoDetails({
   const [errorExternalLink, setErrorExternalLink] = useState<string | null>(
     null
   );
-  const [selectedShowCover, setSelectedShowCover] = useState<Photo[]>([]);
-  const [selectedlandCover, setSelectedlandCover] = useState<Photo | null>(
-    null
+  const [selectedShowCover, setSelectedShowCover] = useState<Photo[]>(
+    initLandInfo.ShowCoverImg || []
   );
-  const [useExternalLink, setUseExternalLink] = useState<boolean>(false);
-  const [externalLinkType, setExternalLinkType] = useState<
-    string | undefined
-  >();
-  const [externalLinkText, setExternalLinkText] = useState<string | null>(null);
+
   const handlePhotoBtn = (id: string) => {
     document.getElementById(id)!.click();
   };
@@ -142,7 +137,7 @@ export default function LandInfoDetails({
 
   const handleDelete = (id: string, type: "landCover" | "showCover") => {
     if (type === "landCover") {
-      setSelectedlandCover(null);
+      setLandInfo("cover_icon_url", null);
     } else if (type === "showCover") {
       const newSelectedShowCover = selectedShowCover.filter(
         (photo) => photo.id !== id
@@ -232,7 +227,7 @@ export default function LandInfoDetails({
           const url = URL.createObjectURL(blob!);
           const newPhoto = { src: url, id: uuidv4(), type: croppingType! };
           if (croppingType === "landCover") {
-            setSelectedlandCover(newPhoto);
+            setLandInfo("cover_icon_url", url);
           } else if (croppingType === "showCover") {
             const newSelectedShowCover = [...selectedShowCover, newPhoto];
             setSelectedShowCover(newSelectedShowCover);
@@ -244,15 +239,24 @@ export default function LandInfoDetails({
     };
   };
 
+  const handleSaveData = () => {
+    if (errorExternalLink) {
+      alert(errorExternalLink);
+      return;
+    }
+  };
   useEffect(() => {
-    if (externalLinkText) {
-      const url = checkExternalLink(externalLinkText, externalLinkType);
+    if (landInfo.external_link) {
+      const url = checkExternalLink(
+        landInfo.external_link,
+        landInfo.external_link_type
+      );
 
       if (url) {
-        setExternalLinkText(url);
+        setLandInfo("external_link", url);
       }
     }
-  }, [externalLinkType, externalLinkText]);
+  }, [landInfo.external_link_type, landInfo.external_link]);
 
   return (
     <div className="flex flex-col  bg-[#FFFFFF] max-w-[800px] rounded text-left m-4 border">
@@ -266,7 +270,12 @@ export default function LandInfoDetails({
           <Button size="sm" onClick={() => undo()} radius="full">
             撤销更改
           </Button>
-          <Button size="sm" radius="full" color="primary">
+          <Button
+            size="sm"
+            onClick={() => handleSaveData()}
+            radius="full"
+            color="primary"
+          >
             保存
           </Button>
           <Button
@@ -310,7 +319,7 @@ export default function LandInfoDetails({
           <div className="flex items-center gap-2">
             <span className="text-sm">使用像素块：</span>
             <span className="px-2 py-[2px] bg-[#f3f6f8] text-[12px] rounded">
-              {landInfo.use_pixel_blocks}
+              {landInfo.use_pixel_blocks || 0}
             </span>
           </div>
 
@@ -425,17 +434,19 @@ export default function LandInfoDetails({
           >
             <TbUpload size={30} color="#63727e" />
           </div>
-          {selectedlandCover && (
+          {landInfo.cover_icon_url && (
             <div className="relative w-[100px] h-[100px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer">
               <img
-                src={selectedlandCover.src}
+                src={landInfo.cover_icon_url}
                 alt="Land Cover"
                 className="w-full h-full object-cover"
               />
               <TbTrash
                 size={20}
                 className="absolute opacity-50 bottom-2 right-2 text-[#63727e] cursor-pointer hover:text-red-500 hover:opacity-100"
-                onClick={() => handleDelete(selectedlandCover.id, "landCover")}
+                onClick={() =>
+                  handleDelete(landInfo.cover_icon_url, "landCover")
+                }
               />
             </div>
           )}
@@ -451,7 +462,7 @@ export default function LandInfoDetails({
           >
             <TbUpload size={30} color="#63727e" />
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 w-full">
             {selectedShowCover.map((cover, index) => (
               <div
                 key={cover.id}
@@ -491,16 +502,19 @@ export default function LandInfoDetails({
             </span>
 
             <Switch
-              defaultSelected={useExternalLink}
-              onValueChange={(v) => setUseExternalLink(v)}
+              defaultSelected={landInfo.use_external_link}
+              value={landInfo.use_external_link}
+              onValueChange={(v) => setLandInfo("use_external_link", v)}
             />
           </div>
-          {useExternalLink && (
+          {landInfo.use_external_link && (
             <div className="w-full px-6">
               <RadioGroup
                 label="提供方"
-                value={externalLinkType}
-                onValueChange={(value) => setExternalLinkType(value)}
+                value={landInfo.external_link_type}
+                onValueChange={(value) =>
+                  setLandInfo("external_link_type", value)
+                }
                 className="mb-4"
               >
                 <div className=" w-full flex items-center justify-between">
@@ -518,10 +532,10 @@ export default function LandInfoDetails({
                 </div>
               </RadioGroup>
 
-              {externalLinkType && (
+              {landInfo.external_link_type && (
                 <div>
                   <span className="text-default-500 text-sm">
-                    其提供 {externalLinkType}
+                    其提供 {landInfo.external_link_type}
                     的iframe嵌入代码
                   </span>
                   <Textarea
@@ -530,8 +544,8 @@ export default function LandInfoDetails({
                     variant="faded"
                     placeholder="拷贝嵌入代码"
                     className="w-full py-2 mb-2"
-                    value={externalLinkText || ""}
-                    onValueChange={(v) => setExternalLinkText(v)}
+                    value={landInfo.external_link || ""}
+                    onValueChange={(v) => setLandInfo("external_link", v)}
                     size="sm"
                   />
                 </div>

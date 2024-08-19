@@ -5,20 +5,22 @@ import { RadioGroup, cn } from "@nextui-org/react";
 import { TbRefresh } from "react-icons/tb";
 import algorithm, { TerrainType } from "../helpers/algorithm";
 import { PixelBlock } from "@/types/MapTypes";
-import { useEditMapStore } from "../SocketManager";
+import { useBaseStore, useEditMapStore } from "../SocketManager";
 import { NumInput } from "@/components/utils/NumInput";
 import { CustomRadio } from "@/components/utils/CustomRadio";
 import { ColorPicker } from "@/components/utils/ColorPicker";
 
 export default function LeftToolView() {
-  const [toolInfo, setToolInfo, pixelBlocks, setPixelBlocks, initData] =
-    useEditMapStore((state: any) => [
-      state.toolInfo,
-      state.setToolInfo,
-      state.pixelBlocks,
-      state.setPixelBlocks,
-      state.initData,
-    ]);
+  const [toolInfo, setToolInfo, initData] = useBaseStore((state: any) => [
+    state.toolInfo,
+    state.setToolInfo,
+    state.initData,
+  ]);
+
+  const [pixelBlocks, setPixelBlocks] = useEditMapStore((state: any) => [
+    state.pixelBlocks,
+    state.setPixelBlocks,
+  ]);
   const handleAlgorithmBtn = (minDistance: number) => {
     const initialTerrain = algorithm.TerrainRenderer({
       detail: toolInfo.terrain_detail,

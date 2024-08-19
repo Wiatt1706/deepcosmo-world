@@ -1,7 +1,7 @@
 .act-view {
     position: absolute;
     z-index: 9;
-    left: 64px;
+    left: 0px;
     top: 46px;
     bottom: 0;
     width: 400px;

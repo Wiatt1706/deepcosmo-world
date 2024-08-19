@@ -1,33 +1,52 @@
 "use client";
-import { BlockCoinsSvg, LandsBoxSvg, LogoSvg } from "../utils/icons";
 import {
   TbArrowLeft,
-  TbBell,
   TbChartBar,
-  TbChevronDown,
-  TbChevronsLeft,
-  TbChevronsRight,
   TbEdit,
-  TbInfoCircle,
-  TbInfoSmall,
-  TbMessageQuestion,
   TbSettings,
   TbTools,
+  TbMessageQuestion,
 } from "react-icons/tb";
-import { useState } from "react";
-import { Link } from "@nextui-org/link";
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Image,
-  Slider,
-  User,
-} from "@nextui-org/react";
+import { Image } from "@nextui-org/react";
 import styles from "@/components/layout/menu-left.module.css";
-export default function LandInfoMenu({ landInfo }: { landInfo: any }) {
+import Link from "next/link";
+
+export default function LandInfoMenu({
+  landInfo,
+  menuactive,
+}: {
+  landInfo: Land;
+  menuactive?: string;
+}) {
+  // Default active item if menuactive is not provided
+  const activeItem = menuactive || "detail";
+
+  const MenuItem = ({
+    href,
+    label,
+    icon: Icon,
+    isActive,
+  }: {
+    href: string;
+    label: string;
+    icon: any;
+    isActive: boolean;
+  }) => {
+    return isActive ? (
+      <div
+        className={`${styles.menuItem} ${styles.menuItemActive} flex items-center`}
+      >
+        <Icon size={20} className="mx-4" />
+        {label}
+      </div>
+    ) : (
+      <Link href={href} passHref color="foreground" className={styles.menuItem}>
+        <Icon size={20} className="mx-4" />
+        {label}
+      </Link>
+    );
+  };
+
   return (
     <>
       <div className="px-3 pt-2 flex flex-col gap-2">
@@ -41,37 +60,47 @@ export default function LandInfoMenu({ landInfo }: { landInfo: any }) {
             width={90}
             radius="sm"
             alt="NextUI hero Image"
-            src="https://3-map.sandbox.game/beta/3/0/-6"
+            src={`${landInfo?.cover_icon_url}`}
           />
         </div>
         <div className="flex flex-col p-2 text-[15px]">
-          <p className=" font-bold">我的土块</p>
+          <p className="font-bold">我的土块</p>
           <p className="text-[#606060] text-[12px]">{landInfo.land_name}</p>
         </div>
 
-        <Link href="/ai" color="foreground" className={styles.menuItemActive}>
-          <TbEdit size={20} className="mx-4" />
-          详细信息
-        </Link>
-        <Link href="/ai" color="foreground" className={styles.menuItem}>
-          <TbChartBar size={20} className="mx-4" />
-          数据分析
-        </Link>
-        <Link href="/ai" color="foreground" className={styles.menuItem}>
-          <TbTools size={20} className="mx-4" />
-          编辑器
-        </Link>
+        <MenuItem
+          href={`/landInfo/${landInfo.id}`}
+          label="详细信息"
+          icon={TbEdit}
+          isActive={activeItem === "detail"}
+        />
+        <MenuItem
+          href="/ai"
+          label="数据分析"
+          icon={TbChartBar}
+          isActive={activeItem === "data"}
+        />
+        <MenuItem
+          href={`/landInfo/${landInfo.id}/edit`}
+          label="编辑器"
+          icon={TbTools}
+          isActive={activeItem === "editor"}
+        />
       </div>
-      <div className=" absolute bottom-0 w-full border-t ">
+      <div className="absolute bottom-0 w-full border-t">
         <div className="px-4 py-4 flex items-center justify-between">
-          <Link color="foreground" className={styles.menuItem}>
-            <TbSettings size={20} className="mx-2" />
-            设置
-          </Link>
-          <Link color="foreground" className={styles.menuItem}>
-            <TbMessageQuestion size={20} className="mx-2" />
-            反馈
-          </Link>
+          <MenuItem
+            href="/settings"
+            label="设置"
+            icon={TbSettings}
+            isActive={activeItem === "settings"}
+          />
+          <MenuItem
+            href="/feedback"
+            label="反馈"
+            icon={TbMessageQuestion}
+            isActive={activeItem === "feedback"}
+          />
         </div>
       </div>
     </>

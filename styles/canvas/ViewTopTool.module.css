@@ -1,9 +1,5 @@
 .top-view {
-    position: absolute;
     z-index: 9;
-    left: 64px;
-    right: 0;
-    top: 0;
     background: #fff;
     height: 46px;
     border-bottom: rgba(0, 0, 0, 0.1) 1px solid;

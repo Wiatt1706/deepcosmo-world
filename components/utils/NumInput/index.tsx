@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, ReactNode } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import styles from "./NumInput.module.css";
 import { clsx } from "clsx";
@@ -7,25 +7,25 @@ import { clsx } from "clsx";
 interface NumInputProps {
   minValue?: number;
   maxValue?: number;
-  prefix?: string;
-  suffix?: string;
+  prefix?: ReactNode; // Updated to ReactNode
+  suffix?: ReactNode; // Updated to ReactNode
   value?: number;
   precision?: number;
   onUpdate: (newValue: number) => void;
-  step?: number; // 新增的参数，默认值为1
-  className?: string; // 新增的参数
+  step?: number;
+  className?: string;
 }
 
 export const NumInput: React.FC<NumInputProps> = ({
   minValue = -Infinity,
   maxValue = Infinity,
-  prefix = "",
-  suffix = "",
+  prefix = "", // Defaults to an empty string, but can now accept elements
+  suffix = "", // Defaults to an empty string, but can now accept elements
   value = 0,
   precision = 2,
   onUpdate,
   step = 1,
-  className = "", // 默认值为空字符串
+  className = "",
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const numInputRef = useRef<HTMLDivElement>(null);
@@ -135,10 +135,10 @@ export const NumInput: React.FC<NumInputProps> = ({
             onMouseDown={(e) => handleMouseDown(e)}
             onMouseUp={handleMouseUp}
           >
-            <span>{prefix}</span>
-            <span>
-              {text.toFixed(precision)} {suffix}
-            </span>
+            <div>{prefix}</div> {/* Supports elements as prefix */}
+            <span>{text.toFixed(precision)}</span>
+            <div>{suffix}</div>
+            {/* Supports elements as suffix */}
           </div>
           <div className={styles.btn} onClick={handleIncrement}>
             <BiChevronRight />
@@ -163,10 +163,10 @@ const radiansToDegrees = (radians: number) => (radians * 180) / Math.PI;
 interface DegreeNumInputProps {
   value: number;
   onUpdate: (newValue: number) => void;
-  prefix?: string;
-  suffix?: string;
+  prefix?: ReactNode; // Updated to ReactNode
+  suffix?: ReactNode; // Updated to ReactNode
   step?: number;
-  className?: string; // 新增的参数
+  className?: string;
 }
 
 export const DegreeNumInput: React.FC<DegreeNumInputProps> = ({
@@ -175,7 +175,7 @@ export const DegreeNumInput: React.FC<DegreeNumInputProps> = ({
   prefix,
   suffix,
   step,
-  className, // 新增的参数
+  className,
 }) => {
   const [inputValue, setInputValue] = useState(radiansToDegrees(value));
 
@@ -191,7 +191,7 @@ export const DegreeNumInput: React.FC<DegreeNumInputProps> = ({
       prefix={prefix}
       suffix={suffix}
       step={step}
-      className={className} // 传递 className 参数
+      className={className}
     />
   );
 };

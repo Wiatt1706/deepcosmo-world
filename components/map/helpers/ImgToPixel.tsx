@@ -40,6 +40,7 @@ export const ImgToPixel = (
           y: adjustedY,
           width: pixelSize,
           height: pixelSize,
+          usedBlocks: 1,
           // imgSrc: img.src,
           color: color,
         });

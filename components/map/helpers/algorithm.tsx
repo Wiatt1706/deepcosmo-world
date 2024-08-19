@@ -230,6 +230,7 @@ algorithm.TerrainRenderer = ({
       y: adjustedY,
       width: pixelSize,
       height: pixelSize,
+      usedBlocks: 1,
       color: `hsl(${hue}, ${sat}%, ${lux}%)`,
     });
 

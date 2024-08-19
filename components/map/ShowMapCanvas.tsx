@@ -15,34 +15,40 @@ import { useBaseStore, useEditMapStore } from "./SocketManager";
 const ShowMapCanvas = ({
   initData,
   scale,
-  onSelectedPixelBlockChange, // Add this prop
+  onSelectedPixelBlockChange,
   rectSize,
 }: {
   initData?: PixelBlock[];
   scale: number;
   onSelectedPixelBlockChange?: (block: PixelBlock | null) => void;
-  rectSize?: number; // Define the type
+  rectSize?: number;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const buffRef = useRef<HTMLCanvasElement | null>(null);
   const imagesRef = useRef<{ [key: string]: HTMLImageElement }>({});
 
-  const [model, setModel, selectedPixelBlock, setSelectedPixelBlock] =
-    useBaseStore((state: any) => [
-      state.model,
-      state.setModel,
-      state.selectedPixelBlock,
-      state.setSelectedPixelBlock,
-    ]);
+  const [
+    toolInfo,
+    landInfo,
+    model,
+    setModel,
+    selectedPixelBlock,
+    setSelectedPixelBlock,
+    setInitData,
+  ] = useBaseStore((state: any) => [
+    state.toolInfo,
+    state.landInfo,
+    state.model,
+    state.setModel,
+    state.selectedPixelBlock,
+    state.setSelectedPixelBlock,
+    state.setInitData,
+  ]);
 
-  const [toolInfo, pixelBlocks, setPixelBlocks, setInitData] = useEditMapStore(
-    (state: any) => [
-      state.toolInfo,
-      state.pixelBlocks,
-      state.setPixelBlocks,
-      state.setInitData,
-    ]
-  );
+  const [pixelBlocks, setPixelBlocks] = useEditMapStore((state: any) => [
+    state.pixelBlocks,
+    state.setPixelBlocks,
+  ]);
 
   const [showCoordinates, setShowCoordinates] = useState<PixelBlock[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -266,7 +272,19 @@ const ShowMapCanvas = ({
               )
             : true;
 
-          if (!isOverlapping && isInRectSizeRange) {
+          const usePixelBlocks = toolInfo.brushSize * toolInfo.brushSize;
+          const checkCapacityUsedBlocks = () => {
+            return (
+              landInfo.capacity_size >=
+              landInfo.used_pixel_blocks + usePixelBlocks
+            );
+          };
+
+          if (
+            !isOverlapping &&
+            isInRectSizeRange &&
+            checkCapacityUsedBlocks()
+          ) {
             const newPixelBlock: PixelBlock = {
               id: adjustedX + "," + adjustedY,
               type: 1,
@@ -274,6 +292,7 @@ const ShowMapCanvas = ({
               y: adjustedY,
               width: brushSizeInPixels,
               height: brushSizeInPixels,
+              usedBlocks: usePixelBlocks,
               color: toolInfo.editColor,
             };
             setPixelBlocks([...pixelBlocks, newPixelBlock]);
