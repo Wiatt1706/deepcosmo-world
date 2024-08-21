@@ -49,7 +49,9 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
   const updateData = useCallback(() => {
     setIsLoading(true);
     const updatedPixelBlocks = pixelBlocks.map((block: PixelBlock) =>
-      block.id === selectedPixelBlock.id ? selectedPixelBlock : block
+      block.x === selectedPixelBlock.x && block.y === selectedPixelBlock.y
+        ? selectedPixelBlock
+        : block
     );
     setPixelBlocks(updatedPixelBlocks);
     setTimeout(() => {
@@ -60,7 +62,8 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
 
   const deletePixelBlock = useCallback(() => {
     const updatedPixelBlocks = pixelBlocks.filter(
-      (block: any) => block.id !== selectedPixelBlock.id
+      (block: any) =>
+        block.x !== selectedPixelBlock.x || block.y !== selectedPixelBlock.y
     );
     setPixelBlocks(updatedPixelBlocks);
     setSelectedPixelBlock(null);
@@ -79,7 +82,7 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
         <div className={styles["columnGgroup"] + " border-b"}>
           <div className={styles["col-title"]}>
             <h2 className={clsx([styles["col"], styles["title"]])}>
-              #{selectedPixelBlock?.id}
+              #{selectedPixelBlock.name}
             </h2>
             <Button
               variant="light"
@@ -92,10 +95,7 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
           </div>
         </div>
         <div className={clsx([styles["col-group"]])}>
-          <PhotosModel
-            landCoverImg={selectedPixelBlock.landCoverImg}
-            showCoverImgs={selectedPixelBlock.showCoverImgList}
-          />
+          <PhotosModel showCoverImgs={selectedPixelBlock.showCoverImgList} />
           <div className={styles["columnGgroup"]}>
             <InfoSection
               selectedPixelBlock={selectedPixelBlock}

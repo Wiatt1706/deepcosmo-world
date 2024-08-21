@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import HomeLandSearch from "@/components/land/home-land-search";
 import MenuLeft from "@/components/layout/menu-left";
 import LandInfoMenu from "@/components/land/land-info-menu";
 import LandInfoDetails from "@/components/land/land-info-detail";

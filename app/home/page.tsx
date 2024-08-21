@@ -41,7 +41,8 @@ export default async function Home({
 
   let productsQuery = supabase
     .from("land_info")
-    .select("*, author: profiles(*),likes(*)");
+    .select("*, author: profiles(*),likes(*)")
+    .eq("is_inland", true);
 
   if (search) {
     productsQuery = productsQuery.ilike("land_name", "%" + search + "%");

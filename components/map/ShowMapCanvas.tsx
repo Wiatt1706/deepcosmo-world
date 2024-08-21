@@ -142,10 +142,10 @@ const ShowMapCanvas = ({
     const newCoordinates = await fetchCoordinates(viewport);
 
     for (const coord of newCoordinates) {
-      if (coord.landCoverImg && !imagesRef.current[coord.landCoverImg.src]) {
+      if (coord.landCoverImg && !imagesRef.current[coord.id]) {
         const img = new Image();
-        img.src = coord.landCoverImg.src;
-        imagesRef.current[coord.landCoverImg.src] = img;
+        img.src = coord.landCoverImg;
+        imagesRef.current[coord.id] = img;
       }
     }
 
@@ -292,7 +292,7 @@ const ShowMapCanvas = ({
               y: adjustedY,
               width: brushSizeInPixels,
               height: brushSizeInPixels,
-              usedBlocks: usePixelBlocks,
+              blockCount: usePixelBlocks,
               color: toolInfo.editColor,
             };
             setPixelBlocks([...pixelBlocks, newPixelBlock]);
@@ -414,7 +414,7 @@ const ShowMapCanvas = ({
 
     showCoordinates.forEach((coord) => {
       const scaledPadding = coord.borderSize
-        ? padding + coord.borderSize
+        ? padding + coord.borderSize * scale
         : padding;
       const scaledX = CONVER_X(coord.x, scaledPadding);
       const scaledY = CONVER_Y(coord.y, scaledPadding);
@@ -424,8 +424,8 @@ const ShowMapCanvas = ({
       buffCtx.fillStyle = coord.color;
       buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
 
-      if (coord.landCoverImg && imagesRef.current[coord.landCoverImg.src]) {
-        const img = imagesRef.current[coord.landCoverImg.src];
+      if (coord.landCoverImg && imagesRef.current[coord.id]) {
+        const img = imagesRef.current[coord.id];
         buffCtx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
       }
     });

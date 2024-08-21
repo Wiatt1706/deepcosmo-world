@@ -37,14 +37,23 @@ const LandInfoService = {
     supabase: SupabaseClient<Database>,
     dataList: Land[]
   ): Promise<boolean> {
-    // 更新字段值
-    const { error } = await supabase.from("land_info").upsert(dataList);
+    try {
+      // 无论 dataList 是单条记录还是多条记录，都可以直接使用 upsert 方法
+      for (let index = 0; index < dataList.length; index++) {
+        const { error } = await supabase
+          .from("land_info")
+          .update(dataList[0])
+          .eq("id", dataList[0].id);
+        if (error) {
+          console.error("LandInfoService.upsertRecord error:", error);
+          return false;
+        }
+      }
 
-    if (error) {
-      console.error("LandInfoService.upsertRecord error:", error);
-      return false;
-    } else {
       return true;
+    } catch (error) {
+      console.error("LandInfoService.upsertRecord unexpected error:", error);
+      return false;
     }
   },
 };

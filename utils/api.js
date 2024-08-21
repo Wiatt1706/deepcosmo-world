@@ -12,7 +12,7 @@ const request = async (url, options = {}) => {
 
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Something went wrong');
+        console.error('apiError', error);
     }
 
     return response;
@@ -44,9 +44,10 @@ export const put = async (url, data) => {
     return response.json();
 };
 
-export const del = async (url) => {
+export const del = async (url, data) => {
     const response = await request(url, {
         method: 'DELETE',
+        body: JSON.stringify(data),
     });
     return response.json();
 };

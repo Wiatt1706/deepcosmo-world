@@ -104,7 +104,7 @@ export default function Lands({ lands }: { lands: LandWithAuthor[] }) {
             removeWrapper
             alt="Card example background"
             className="z-0 w-full -translate-y-[20px] object-cover"
-            src={`https://2-map.sandbox.game/beta/1/1/0`}
+            src={land.cover_icon_url || "/images/pixel_map_1.jpg"}
           />
           <CardFooter className="absolute bg-white/90 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
             <div>

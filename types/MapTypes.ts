@@ -12,20 +12,20 @@ interface CssSize {
 // 像素块存储实体
 interface PixelBlock {
     id: string;
+    name?: string;
     x: number;
     y: number;
     width: number;
     height: number;
     color: string | CanvasGradient | CanvasPattern;
-    usedBlocks: number;
+    borderSize?: number;
+    blockCount: number;
     type: number;
     status?: number;
-    name?: string;
-    landCoverImg?: Photo;
+    landCoverImg?: string;
     showCoverImgList?: Photo[];
     groupId?: string;
     skipUrl?: string;
-    borderSize?: number;
     useExternalLink?: boolean; // 是否使用外部链接
     externalLinkType?: string; // 外部链接类型
     externalLink?: string; // 外部链接

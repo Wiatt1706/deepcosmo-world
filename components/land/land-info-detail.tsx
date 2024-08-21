@@ -8,6 +8,7 @@ import {
   TbBrandBilibili,
   TbBrandYoutube,
   TbDotsVertical,
+  TbLock,
   TbTrash,
   TbUpload,
 } from "react-icons/tb";
@@ -26,6 +27,9 @@ import { v4 as uuidv4 } from "uuid";
 import DateComponent from "../utils/DateComponent";
 import { temporal } from "zundo";
 import { create, useStore } from "zustand";
+import Locked from "../utils/Locked";
+
+import { put as putApi } from "@/utils/api";
 
 export const temporalLandDetailStore = <T,>(
   selector: (state: any) => T,
@@ -72,6 +76,7 @@ export default function LandInfoDetails({
     undo: state.undo,
     redo: state.redo,
   }));
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (initLandInfo) {
@@ -239,12 +244,31 @@ export default function LandInfoDetails({
     };
   };
 
-  const handleSaveData = () => {
+  const handleSaveData = async () => {
     if (errorExternalLink) {
       alert(errorExternalLink);
       return;
     }
+    setIsLoading(true);
+
+    // 找出改动的字段
+    const changedFields: any = { id: initLandInfo.id }; // Include the mandatory ID field
+    Object.keys(landInfo).forEach((key) => {
+      if (landInfo[key] !== initLandInfo[key]) {
+        changedFields[key] = landInfo[key];
+      }
+    });
+
+    await putApi(`/landInfo/single`, changedFields).then((response) => {
+      setIsLoading(false);
+      if (response.data) {
+        console.log("handleSaveData Blocks:", landInfo);
+      } else {
+        console.error("Failed to handleSaveData:", response.data.message);
+      }
+    });
   };
+
   useEffect(() => {
     if (landInfo.external_link) {
       const url = checkExternalLink(
@@ -257,6 +281,13 @@ export default function LandInfoDetails({
       }
     }
   }, [landInfo.external_link_type, landInfo.external_link]);
+
+  const LockMessage = (num: number) => (
+    <div className="flex gap-2 items-center justify-center w-full p-8 bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer rounded text-gray-500 transition duration-1000 ease-in-out transform ">
+      <TbLock size={20} color="#63727e" />
+      合并{num}块土地解锁
+    </div>
+  );
 
   return (
     <div className="flex flex-col  bg-[#FFFFFF] max-w-[800px] rounded text-left m-4 border">
@@ -271,6 +302,7 @@ export default function LandInfoDetails({
             撤销更改
           </Button>
           <Button
+            isLoading={isLoading}
             size="sm"
             onClick={() => handleSaveData()}
             radius="full"
@@ -427,132 +459,151 @@ export default function LandInfoDetails({
           onChange={handleShowCoverChange}
         />
         <span className="text-sm text-gray-500 font-bold">土块封面</span>
-        <div className="flex gap-2 mb-2">
-          <div
-            onClick={() => handlePhotoBtn("landCover")}
-            className="w-[60px] h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
-          >
-            <TbUpload size={30} color="#63727e" />
-          </div>
-          {landInfo.cover_icon_url && (
-            <div className="relative w-[100px] h-[100px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer">
-              <img
-                src={landInfo.cover_icon_url}
-                alt="Land Cover"
-                className="w-full h-full object-cover"
-              />
-              <TbTrash
-                size={20}
-                className="absolute opacity-50 bottom-2 right-2 text-[#63727e] cursor-pointer hover:text-red-500 hover:opacity-100"
-                onClick={() =>
-                  handleDelete(landInfo.cover_icon_url, "landCover")
-                }
-              />
+
+        <Locked
+          isLocked={landInfo?.block_count < 9}
+          lockMessage={LockMessage(9)}
+        >
+          <div className="flex gap-2 mb-2 w-full">
+            <div
+              onClick={() => handlePhotoBtn("landCover")}
+              className="w-[60px] h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
+            >
+              <TbUpload size={30} color="#63727e" />
             </div>
-          )}
-        </div>
+            {landInfo.cover_icon_url && (
+              <div className="relative w-[100px] h-[100px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer">
+                <img
+                  src={landInfo.cover_icon_url}
+                  alt="Land Cover"
+                  className="w-full h-full object-cover"
+                />
+                <TbTrash
+                  size={20}
+                  className="absolute opacity-50 bottom-2 right-2 text-[#63727e] cursor-pointer hover:text-red-500 hover:opacity-100"
+                  onClick={() =>
+                    handleDelete(landInfo.cover_icon_url, "landCover")
+                  }
+                />
+              </div>
+            )}
+          </div>
+        </Locked>
 
         <span className="text-sm text-gray-500 font-bold">
           展示图 {selectedShowCover.length + "/3"}
         </span>
-        <div className="flex gap-2 mb-6">
-          <div
-            onClick={() => handlePhotoBtn("showCover")}
-            className="min-w-[60px] min-h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
-          >
-            <TbUpload size={30} color="#63727e" />
-          </div>
-          <div className="flex flex-wrap gap-2 w-full">
-            {selectedShowCover.map((cover, index) => (
-              <div
-                key={cover.id}
-                className="relative w-full border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
-              >
-                <img
-                  src={cover.src}
-                  alt={`Show Cover ${index}`}
-                  className="w-full h-full object-cover max-w-[400px] max-h-[200px]"
-                />
-                <div className="absolute top-2 right-2 flex flex-col gap-2">
-                  <TbArrowUp
-                    size={20}
-                    className="text-[#63727e] opacity-50 cursor-pointer hover:text-blue-500 hover:opacity-100"
-                    onClick={() => moveImage(index, "up")}
-                  />
-                  <TbArrowDown
-                    size={20}
-                    className="text-[#63727e] opacity-50 cursor-pointer hover:text-blue-500 hover:opacity-100"
-                    onClick={() => moveImage(index, "down")}
-                  />
-                </div>
-                <TbTrash
-                  size={20}
-                  className="absolute opacity-50 bottom-2 right-2 text-[#63727e] cursor-pointer hover:text-red-500 hover:opacity-100"
-                  onClick={() => handleDelete(cover.id, "showCover")}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="flex flex-col  mb-2 items-center rounded bg-[#f3f6f8]">
-          <div className="flex items-center justify-between w-full p-6">
-            <span className="text-sm text-gray-500 font-bold">
-              开启外站嵌入
-            </span>
-
-            <Switch
-              defaultSelected={landInfo.use_external_link}
-              value={landInfo.use_external_link}
-              onValueChange={(v) => setLandInfo("use_external_link", v)}
-            />
-          </div>
-          {landInfo.use_external_link && (
-            <div className="w-full px-6">
-              <RadioGroup
-                label="提供方"
-                value={landInfo.external_link_type}
-                onValueChange={(value) =>
-                  setLandInfo("external_link_type", value)
-                }
-                className="mb-4"
-              >
-                <div className=" w-full flex items-center justify-between">
-                  <CustomRadio description="Up to 20 items" value="Bilibili">
-                    <TbBrandBilibili size={20} color="#009ccf" />
-                    <span className="ml-2">Bilibili</span>
-                  </CustomRadio>
-                  <CustomRadio
-                    description="Unlimited items. $10 per month."
-                    value="Youtube"
-                  >
-                    <TbBrandYoutube size={20} color="#ff0000" />
-                    <span className="ml-2">YouTube</span>
-                  </CustomRadio>
-                </div>
-              </RadioGroup>
-
-              {landInfo.external_link_type && (
-                <div>
-                  <span className="text-default-500 text-sm">
-                    其提供 {landInfo.external_link_type}
-                    的iframe嵌入代码
-                  </span>
-                  <Textarea
-                    isInvalid={errorExternalLink != null}
-                    errorMessage={errorExternalLink}
-                    variant="faded"
-                    placeholder="拷贝嵌入代码"
-                    className="w-full py-2 mb-2"
-                    value={landInfo.external_link || ""}
-                    onValueChange={(v) => setLandInfo("external_link", v)}
-                    size="sm"
-                  />
-                </div>
-              )}
+        <Locked
+          isLocked={landInfo.block_count < 16}
+          lockMessage={LockMessage(16)}
+        >
+          <div className="flex gap-2 mb-6">
+            <div
+              onClick={() => handlePhotoBtn("showCover")}
+              className="min-w-[60px] min-h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
+            >
+              <TbUpload size={30} color="#63727e" />
             </div>
-          )}
-        </div>
+            <div className="flex flex-wrap gap-2 w-full">
+              {selectedShowCover.map((cover, index) => (
+                <div
+                  key={cover.id}
+                  className="relative w-full border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
+                >
+                  <img
+                    src={cover.src}
+                    alt={`Show Cover ${index}`}
+                    className="w-full h-full object-cover max-w-[400px] max-h-[200px]"
+                  />
+                  <div className="absolute top-2 right-2 flex flex-col gap-2">
+                    <TbArrowUp
+                      size={20}
+                      className="text-[#63727e] opacity-50 cursor-pointer hover:text-blue-500 hover:opacity-100"
+                      onClick={() => moveImage(index, "up")}
+                    />
+                    <TbArrowDown
+                      size={20}
+                      className="text-[#63727e] opacity-50 cursor-pointer hover:text-blue-500 hover:opacity-100"
+                      onClick={() => moveImage(index, "down")}
+                    />
+                  </div>
+                  <TbTrash
+                    size={20}
+                    className="absolute opacity-50 bottom-2 right-2 text-[#63727e] cursor-pointer hover:text-red-500 hover:opacity-100"
+                    onClick={() => handleDelete(cover.id, "showCover")}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </Locked>
+
+        <span className="text-sm text-gray-500 font-bold">开启外站嵌入</span>
+
+        <Locked
+          isLocked={landInfo.block_count < 16}
+          lockMessage={LockMessage(16)}
+        >
+          <div className="flex flex-col  mb-2 items-center rounded bg-[#f3f6f8]">
+            <div className="flex items-center justify-between w-full p-6">
+              <span className="text-sm text-gray-500 font-bold">
+                使用外站链接
+              </span>
+
+              <Switch
+                defaultSelected={landInfo.use_external_link}
+                value={landInfo.use_external_link}
+                onValueChange={(v) => setLandInfo("use_external_link", v)}
+              />
+            </div>
+            {landInfo.use_external_link && (
+              <div className="w-full px-6">
+                <RadioGroup
+                  label="提供方"
+                  value={landInfo.external_link_type}
+                  onValueChange={(value) =>
+                    setLandInfo("external_link_type", value)
+                  }
+                  className="mb-4"
+                >
+                  <div className=" w-full flex items-center justify-between">
+                    <CustomRadio description="Up to 20 items" value="Bilibili">
+                      <TbBrandBilibili size={20} color="#009ccf" />
+                      <span className="ml-2">Bilibili</span>
+                    </CustomRadio>
+                    <CustomRadio
+                      description="Unlimited items. $10 per month."
+                      value="Youtube"
+                    >
+                      <TbBrandYoutube size={20} color="#ff0000" />
+                      <span className="ml-2">YouTube</span>
+                    </CustomRadio>
+                  </div>
+                </RadioGroup>
+
+                {landInfo.external_link_type && (
+                  <div>
+                    <span className="text-default-500 text-sm">
+                      其提供 {landInfo.external_link_type}
+                      的iframe嵌入代码
+                    </span>
+                    <Textarea
+                      isInvalid={errorExternalLink != null}
+                      errorMessage={errorExternalLink}
+                      variant="faded"
+                      placeholder="拷贝嵌入代码"
+                      className="w-full py-2 mb-2"
+                      value={landInfo.external_link || ""}
+                      onValueChange={(v) => setLandInfo("external_link", v)}
+                      size="sm"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </Locked>
       </div>
     </div>
   );

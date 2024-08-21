@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import MenuLeft from "@/components/layout/menu-left";
 import LandInfoMenu from "@/components/land/land-info-menu";
 import NewMapIndex from "@/components/map/layout/NewMapIndex";
+import { PixelBlock } from "@/types/MapTypes";
 
 export default async function EditInfo({ params }: any) {
   const landId = params?.id;
@@ -38,13 +39,44 @@ export default async function EditInfo({ params }: any) {
   }
   const landInfo = landInfos[0];
 
+  let { data: requestDTOs } = await supabase
+    .from("land_info")
+    .select("*,author: profiles(*),ShowCoverImg(*)")
+    .eq("parent_land_id", landId);
+
+  const pixelBlocks: PixelBlock[] =
+    requestDTOs?.map((requestDTO: Land) => {
+      return {
+        id: requestDTO.id,
+        name: requestDTO.land_name,
+        x: requestDTO.world_coordinates_x,
+        y: requestDTO.world_coordinates_y,
+        width: requestDTO.world_size_x,
+        height: requestDTO.world_size_y,
+        color: requestDTO.fill_color,
+        borderSize: requestDTO.border_size,
+        blockCount: requestDTO.block_count,
+        type: parseInt(requestDTO.land_type),
+        status: parseInt(requestDTO.land_status),
+        landCoverImg: requestDTO.cover_icon_url, // 如果没有封面图片，则设置为undefined
+        skipUrl: requestDTO.skip_url, // 处理可选的跳转URL
+        useExternalLink: requestDTO.use_external_link, // 布尔值直接映射
+        externalLinkType: requestDTO.external_link_type, // 处理可选的外部链接类型
+        externalLink: requestDTO.external_link, // 处理可选的外部链接
+      } as PixelBlock;
+    }) || [];
+
   return (
     <div className="flex relative w-full h-full overflow-hidden">
       <MenuLeft>
         <LandInfoMenu landInfo={landInfo} menuactive="editor" />
       </MenuLeft>
       <div className="w-full max-h-screen h-full overflow-y-auto inline-block text-center justify-center bg-[#f3f6f8]">
-        <NewMapIndex initLandInfo={landInfo} session={session} />
+        <NewMapIndex
+          initData={pixelBlocks}
+          initLandInfo={landInfo}
+          session={session}
+        />
       </div>
     </div>
   );

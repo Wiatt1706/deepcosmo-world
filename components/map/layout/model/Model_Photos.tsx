@@ -10,6 +10,7 @@ import {
   TbArrowDown,
   TbBrandBilibili,
   TbBrandYoutube,
+  TbLock,
 } from "react-icons/tb";
 import {
   Button,
@@ -30,12 +31,11 @@ import Cropper, { Area } from "react-easy-crop";
 import { v4 as uuidv4 } from "uuid";
 import { useBaseStore } from "../../SocketManager";
 import { CustomRadio } from "@/components/utils/CustomRadio";
+import Locked from "@/components/utils/Locked";
 
 export default function PhotosModel({
-  landCoverImg,
   showCoverImgs,
 }: {
-  landCoverImg?: Photo;
   showCoverImgs?: Photo[];
 }) {
   const [selectedPixelBlock, setSelectedPixelBlock] = useBaseStore(
@@ -134,7 +134,7 @@ export default function PhotosModel({
           if (croppingType === "landCover") {
             setSelectedPixelBlock({
               ...selectedPixelBlock,
-              landCoverImg: newPhoto,
+              landCoverImg: url,
             });
           } else if (croppingType === "showCover") {
             const newSelectedShowCover = [...selectedShowCover, newPhoto];
@@ -246,6 +246,13 @@ export default function PhotosModel({
     return null;
   };
 
+  const LockMessage = (num: number) => (
+    <div className="flex gap-2 items-center justify-center w-full p-8 bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer rounded text-gray-500 transition duration-1000 ease-in-out transform ">
+      <TbLock size={20} color="#63727e" />
+      合并{num}块土地解锁
+    </div>
+  );
+
   return (
     <>
       <div
@@ -306,167 +313,182 @@ export default function PhotosModel({
                 <span className="text-sm text-gray-500 font-bold">
                   土块封面
                 </span>
-                <div className="flex gap-2 mb-2">
-                  <div
-                    onClick={() => handlePhotoBtn("landCover")}
-                    className="w-[60px] h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
-                  >
-                    <TbUpload size={30} color="#63727e" />
-                  </div>
-                  {selectedPixelBlock.landCoverImg && (
-                    <div className="relative w-[200px] h-[200px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer">
-                      <img
-                        src={selectedPixelBlock.landCoverImg.src}
-                        alt="Land Cover"
-                        className="w-full h-full object-cover"
-                      />
-                      <TbTrash
-                        size={20}
-                        className="absolute opacity-50 bottom-2 right-2 text-[#63727e] cursor-pointer hover:text-red-500 hover:opacity-100"
-                        onClick={() =>
-                          handleDelete(
-                            selectedPixelBlock.landCoverImg.id,
-                            "landCover"
-                          )
-                        }
-                      />
+                <Locked
+                  isLocked={selectedPixelBlock?.blockCount < 9}
+                  lockMessage={LockMessage(9)}
+                >
+                  <div className="flex gap-2 mb-2">
+                    <div
+                      onClick={() => handlePhotoBtn("landCover")}
+                      className="w-[60px] h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
+                    >
+                      <TbUpload size={30} color="#63727e" />
                     </div>
-                  )}
-                </div>
-
-                <span className="text-sm text-gray-500 font-bold">
-                  展示图 {selectedShowCover.length + "/3"}
-                </span>
-                <div className="flex gap-2 mb-6">
-                  <div
-                    onClick={() => handlePhotoBtn("showCover")}
-                    className="min-w-[60px] min-h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
-                  >
-                    <TbUpload size={30} color="#63727e" />
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedShowCover.map((cover, index) => (
-                      <div
-                        key={cover.id}
-                        className="relative w-full border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
-                      >
+                    {selectedPixelBlock.landCoverImg && (
+                      <div className="relative w-[200px] h-[200px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer">
                         <img
-                          src={cover.src}
-                          alt={`Show Cover ${index}`}
+                          src={selectedPixelBlock.landCoverImg}
+                          alt="Land Cover"
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute top-2 right-2 flex flex-col gap-2">
-                          <TbArrowUp
-                            size={20}
-                            className="text-[#63727e] opacity-50 cursor-pointer hover:text-blue-500 hover:opacity-100"
-                            onClick={() => moveImage(index, "up")}
-                          />
-                          <TbArrowDown
-                            size={20}
-                            className="text-[#63727e] opacity-50 cursor-pointer hover:text-blue-500 hover:opacity-100"
-                            onClick={() => moveImage(index, "down")}
-                          />
-                        </div>
                         <TbTrash
                           size={20}
                           className="absolute opacity-50 bottom-2 right-2 text-[#63727e] cursor-pointer hover:text-red-500 hover:opacity-100"
-                          onClick={() => handleDelete(cover.id, "showCover")}
+                          onClick={() =>
+                            handleDelete(
+                              selectedPixelBlock.landCoverImg,
+                              "landCover"
+                            )
+                          }
                         />
                       </div>
-                    ))}
+                    )}
                   </div>
-                </div>
+                </Locked>
+                <span className="text-sm text-gray-500 font-bold">
+                  展示图 {selectedShowCover.length + "/3"}
+                </span>
+                <Locked
+                  isLocked={selectedPixelBlock?.blockCount < 16}
+                  lockMessage={LockMessage(16)}
+                >
+                  <div className="flex gap-2 mb-6">
+                    <div
+                      onClick={() => handlePhotoBtn("showCover")}
+                      className="min-w-[60px] min-h-[60px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
+                    >
+                      <TbUpload size={30} color="#63727e" />
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedShowCover.map((cover, index) => (
+                        <div
+                          key={cover.id}
+                          className="relative w-full border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer"
+                        >
+                          <img
+                            src={cover.src}
+                            alt={`Show Cover ${index}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute top-2 right-2 flex flex-col gap-2">
+                            <TbArrowUp
+                              size={20}
+                              className="text-[#63727e] opacity-50 cursor-pointer hover:text-blue-500 hover:opacity-100"
+                              onClick={() => moveImage(index, "up")}
+                            />
+                            <TbArrowDown
+                              size={20}
+                              className="text-[#63727e] opacity-50 cursor-pointer hover:text-blue-500 hover:opacity-100"
+                              onClick={() => moveImage(index, "down")}
+                            />
+                          </div>
+                          <TbTrash
+                            size={20}
+                            className="absolute opacity-50 bottom-2 right-2 text-[#63727e] cursor-pointer hover:text-red-500 hover:opacity-100"
+                            onClick={() => handleDelete(cover.id, "showCover")}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Locked>
+
                 <span className="text-sm text-gray-500 font-bold">
                   开启外站嵌入
                 </span>
-                <div className="flex flex-col  mb-2 items-center justify-center bg-[#f3f6f8]">
-                  <Switch
-                    defaultSelected={selectedPixelBlock.useExternalLink}
-                    onValueChange={(value) => {
-                      setSelectedPixelBlock({
-                        ...selectedPixelBlock,
-                        useExternalLink: value,
-                      });
-                    }}
-                    classNames={{
-                      base: cn(
-                        "inline-flex flex-row-reverse w-full max-w-md bg-[#f3f6f8] hover:border-primary items-center",
-                        "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
-                        "data-[selected=true]:"
-                      ),
-                      wrapper: "p-0 h-4 overflow-visible",
-                      thumb: cn(
-                        "w-6 h-6 border-2 shadow-lg",
-                        "group-data-[hover=true]:border-primary",
-                        //selected
-                        "group-data-[selected=true]:ml-6",
-                        // pressed
-                        "group-data-[pressed=true]:w-7",
-                        "group-data-[selected]:group-data-[pressed]:ml-4"
-                      ),
-                    }}
-                  >
-                    <div className="flex flex-col gap-1 ">
-                      <p className="text-medium">使用外站链接</p>
-                      <p className="text-tiny text-default-400">
-                        Get access to new features before they are released.
-                      </p>
-                    </div>
-                  </Switch>
-                  {selectedPixelBlock.useExternalLink && (
-                    <div className="w-full px-6">
-                      <RadioGroup
-                        label="提供方"
-                        value={selectedPixelBlock.externalLinkType}
-                        onValueChange={(value) => {
-                          setSelectedPixelBlock({
-                            ...selectedPixelBlock,
-                            externalLinkType: value,
-                          });
-                        }}
-                        className="mb-4"
-                      >
-                        <div className=" w-full flex items-center justify-between">
-                          <CustomRadio
-                            description="Up to 20 items"
-                            value="Bilibili"
-                          >
-                            <TbBrandBilibili size={20} color="#009ccf" />
-                            <span className="ml-2">Bilibili</span>
-                          </CustomRadio>
-                          <CustomRadio
-                            description="Unlimited items. $10 per month."
-                            value="Youtube"
-                          >
-                            <TbBrandYoutube size={20} color="#ff0000" />
-                            <span className="ml-2">YouTube</span>
-                          </CustomRadio>
-                        </div>
-                      </RadioGroup>
+                <Locked
+                  isLocked={selectedPixelBlock?.blockCount < 16}
+                  lockMessage={LockMessage(16)}
+                >
+                  <div className="flex flex-col  mb-2 items-center justify-center bg-[#f3f6f8]">
+                    <Switch
+                      defaultSelected={selectedPixelBlock.useExternalLink}
+                      onValueChange={(value) => {
+                        setSelectedPixelBlock({
+                          ...selectedPixelBlock,
+                          useExternalLink: value,
+                        });
+                      }}
+                      classNames={{
+                        base: cn(
+                          "inline-flex flex-row-reverse w-full max-w-md bg-[#f3f6f8] hover:border-primary items-center",
+                          "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
+                          "data-[selected=true]:"
+                        ),
+                        wrapper: "p-0 h-4 overflow-visible",
+                        thumb: cn(
+                          "w-6 h-6 border-2 shadow-lg",
+                          "group-data-[hover=true]:border-primary",
+                          //selected
+                          "group-data-[selected=true]:ml-6",
+                          // pressed
+                          "group-data-[pressed=true]:w-7",
+                          "group-data-[selected]:group-data-[pressed]:ml-4"
+                        ),
+                      }}
+                    >
+                      <div className="flex flex-col gap-1 ">
+                        <p className="text-medium">使用外站链接</p>
+                        <p className="text-tiny text-default-400">
+                          Get access to new features before they are released.
+                        </p>
+                      </div>
+                    </Switch>
+                    {selectedPixelBlock.useExternalLink && (
+                      <div className="w-full px-6">
+                        <RadioGroup
+                          label="提供方"
+                          value={selectedPixelBlock.externalLinkType}
+                          onValueChange={(value) => {
+                            setSelectedPixelBlock({
+                              ...selectedPixelBlock,
+                              externalLinkType: value,
+                            });
+                          }}
+                          className="mb-4"
+                        >
+                          <div className=" w-full flex items-center justify-between">
+                            <CustomRadio
+                              description="Up to 20 items"
+                              value="Bilibili"
+                            >
+                              <TbBrandBilibili size={20} color="#009ccf" />
+                              <span className="ml-2">Bilibili</span>
+                            </CustomRadio>
+                            <CustomRadio
+                              description="Unlimited items. $10 per month."
+                              value="Youtube"
+                            >
+                              <TbBrandYoutube size={20} color="#ff0000" />
+                              <span className="ml-2">YouTube</span>
+                            </CustomRadio>
+                          </div>
+                        </RadioGroup>
 
-                      {selectedPixelBlock.externalLinkType && (
-                        <div>
-                          <span className="text-default-500 text-sm">
-                            其提供 {selectedPixelBlock.externalLinkType}{" "}
-                            的iframe嵌入代码
-                          </span>
-                          <Textarea
-                            isInvalid={errorExternalLink != null}
-                            errorMessage={errorExternalLink}
-                            variant="faded"
-                            placeholder="拷贝嵌入代码"
-                            className="w-full py-2 mb-2"
-                            value={externalLinkText || ""}
-                            onValueChange={(v) => {
-                              setExternalLinkText(v);
-                            }}
-                            size="sm"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                        {selectedPixelBlock.externalLinkType && (
+                          <div>
+                            <span className="text-default-500 text-sm">
+                              其提供 {selectedPixelBlock.externalLinkType}{" "}
+                              的iframe嵌入代码
+                            </span>
+                            <Textarea
+                              isInvalid={errorExternalLink != null}
+                              errorMessage={errorExternalLink}
+                              variant="faded"
+                              placeholder="拷贝嵌入代码"
+                              className="w-full py-2 mb-2"
+                              value={externalLinkText || ""}
+                              onValueChange={(v) => {
+                                setExternalLinkText(v);
+                              }}
+                              size="sm"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </Locked>
               </ModalBody>
               <ModalFooter>
                 <Button color="primary" size="sm" onPress={onClose}>
