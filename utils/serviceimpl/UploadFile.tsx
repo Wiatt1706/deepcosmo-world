@@ -1,6 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database.types";
-const PUBLIC_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 const UploadService = {
   async uploadImg(
@@ -8,19 +7,32 @@ const UploadService = {
     bucket: string,
     filePath: string,
     fileBlob: Blob
-  ): Promise<String | null> {
+  ): Promise<{
+    id?: string;
+    path: string;
+    fullPath?: string;
+  } | null> {
     const { data, error } = await supabase.storage
       .from(bucket)
-      .upload(filePath, fileBlob, {
-        upsert: true,
-      });
+      .upload(filePath, fileBlob);
     if (data) {
-      return `${PUBLIC_URL}/storage/v1/object/public/${bucket}/${filePath}`;
+      return data;
     }
-
-    console.log("UploadService:", error);
-
+    console.log("UploadService-uploadImg-error:", error);
     return null;
+  },
+  async deleteImg(
+    supabase: SupabaseClient<Database>,
+    bucket: string,
+    keys: string[]
+  ): Promise<boolean> {
+    console.log("UploadService-deleteImg-keys:", keys);
+    const { data, error } = await supabase.storage.from(bucket).remove(keys);
+    if (error) {
+      console.log("UploadService-deleteImg-error:", error);
+      return false;
+    }
+    return true;
   },
 };
 export default UploadService;

@@ -59,6 +59,7 @@ export default async function EditInfo({ params }: any) {
         type: parseInt(requestDTO.land_type),
         status: parseInt(requestDTO.land_status),
         landCoverImg: requestDTO.cover_icon_url, // 如果没有封面图片，则设置为undefined
+        showCoverImgList: requestDTO.show_cover_list,
         skipUrl: requestDTO.skip_url, // 处理可选的跳转URL
         useExternalLink: requestDTO.use_external_link, // 布尔值直接映射
         externalLinkType: requestDTO.external_link_type, // 处理可选的外部链接类型

@@ -20,8 +20,7 @@ import {
   ModalFooter,
   ModalHeader,
   RadioGroup,
-  Select,
-  SelectItem,
+
   Switch,
   Textarea,
   cn,

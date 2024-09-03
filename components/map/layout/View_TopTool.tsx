@@ -3,6 +3,8 @@
 import styles from "@/styles/canvas/ViewTopTool.module.css";
 import {
   Avatar,
+  BreadcrumbItem,
+  Breadcrumbs,
   Button,
   Divider,
   Dropdown,
@@ -18,9 +20,13 @@ import {
 } from "@nextui-org/react";
 import {
   TbBell,
+  TbCaretDown,
+  TbCaretDownFilled,
   TbChevronDown,
+  TbChevronRight,
   TbCode,
   TbDeviceFloppy,
+  TbDownload,
   TbEye,
   TbGeometry,
   TbHelp,
@@ -30,20 +36,54 @@ import {
 import { useBaseStore } from "../SocketManager";
 import { NotificationList } from "@/components/utils/NotificationBar";
 import { LiLandsBoxSvg } from "@/components/utils/icons";
+import { ChevronDownIcon } from "lucide-react";
 
 export default function TopToolView() {
-  const [model, setModel, landInfo] = useBaseStore((state: any) => [
-    state.model,
-    state.setModel,
-    state.landInfo,
-  ]);
+  const [model, setModel, landInfo, canSave, isSaveing, setIsSaveing] =
+    useBaseStore((state: any) => [
+      state.model,
+      state.setModel,
+      state.landInfo,
+      state.canSave,
+      state.isSaveing,
+      state.setIsSaveing,
+    ]);
 
   return (
     <div className={styles["top-view"]}>
       <div className="flex items-center justify-between h-full px-4">
-        <div className="flex items-center h-full ">
-          <div className="px-2 ">
-            <div className="flex items-center justify-center gap-2 text-[#808e9a] text-xs w-[220px]  ">
+        <div className="flex items-center h-full text-[12px] ">
+          <Breadcrumbs
+            separator={<TbChevronRight size={12} color="#808e9a" />}
+            itemClasses={{
+              separator: "px-2",
+            }}
+          >
+            <BreadcrumbItem>
+              <span className="text-[12px]">主世界</span>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <Dropdown>
+                <DropdownTrigger>
+                  <div className="flex items-center gap-1 py-1 px-2 rounded-md hover:bg-[#f3f6f8] text-[12px] text-[#808e9a]">
+                    {landInfo.land_name}
+                    <TbCaretDownFilled size={12} color="#808e9a" />
+                  </div>
+                </DropdownTrigger>
+                <DropdownMenu aria-label="Routes">
+                  <DropdownItem href="#song-1">更改名称</DropdownItem>
+                  <DropdownItem href="#song2">升级扩展</DropdownItem>
+                  <DropdownItem href="#song3">删除</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </BreadcrumbItem>
+          </Breadcrumbs>
+        </div>
+
+        <div className="flex items-center h-full">
+          <div className="px-4 ">
+            <div className="flex items-center justify-center gap-2 text-[#808e9a] text-xs w-full  ">
+              <LiLandsBoxSvg width={12} height={12} />
               <p className="flex items-center gap-1 whitespace-nowrap">
                 里土块 <TbHelpCircle size={14} />
               </p>
@@ -60,18 +100,14 @@ export default function TopToolView() {
                   filler: "bg-[#77a6d5] ",
                 }}
               />
-              <p className="flex items-center gap-1">
+              <p className="flex items-center gap-1 whitespace-nowrap">
                 {landInfo.used_pixel_blocks}/{landInfo.capacity_size}
               </p>
-              <LiLandsBoxSvg width={14} height={14} />
             </div>
           </div>
-        </div>
-
-        <div className="flex items-center h-full">
+          <Divider orientation="vertical" />
           <div className="flex items-center pl-4">
             <Switch
-              size="sm"
               tabIndex={-1} // 使元素可以聚焦
               style={{ outline: "none" }}
               data-focus
@@ -90,16 +126,28 @@ export default function TopToolView() {
               }
             />
           </div>
+
           <div className="flex items-center px-4">
             <div className="flex items-center justify-center w-[38px] h-[38px] rounded-full hover:bg-[#f3f6f8] text-[#4c5863] mr-1">
-              <TbUpload size={24} strokeWidth={1.1} />
+              <TbDownload size={24} strokeWidth={1.1} />
             </div>
             <div className="flex items-center justify-center w-[38px] h-[38px] rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
               <TbGeometry size={24} strokeWidth={1.1} />
             </div>
           </div>
-          <Divider orientation="vertical" />
-          <div className="flex items-center px-4">
+          <div className="px-2">
+            <Button
+              size="sm"
+              color="primary"
+              isLoading={isSaveing}
+              isDisabled={!canSave}
+              onClick={() => setIsSaveing(true)}
+            >
+              保存
+            </Button>
+          </div>
+
+          {/* <div className="flex items-center px-4">
             <div className="flex items-center justify-center w-[38px] h-[38px] mr-1 rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
               <TbHelp size={24} strokeWidth={1.1} />
             </div>
@@ -147,7 +195,7 @@ export default function TopToolView() {
                 Log Out
               </DropdownItem>
             </DropdownMenu>
-          </Dropdown>
+          </Dropdown> */}
         </div>
       </div>
     </div>

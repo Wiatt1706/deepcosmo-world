@@ -19,6 +19,8 @@ export const useBaseStore = create((set) => ({
     terrain_color: "#000000",
     terrain_type: TerrainType.ALL,
   },
+  isSaveing: false,
+  canSave: false,
   initData: [] as PixelBlock[],
   selectedPixelBlock: null as PixelBlock | null,
   setModel: (model: "OBSERVE" | "EDIT" | "FIXED") => set({ model }),
@@ -49,6 +51,8 @@ export const useBaseStore = create((set) => ({
         ...initLandInfo,
       },
     })),
+  setIsSaveing: (isSaveing: boolean) => set({ isSaveing }),
+  setCanSave: (canSave: boolean) => set({ canSave }),
 }));
 
 export const temporalEditMapStore = <T,>(

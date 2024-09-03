@@ -4,6 +4,7 @@ import Slider, { Settings } from "react-slick";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import Image from "next/image";
 
 interface ArrowProps {
   className?: string;
@@ -90,10 +91,14 @@ const PhotoSlider: React.FC<PhotoSliderProps> = ({ iframeSrc, photos }) => {
           <iframe className={styles["gallery-iframe"]} src={iframeSrc} />
         )}
         {photos.map((photo) => (
-          <img
+          <Image
+            key={photo.id}
             src={photo.src}
             alt={photo.alt || ""}
             className={styles["gallery-item"]}
+            layout="responsive"
+            width={400} // 你可以根据你的需求调整宽度和高度
+            height={200} // 你可以根据你的需求调整宽度和高度
           />
         ))}
       </Slider>

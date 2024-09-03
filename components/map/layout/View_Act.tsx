@@ -28,13 +28,13 @@ import { NumInput } from "@/components/utils/NumInput";
 export default function RightActView({ setIsAct }: { setIsAct: any }) {
   const addNotification = useNotification((state) => state.addNotification);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPixelBlock, setSelectedPixelBlock, model] = useBaseStore(
-    (state: any) => [
+  const [selectedPixelBlock, setSelectedPixelBlock, model, setIsSaveing] =
+    useBaseStore((state: any) => [
       state.selectedPixelBlock,
       state.setSelectedPixelBlock,
       state.model,
-    ]
-  );
+      state.setIsSaveing,
+    ]);
   const [pixelBlocks, setPixelBlocks] = useEditMapStore((state: any) => [
     state.pixelBlocks,
     state.setPixelBlocks,
@@ -47,17 +47,12 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
   }, [model, setSelectedPixelBlock]);
 
   const updateData = useCallback(() => {
-    setIsLoading(true);
     const updatedPixelBlocks = pixelBlocks.map((block: PixelBlock) =>
       block.x === selectedPixelBlock.x && block.y === selectedPixelBlock.y
         ? selectedPixelBlock
         : block
     );
     setPixelBlocks(updatedPixelBlocks);
-    setTimeout(() => {
-      setIsLoading(false);
-      addNotification("Updated successfully", "success", "Update Success");
-    }, 1000);
   }, [pixelBlocks, selectedPixelBlock, setPixelBlocks, addNotification]);
 
   const deletePixelBlock = useCallback(() => {
@@ -82,7 +77,9 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
         <div className={styles["columnGgroup"] + " border-b"}>
           <div className={styles["col-title"]}>
             <h2 className={clsx([styles["col"], styles["title"]])}>
-              #{selectedPixelBlock.name}
+              #
+              {selectedPixelBlock.name ??
+                `Land_${selectedPixelBlock.x}_${selectedPixelBlock.y}`}
             </h2>
             <Button
               variant="light"

@@ -26,9 +26,8 @@ import EditToolView from "./View_EditTool";
 import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 import { NumInput } from "@/components/utils/NumInput";
 import { GlobalHotKeys } from "react-hotkeys";
-import { post as postApi, put as putApi, del as delApi } from "@/utils/api";
 import { Session } from "@supabase/auth-helpers-nextjs";
-import { useUserStore } from "@/components/SocketManager";
+import useUpdate from "@/components/hook/canvas/useUpdate";
 
 const keyMap = {
   UNDO: "ctrl+z",
@@ -54,17 +53,22 @@ export default function NewMapIndex({
   initLandInfo?: Land;
   session: Session | null;
 }) {
-  const checkLogin = useUserStore((state) => state.checkLogin);
-
   const containerRef = useRef<HTMLDivElement>(null);
-  const [model, setInitialLandInfo, toolInfo, setToolInfo, setLandInfo] =
-    useBaseStore((state: any) => [
-      state.model,
-      state.setInitialLandInfo,
-      state.toolInfo,
-      state.setToolInfo,
-      state.setLandInfo,
-    ]);
+  const [
+    model,
+    setInitialLandInfo,
+    toolInfo,
+    setToolInfo,
+    setLandInfo,
+    setIsSaveing,
+  ] = useBaseStore((state: any) => [
+    state.model,
+    state.setInitialLandInfo,
+    state.toolInfo,
+    state.setToolInfo,
+    state.setLandInfo,
+    state.setIsSaveing,
+  ]);
 
   const [pixelBlocks, setPixelBlocks] = useEditMapStore((state: any) => [
     state.pixelBlocks as PixelBlock[],
@@ -75,17 +79,7 @@ export default function NewMapIndex({
   const { scale, setScale } = useScale(1, 0.2, 5, containerRef.current);
   const [selectedModule, setSelectedModule] = useState<string>("");
 
-  // 防抖定时器的引用
-  const pixelBlocksChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const blocksDetectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [originalPixelBlocksMap, setOriginalPixelBlocksMap] = useState<
-    Map<string, PixelBlock>
-  >(new Map(initData?.map((block) => [`${block.x}_${block.y}`, block])));
-
-  const addedBlocksRef = useRef<Map<string, PixelBlock>>(new Map());
-  const modifiedBlocksRef = useRef<Map<string, PixelBlock>>(new Map());
-  const deletedBlocksRef = useRef<Set<string>>(new Set());
+  useUpdate(initLandInfo?.id, initData);
 
   useEffect(() => {
     setIsAct(false);
@@ -149,7 +143,7 @@ export default function NewMapIndex({
     REDO: () => redo(),
     SAVE: (event) => {
       event?.preventDefault();
-      detectBlocksSave();
+      setIsSaveing(true);
     },
     ONE: () => setToolInfo("brushSize", 1),
     TWO: () => setToolInfo("brushSize", 2),
@@ -160,143 +154,6 @@ export default function NewMapIndex({
     SEVEN: () => setToolInfo("brushSize", 7),
     EIGHT: () => setToolInfo("brushSize", 8),
     NINE: () => setToolInfo("brushSize", 9),
-  };
-
-  // 监听 pixelBlocks 的变动，三秒防抖
-  useEffect(() => {
-    if (pixelBlocksChangeTimeoutRef.current) {
-      clearTimeout(pixelBlocksChangeTimeoutRef.current);
-    }
-
-    pixelBlocksChangeTimeoutRef.current = setTimeout(() => {
-      const currentPixelBlocksMap = new Map(
-        pixelBlocks.map((block: PixelBlock) => [`${block.x}_${block.y}`, block])
-      );
-
-      // Detect added and modified blocks
-      currentPixelBlocksMap.forEach((block, id) => {
-        const originalBlock = originalPixelBlocksMap.get(id);
-
-        if (!originalBlock) {
-          // Block is new
-          if (deletedBlocksRef.current.has(id)) {
-            // If it was previously deleted, just remove from deleted set
-            deletedBlocksRef.current.delete(id);
-          } else {
-            // Otherwise, add to addedBlocksRef
-            addedBlocksRef.current.set(id, block);
-          }
-        } else if (JSON.stringify(block) !== JSON.stringify(originalBlock)) {
-          // Block is modified
-          if (addedBlocksRef.current.has(id)) {
-            // If it's already in addedBlocksRef, update it there
-            addedBlocksRef.current.set(id, block);
-          } else {
-            // Otherwise, add to modifiedBlocksRef
-            modifiedBlocksRef.current.set(id, block);
-          }
-        }
-      });
-
-      // Detect deleted blocks
-      originalPixelBlocksMap.forEach((_, id) => {
-        if (!currentPixelBlocksMap.has(id)) {
-          if (addedBlocksRef.current.has(id)) {
-            // If it was added and now deleted, remove from added set
-            addedBlocksRef.current.delete(id);
-          } else {
-            // Otherwise, add to deletedBlocksRef
-            deletedBlocksRef.current.add(id);
-          }
-        }
-      });
-
-      // Update originalPixelBlocksMap
-      setOriginalPixelBlocksMap(
-        new Map(pixelBlocks.map((block) => [`${block.x}_${block.y}`, block]))
-      );
-    }, 2000);
-
-    return () => {
-      if (pixelBlocksChangeTimeoutRef.current) {
-        clearTimeout(pixelBlocksChangeTimeoutRef.current);
-      }
-    };
-  }, [pixelBlocks]);
-
-  // 检测新增、修改、删除的 pixelBlocks 数据，十秒防抖
-  const detectBlocksSave = () => {
-    // 保存操作后，更新初始值
-
-    // 此处可以进行相应的 API 调用或保存操作
-    if (addedBlocksRef.current.size > 0) {
-      processAddedBlocks(Array.from(addedBlocksRef.current.values()));
-      console.log("Added Blocks:", addedBlocksRef.current);
-    }
-    if (modifiedBlocksRef.current.size > 0) {
-      processModifiedBlocks(Array.from(modifiedBlocksRef.current.values()));
-      console.log("Modified Blocks:", modifiedBlocksRef.current);
-    }
-    if (deletedBlocksRef.current.size > 0) {
-      processDeletedBlocks(deletedBlocksRef.current);
-      console.log("Deleted Blocks:", deletedBlocksRef.current);
-    }
-
-    // 清空临时变量
-    addedBlocksRef.current.clear();
-    modifiedBlocksRef.current.clear();
-    deletedBlocksRef.current.clear();
-  };
-
-  const processAddedBlocks = async (
-    addedBlocks: PixelBlock[]
-  ): Promise<void> => {
-    // 在这里添加调用API的逻辑
-    await postApi(`/landInfo`, {
-      pixelBlocks: addedBlocks,
-      parentLandId: initLandInfo?.id,
-    }).then((response) => {
-      if (response.data) {
-        console.log("Added Blocks:", addedBlocks);
-      } else {
-        console.error("Failed to processAddedBlocks:", response.data.message);
-      }
-    });
-  };
-
-  const processModifiedBlocks = async (
-    modifiedBlocks: PixelBlock[]
-  ): Promise<void> => {
-    await putApi(`/landInfo`, {
-      pixelBlocks: modifiedBlocks,
-      parentLandId: initLandInfo?.id,
-    }).then((response) => {
-      if (response.data) {
-        console.log("Modified Blocks:", modifiedBlocks);
-      } else {
-        console.error("Failed to processModifiedBlocks:", response.data);
-      }
-    });
-  };
-
-  const processDeletedBlocks = async (
-    deletedBlocks: Set<string>
-  ): Promise<void> => {
-    const pixelBlocks = Array.from(deletedBlocks).map((block) => {
-      const [x, y] = block.split("_").map(Number);
-      return { x, y };
-    });
-
-    await delApi(`/landInfo`, {
-      pixelBlocks: pixelBlocks,
-      parentLandId: initLandInfo?.id,
-    }).then((response) => {
-      if (response.data) {
-        console.log("Deleted Blocks:", deletedBlocks);
-      } else {
-        console.error("Failed to processDeletedBlocks:", response.data);
-      }
-    });
   };
 
   return (

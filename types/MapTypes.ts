@@ -22,8 +22,8 @@ interface PixelBlock {
     blockCount: number;
     type: number;
     status?: number;
-    landCoverImg?: string;
-    showCoverImgList?: Photo[];
+    landCoverImg?: string | null;
+    showCoverImgList?: Photo[] | [];
     groupId?: string;
     skipUrl?: string;
     useExternalLink?: boolean; // 是否使用外部链接

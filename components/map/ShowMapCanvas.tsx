@@ -11,7 +11,7 @@ import { useEvent } from "../utils/GeneralEvent";
 import { PixelBlock } from "@/types/MapTypes";
 import { Position } from "@/types/CanvasTypes";
 import { useBaseStore, useEditMapStore } from "./SocketManager";
-
+const PUBLIC_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ShowMapCanvas = ({
   initData,
   scale,
@@ -140,12 +140,11 @@ const ShowMapCanvas = ({
     };
 
     const newCoordinates = await fetchCoordinates(viewport);
-
     for (const coord of newCoordinates) {
-      if (coord.landCoverImg && !imagesRef.current[coord.id]) {
+      if (coord.landCoverImg && !imagesRef.current[coord.landCoverImg]) {
         const img = new Image();
         img.src = coord.landCoverImg;
-        imagesRef.current[coord.id] = img;
+        imagesRef.current[coord.landCoverImg] = img;
       }
     }
 
@@ -424,8 +423,8 @@ const ShowMapCanvas = ({
       buffCtx.fillStyle = coord.color;
       buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
 
-      if (coord.landCoverImg && imagesRef.current[coord.id]) {
-        const img = imagesRef.current[coord.id];
+      if (coord.landCoverImg && imagesRef.current[coord.landCoverImg]) {
+        const img = imagesRef.current[coord.landCoverImg];
         buffCtx.drawImage(img, scaledX, scaledY, scaledWidth, scaledHeight);
       }
     });
