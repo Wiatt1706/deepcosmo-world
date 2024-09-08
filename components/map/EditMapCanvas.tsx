@@ -1,18 +1,26 @@
 "use client";
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import styles from "@/styles/canvas/map-canvas.module.css";
-import { drawGrid, getMouseupPixel } from "./helpers/BaseDraw";
+import {
+  drawAim,
+  drawGrid,
+  drawRuler,
+  getMouseupPixel,
+} from "./helpers/BaseDraw";
 import { useEvent } from "../utils/GeneralEvent";
 import { PixelBlock } from "@/types/MapTypes";
 import { Position } from "@/types/CanvasTypes";
 import { useBaseStore, useEditMapStore } from "./SocketManager";
-const ShowMapCanvas = ({
+const PUBLIC_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const EditMapCanvas = ({
   initData,
   scale,
+  onSelectedPixelBlockChange,
   rectSize,
 }: {
   initData?: PixelBlock[];
   scale: number;
+  onSelectedPixelBlockChange?: (block: PixelBlock | null) => void;
   rectSize?: number;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -21,11 +29,17 @@ const ShowMapCanvas = ({
 
   const [
     toolInfo,
+    landInfo,
+    model,
+    setModel,
     selectedPixelBlock,
     setSelectedPixelBlock,
     setInitData,
   ] = useBaseStore((state: any) => [
     state.toolInfo,
+    state.landInfo,
+    state.model,
+    state.setModel,
     state.selectedPixelBlock,
     state.setSelectedPixelBlock,
     state.setInitData,
@@ -208,15 +222,151 @@ const ShowMapCanvas = ({
 
     const buffPosition = getMouseupPixel(e, buffCanvas, scale, mapCenter);
 
-    const clickedPixelBlock = showCoordinates.find(
-      (block) =>
-        buffPosition.x >= block.x &&
-        buffPosition.x < block.x + block.width &&
-        buffPosition.y >= block.y &&
-        buffPosition.y < block.y + block.height
+    switch (model) {
+      case "OBSERVE":
+        const clickedPixelBlock = showCoordinates.find(
+          (block) =>
+            buffPosition.x >= block.x &&
+            buffPosition.x < block.x + block.width &&
+            buffPosition.y >= block.y &&
+            buffPosition.y < block.y + block.height
+        );
+
+        if (onSelectedPixelBlockChange) {
+          setSelectedPixelBlock(clickedPixelBlock || null);
+          onSelectedPixelBlockChange(clickedPixelBlock || null); // Notify parent component
+        }
+        break;
+      case "EDIT":
+        if (mousePosition) {
+          const { adjustedX, adjustedY, brushSizeInPixels } =
+            calculatePixelBlockPosition(
+              mousePosition,
+              buffCanvas,
+              scale,
+              mapCenter,
+              toolInfo.pixelSize,
+              toolInfo.brushSize
+            );
+
+          // Check for overlap
+          const isOverlapping = pixelBlocks.some((block: PixelBlock) =>
+            checkOverlap(
+              adjustedX,
+              adjustedY,
+              brushSizeInPixels,
+              brushSizeInPixels,
+              block
+            )
+          );
+
+          // Check if the position is within the rectSize range
+          const isInRectSizeRange = rectSize
+            ? checkInRectSizeRange(
+                adjustedX,
+                adjustedY,
+                brushSizeInPixels,
+                brushSizeInPixels,
+                rectSize
+              )
+            : true;
+
+          const usePixelBlocks = toolInfo.brushSize * toolInfo.brushSize;
+          const checkCapacityUsedBlocks = () => {
+            return (
+              landInfo.capacity_size >=
+              landInfo.used_pixel_blocks + usePixelBlocks
+            );
+          };
+
+          if (
+            !isOverlapping &&
+            isInRectSizeRange &&
+            checkCapacityUsedBlocks()
+          ) {
+            const newPixelBlock: PixelBlock = {
+              id: adjustedX + "," + adjustedY,
+              type: 1,
+              x: adjustedX,
+              y: adjustedY,
+              width: brushSizeInPixels,
+              height: brushSizeInPixels,
+              blockCount: usePixelBlocks,
+              color: toolInfo.editColor,
+            };
+            setPixelBlocks([...pixelBlocks, newPixelBlock]);
+          } else {
+            // Trigger flash animation
+            setFlashOverlap(true);
+            setTimeout(() => setFlashOverlap(false), 300);
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  const checkOverlap = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    block: PixelBlock
+  ) => {
+    return (
+      x < block.x + block.width &&
+      x + width > block.x &&
+      y < block.y + block.height &&
+      y + height > block.y
+    );
+  };
+
+  const checkInRectSizeRange = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    rectSize: number
+  ) => {
+    const leftBoundary = -rectSize / 2;
+    const rightBoundary = rectSize / 2;
+    const topBoundary = -rectSize / 2;
+    const bottomBoundary = rectSize / 2;
+
+    return (
+      x >= leftBoundary &&
+      x + width <= rightBoundary &&
+      y >= topBoundary &&
+      y + height <= bottomBoundary
+    );
+  };
+
+  const calculatePixelBlockPosition = (
+    mousePosition: Position,
+    buffCanvas: HTMLCanvasElement,
+    scale: number,
+    mapCenter: Position,
+    pixelSize: number,
+    brushSize: number
+  ): { adjustedX: number; adjustedY: number; brushSizeInPixels: number } => {
+    const mousePixel = getMouseupPixel(
+      {
+        clientX: mousePosition.x,
+        clientY: mousePosition.y,
+      } as MouseEvent,
+      buffCanvas,
+      scale,
+      mapCenter
     );
 
-    setSelectedPixelBlock(clickedPixelBlock || null);
+    const gridX = Math.floor(mousePixel.x / pixelSize) * pixelSize;
+    const gridY = Math.floor(mousePixel.y / pixelSize) * pixelSize;
+    const adjustedX = gridX - Math.floor(brushSize / 2) * pixelSize;
+    const adjustedY = gridY - Math.floor(brushSize / 2) * pixelSize;
+    const brushSizeInPixels = pixelSize * brushSize;
+
+    return { adjustedX, adjustedY, brushSizeInPixels };
   };
 
   const drawBuff = () => {
@@ -249,16 +399,18 @@ const ShowMapCanvas = ({
       return height * scale - 2 * p;
     };
 
-    drawGrid(
-      buffCtx,
-      mapCenter,
-      scale,
-      toolInfo.pixelSize,
-      canvasWidth,
-      canvasHeight,
-      rectSize
-    );
- 
+    if (toolInfo.isGrid) {
+      drawGrid(
+        buffCtx,
+        mapCenter,
+        scale,
+        toolInfo.pixelSize,
+        canvasWidth,
+        canvasHeight,
+        rectSize
+      );
+    }
+
     showCoordinates.forEach((coord) => {
       const scaledPadding = coord.borderSize
         ? padding + coord.borderSize * scale
@@ -297,6 +449,49 @@ const ShowMapCanvas = ({
       );
       buffCtx.restore();
     }
+
+    if (model === "EDIT" && mousePosition) {
+      const { adjustedX, adjustedY, brushSizeInPixels } =
+        calculatePixelBlockPosition(
+          mousePosition,
+          buffCanvas,
+          scale,
+          mapCenter,
+          toolInfo.pixelSize,
+          toolInfo.brushSize
+        );
+
+      drawAim(
+        buffCtx,
+        toolInfo.pixelSize / 2,
+        CONVER_X(adjustedX),
+        CONVER_Y(adjustedY),
+        CONVER_WIDTH(brushSizeInPixels),
+        CONVER_HEIGHT(brushSizeInPixels)
+      ); // 绘制辅助线
+
+      if (flashOverlap) {
+        buffCtx.strokeStyle = "red";
+        buffCtx.lineWidth = 3;
+        buffCtx.strokeRect(
+          CONVER_X(adjustedX),
+          CONVER_Y(adjustedY),
+          CONVER_WIDTH(brushSizeInPixels),
+          CONVER_HEIGHT(brushSizeInPixels)
+        );
+      }
+    }
+
+    if (toolInfo.isGrid) {
+      drawRuler(
+        buffCtx,
+        mapCenter,
+        scale,
+        toolInfo.pixelSize,
+        canvasWidth,
+        canvasHeight
+      );
+    }
   };
 
   useEffect(() => {
@@ -325,4 +520,4 @@ const ShowMapCanvas = ({
   );
 };
 
-export default ShowMapCanvas;
+export default EditMapCanvas;

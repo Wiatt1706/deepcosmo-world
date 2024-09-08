@@ -93,6 +93,12 @@ export const LAND_LEVEL = [
     { value: "2", name: "2x2" },
     { value: "3", name: "3x3" },
     { value: "4", name: "4x4" },
+    { value: "5", name: "5x5" },
+    { value: "6", name: "6x6" },
+    { value: "7", name: "7x7" },
+    { value: "8", name: "8x8" },
+    { value: "9", name: "9x9" },
+    { value: "10", name: "10x10" },
 ];
 
 export const LAND_TYPE = [

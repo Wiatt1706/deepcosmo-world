@@ -4,7 +4,7 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import MenuLeft from "@/components/layout/menu-left";
 import LandInfoMenu from "@/components/land/land-info-menu";
-import NewMapIndex from "@/components/map/layout/NewMapIndex";
+import EditMapIndex from "@/components/map/layout/EditMapIndex";
 import { PixelBlock } from "@/types/MapTypes";
 
 export default async function EditInfo({ params }: any) {
@@ -73,7 +73,7 @@ export default async function EditInfo({ params }: any) {
         <LandInfoMenu landInfo={landInfo} menuactive="editor" />
       </MenuLeft>
       <div className="w-full max-h-screen h-full overflow-y-auto inline-block text-center justify-center bg-[#f3f6f8]">
-        <NewMapIndex
+        <EditMapIndex
           initData={pixelBlocks}
           initLandInfo={landInfo}
           session={session}

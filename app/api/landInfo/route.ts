@@ -1,6 +1,6 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import { PixelBlock } from "@/types/MapTypes";
+import { Photo, PixelBlock } from "@/types/MapTypes";
 import { LandInfoService } from "@/utils/serviceimpl";
 import { Json } from "@/types/database.types";
 
@@ -119,7 +119,7 @@ export async function PUT(request: Request) {
             if (updatedBlock.skipUrl !== undefined) updateData.skip_url = updatedBlock.skipUrl;
             if (updatedBlock.color !== undefined) updateData.fill_color = updatedBlock.color.toString();
             if (updatedBlock.showCoverImgList !== undefined) {
-                updateData.show_cover_list = updatedBlock.showCoverImgList.map(photo => ({
+                updateData.show_cover_list = updatedBlock.showCoverImgList.map((photo: Photo) => ({
                     id: photo.id,
                     src: photo.src,
                 }));

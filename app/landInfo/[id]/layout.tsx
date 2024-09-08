@@ -1,6 +1,3 @@
-import Footer from "@/components/layout/footer";
-import MenuLeft from "@/components/layout/menu-left";
-import { Navbar } from "@/components/layout/navbar";
 
 export default function BlogLayout({
   children,

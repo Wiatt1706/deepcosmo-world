@@ -2,7 +2,6 @@
 "use client";
 import styles from "@/styles/canvas/ViewTopTool.module.css";
 import {
-  Avatar,
   BreadcrumbItem,
   Breadcrumbs,
   Button,
@@ -10,33 +9,23 @@ import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
-  DropdownSection,
   DropdownTrigger,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   Slider,
   Switch,
 } from "@nextui-org/react";
 import {
-  TbBell,
-  TbCaretDown,
   TbCaretDownFilled,
-  TbChevronDown,
   TbChevronRight,
   TbCode,
-  TbDeviceFloppy,
   TbDownload,
   TbEye,
-  TbGeometry,
-  TbHelp,
   TbHelpCircle,
-  TbUpload,
 } from "react-icons/tb";
-import { useBaseStore } from "../SocketManager";
-import { NotificationList } from "@/components/utils/NotificationBar";
+import { useBaseStore, useEditMapStore } from "../SocketManager";
 import { LiLandsBoxSvg } from "@/components/utils/icons";
-import { ChevronDownIcon } from "lucide-react";
+import { handleExport } from "@/components/utils/ExcelUtil";
+import ModelTool from "./model/Model_Tool";
+import ModelPopUp from "@/components/utils/ModelPopUp";
 
 export default function TopToolView() {
   const [model, setModel, landInfo, canSave, isSaveing, setIsSaveing] =
@@ -48,6 +37,11 @@ export default function TopToolView() {
       state.isSaveing,
       state.setIsSaveing,
     ]);
+
+  const [pixelBlocks, setPixelBlocks] = useEditMapStore((state: any) => [
+    state.pixelBlocks,
+    state.setPixelBlocks,
+  ]);
 
   return (
     <div className={styles["top-view"]}>
@@ -128,12 +122,27 @@ export default function TopToolView() {
           </div>
 
           <div className="flex items-center px-4">
-            <div className="flex items-center justify-center w-[38px] h-[38px] rounded-full hover:bg-[#f3f6f8] text-[#4c5863] mr-1">
-              <TbDownload size={24} strokeWidth={1.1} />
-            </div>
-            <div className="flex items-center justify-center w-[38px] h-[38px] rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
-              <TbGeometry size={24} strokeWidth={1.1} />
-            </div>
+            <ModelPopUp
+              title="下载确认"
+              message="是否导出当前像素块数据？"
+              onConfirm={() => {
+                const currentDate = new Date();
+                const formattedDate = currentDate
+                  .toISOString()
+                  .slice(0, 10)
+                  .replace(/-/g, "");
+                handleExport(
+                  pixelBlocks,
+                  `${landInfo.land_name}_${formattedDate}`
+                );
+              }}
+              triggerContent={
+                <div className="flex items-center justify-center w-[38px] h-[38px] rounded-full hover:bg-[#f3f6f8] text-[#4c5863] mr-1">
+                  <TbDownload size={24} strokeWidth={1.1} />
+                </div>
+              }
+            />
+            <ModelTool />
           </div>
           <div className="px-2">
             <Button

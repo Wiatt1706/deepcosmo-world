@@ -7,7 +7,7 @@ import { TbPhoto, TbPlus, TbUpload } from "react-icons/tb";
 import { ImgToPixel } from "@/components/map/helpers/ImgToPixel";
 import { PixelBlock } from "@/types/MapTypes";
 import { Button } from "@nextui-org/button";
-import NewMapIndex from "@/components/map/layout/NewMapIndex";
+import NewMapIndex from "@/components/map/layout/EditMapIndex";
 import { Step } from "@/components/utils/Step";
 
 // Constants for controlling the image resolution range

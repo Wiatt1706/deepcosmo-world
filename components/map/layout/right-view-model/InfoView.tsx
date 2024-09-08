@@ -79,7 +79,7 @@ export default function RightInfoView({
           <div className="flex items-center justify-between">
             <span className="text-sm">级别</span>
             <span className="px-2 py-[2px] bg-[#f3f6f8] text-[12px] rounded">
-              {LAND_LEVEL[Number(landInfo?.land_level || 0)].name}
+              {LAND_LEVEL[Number(landInfo?.land_level || 0) - 1]?.name}
             </span>
           </div>
           <div className="flex items-center justify-between">

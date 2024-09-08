@@ -1,11 +1,6 @@
-import { Navbar } from "@/components/layout/navbar";
-export default function CommunityLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MapLayout({ children }: { children: React.ReactNode }) {
   return (
-    <section className="bg-[#f5f5f5]">
+    <section className="flex relative w-full h-[100vh] overflow-hidden">
       {children}
     </section>
   );

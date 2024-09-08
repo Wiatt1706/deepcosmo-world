@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@/styles/canvas/map-canvas.module.css";
-import ShowMapCanvas from "@/components/map/ShowMapCanvas";
+import EditMapCanvas from "@/components/map/EditMapCanvas";
 import { PixelBlock } from "@/types/MapTypes";
 import RightToolView from "./View_RightTool";
 import RightActView from "./View_Act";
@@ -44,14 +44,14 @@ const keyMap = {
   NINE: "9",
 };
 
-export default function NewMapIndex({
+export default function EditMapIndex({
   initData,
   initLandInfo,
   session,
 }: {
   initData?: PixelBlock[];
   initLandInfo?: Land;
-  session: Session | null;
+  session?: Session | null;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [
@@ -279,11 +279,16 @@ export default function NewMapIndex({
                 </div>
               </div>
             </div>
-            <ShowMapCanvas
+            <EditMapCanvas
               scale={scale}
               initData={initData}
               onSelectedPixelBlockChange={handleSelectedPixelBlockChange}
-              rectSize={100 * 20}
+              rectSize={
+                Number.parseInt(String(initLandInfo?.land_level) || "1") *
+                10 *
+                2 *
+                20
+              }
             />
           </div>
         </div>

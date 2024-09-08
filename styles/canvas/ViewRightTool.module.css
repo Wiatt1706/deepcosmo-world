@@ -1,6 +1,6 @@
 .right-view {
     position: absolute;
-    z-index: 90;
+    z-index: 20;
     right: 0;
     top: 46px;
     bottom: 0;
