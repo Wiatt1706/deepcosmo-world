@@ -109,6 +109,7 @@ algorithm.TerrainRenderer = ({
   maxPixels,
   exclusionWidth,
   exclusionHeight,
+  terrainColor,
 }: {
   detail: number;
   roughness: number;
@@ -117,6 +118,7 @@ algorithm.TerrainRenderer = ({
   maxPixels?: number;
   exclusionWidth?: number;
   exclusionHeight?: number;
+  terrainColor?: string | CanvasGradient | CanvasPattern | undefined | null;
 }): PixelBlock[] => {
   const terrain = algorithm.createDiamondSquareTerrain({
     detail,
@@ -231,7 +233,7 @@ algorithm.TerrainRenderer = ({
       width: pixelSize,
       height: pixelSize,
       blockCount: 1,
-      color: `hsl(${hue}, ${sat}%, ${lux}%)`,
+      color: terrainColor ? terrainColor : `hsl(${hue}, ${sat}%, ${lux}%)`,
     });
 
     checked.add(`${x},${y}`);

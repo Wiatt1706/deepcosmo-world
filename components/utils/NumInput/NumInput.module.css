@@ -51,3 +51,9 @@
     width: 100%;
     /* 设置字体大小 */
 }
+
+/* NumInput.module.css */
+.readOnly {
+    opacity: 0.6;
+    pointer-events: none;
+}

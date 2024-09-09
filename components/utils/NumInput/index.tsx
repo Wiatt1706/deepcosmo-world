@@ -14,6 +14,7 @@ interface NumInputProps {
   onUpdate: (newValue: number) => void;
   step?: number;
   className?: string;
+  readOnly?: boolean; // New readOnly prop
 }
 
 export const NumInput: React.FC<NumInputProps> = ({
@@ -26,6 +27,7 @@ export const NumInput: React.FC<NumInputProps> = ({
   onUpdate,
   step = 1,
   className = "",
+  readOnly = false, // Defaults to false (editable)
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const numInputRef = useRef<HTMLDivElement>(null);
@@ -38,15 +40,18 @@ export const NumInput: React.FC<NumInputProps> = ({
   const [editing, setEditing] = useState(false);
 
   const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    if (readOnly) return; // Prevent wheel increment in read-only mode
     const direction = event.deltaY > 0 ? 1 : -1;
     updateValue(direction * step);
   };
 
   const handleIncrement = () => {
+    if (readOnly) return; // Prevent increment in read-only mode
     updateValue(step);
   };
 
   const handleDecrement = () => {
+    if (readOnly) return; // Prevent decrement in read-only mode
     updateValue(-step);
   };
 
@@ -71,6 +76,8 @@ export const NumInput: React.FC<NumInputProps> = ({
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (readOnly) return; // Prevent dragging in read-only mode
+
     dragStartX.current = e.clientX;
     isDragging.current = true;
     hasMoved.current = false;
@@ -84,7 +91,7 @@ export const NumInput: React.FC<NumInputProps> = ({
   };
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging.current) return;
+    if (!isDragging.current || readOnly) return;
 
     if (dragStartX.current !== null) {
       const deltaX = e.clientX - dragStartX.current;
@@ -104,7 +111,7 @@ export const NumInput: React.FC<NumInputProps> = ({
       numInputRef.current.style.cursor = "auto";
       numInputRef.current.style.backgroundColor = "initial";
     }
-    if (!hasMoved.current) {
+    if (!hasMoved.current && !readOnly) {
       setEditing(true);
     }
   };
@@ -121,7 +128,7 @@ export const NumInput: React.FC<NumInputProps> = ({
 
   return (
     <div
-      className={clsx(styles.numInput, className)}
+      className={clsx(styles.numInput, className, readOnly && styles.readOnly)} // Optional read-only styling
       onWheel={(e) => handleWheel(e)}
       ref={numInputRef}
     >
@@ -152,6 +159,7 @@ export const NumInput: React.FC<NumInputProps> = ({
           step={step}
           onChange={handleInputChange}
           onBlur={handleInputBlur}
+          disabled={readOnly} // Disable input in read-only mode
         />
       )}
     </div>
@@ -167,6 +175,7 @@ interface DegreeNumInputProps {
   suffix?: ReactNode; // Updated to ReactNode
   step?: number;
   className?: string;
+  readOnly?: boolean; // New readOnly prop
 }
 
 export const DegreeNumInput: React.FC<DegreeNumInputProps> = ({
@@ -176,6 +185,7 @@ export const DegreeNumInput: React.FC<DegreeNumInputProps> = ({
   suffix,
   step,
   className,
+  readOnly,
 }) => {
   const [inputValue, setInputValue] = useState(radiansToDegrees(value));
 
@@ -192,6 +202,7 @@ export const DegreeNumInput: React.FC<DegreeNumInputProps> = ({
       suffix={suffix}
       step={step}
       className={className}
+      readOnly={readOnly} // Pass readOnly prop down
     />
   );
 };

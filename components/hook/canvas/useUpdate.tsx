@@ -6,6 +6,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { UploadService } from "@/utils/serviceimpl";
 import { v4 as uuidv4 } from "uuid";
 import { useBaseStore, useEditMapStore } from "@/components/map/SocketManager";
+import { useNotification } from "@/components/utils/NotificationBar";
 
 const PUBLIC_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const bucket = "deepcosmo_img";
@@ -25,11 +26,16 @@ export const useDebounce = (
 const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
   const supabase = createClientComponentClient();
 
-  const [setCanSave, isSaveing, setIsSaveing] = useBaseStore((state: any) => [
-    state.setCanSave,
-    state.isSaveing,
-    state.setIsSaveing,
-  ]);
+  const addNotification = useNotification((state) => state.addNotification);
+
+  const [setCanSave, isSaveing, setIsSaveing, landInfo] = useBaseStore(
+    (state: any) => [
+      state.setCanSave,
+      state.isSaveing,
+      state.setIsSaveing,
+      state.landInfo,
+    ]
+  );
 
   const pixelBlocks = useEditMapStore(
     useCallback((state: any) => state.pixelBlocks as PixelBlock[], [])
@@ -370,9 +376,19 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
   // 监听保存状态的变化
   useEffect(() => {
     if (isSaveing) {
+      if (landInfo.capacity_size < landInfo.used_pixel_blocks) {
+        addNotification("当前可用土块不足，无法保存，请减少使用量再次尝试", "error", "保存异常");
+        setIsSaveing(false);
+        return;
+      }
       saveChanges();
     }
-  }, [isSaveing, saveChanges]);
+  }, [
+    isSaveing,
+    saveChanges,
+    landInfo.capacity_size,
+    landInfo.used_pixel_blocks,
+  ]);
 };
 
 export default useUpdate;

@@ -68,9 +68,6 @@ const ShowMapCanvas = ({
 
   useEvent("mousemove", (e: MouseEvent) => {
     setIsDragging(true);
-    if (model === "EDIT") {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    }
     if (!isDrag || !dragStartRef.current) return;
 
     const deltaX = (e.clientX - dragStartRef.current.x) / scale;

@@ -1,10 +1,36 @@
 import React, { useState } from "react";
-import { TbUpload, TbTrash } from "react-icons/tb"; // 引入删除图标
+import { TbUpload, TbTrash, TbHelpOctagon } from "react-icons/tb"; // 引入删除图标
 import { utils, read } from "xlsx";
 import { PixelBlock } from "@/types/MapTypes";
 import TableShow from "@/components/utils/TeabelShow";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { useEditMapStore } from "@/components/map/SocketManager";
+
+export const IntegrationData = (
+  pixelBlocks: PixelBlock[],
+  excelData: PixelBlock[]
+) => {
+  let updatedBlocks = [...pixelBlocks]; // 复制现有的 pixelBlocks
+  const intersectingBlocks = new Set<PixelBlock>(); // 存储相交的 pixelBlocks
+
+  // 查找与 excelData 相交的 pixelBlocks
+  excelData.forEach((newBlock) => {
+    pixelBlocks.forEach((existingBlock: PixelBlock) => {
+      if (isRectIntersect(newBlock, existingBlock)) {
+        intersectingBlocks.add(existingBlock); // 找到相交的 block
+      }
+    });
+  });
+
+  if (intersectingBlocks.size > 0) {
+    // 从 pixelBlocks 中删除相交的 blocks
+    updatedBlocks = updatedBlocks.filter(
+      (block) => !intersectingBlocks.has(block)
+    );
+  }
+
+  return [...updatedBlocks, ...excelData];
+};
 
 // 校验导入数据是否符合 PixelBlock 接口
 const isValidPixelBlock = (data: any): data is PixelBlock => {
@@ -21,7 +47,10 @@ const isValidPixelBlock = (data: any): data is PixelBlock => {
 };
 
 // 判断两个矩形是否相交
-const isRectIntersect = (rectA: PixelBlock, rectB: PixelBlock): boolean => {
+export const isRectIntersect = (
+  rectA: PixelBlock,
+  rectB: PixelBlock
+): boolean => {
   return !(
     (
       rectA.x + rectA.width <= rectB.x || // A的右边在B的左边
@@ -38,6 +67,7 @@ export default function ModelUpload({ onClose }: { onClose: () => void }) {
     state.pixelBlocks,
     state.setPixelBlocks,
   ]);
+  const [hasIntersection, setHasIntersection] = useState(false); // 是否存在相交的块
 
   // 处理文件上传
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,14 +91,26 @@ export default function ModelUpload({ onClose }: { onClose: () => void }) {
 
       if (validData.length > 0) {
         setExcelData(validData as PixelBlock[]);
-        console.log("导入的有效数据：", validData);
+        // 检查是否存在相交的块
+        const intersectingBlocks = new Set<PixelBlock>();
+        (validData as PixelBlock[]).forEach((newBlock) => {
+          pixelBlocks.forEach((existingBlock: PixelBlock) => {
+            if (isRectIntersect(newBlock, existingBlock)) {
+              intersectingBlocks.add(existingBlock);
+            }
+          });
+        });
+        setHasIntersection(intersectingBlocks.size > 0); // 更新相交状态
       } else {
         console.log("没有符合 PixelBlock 格式的数据");
       }
     };
     reader.readAsArrayBuffer(file); // 读取文件
   };
-
+  const handleSave = () => {
+    setPixelBlocks([...pixelBlocks, ...excelData]);
+    onClose();
+  };
   // 处理删除导入的数据
   const handleDelete = () => {
     setExcelData([]); // 清空数据
@@ -79,36 +121,8 @@ export default function ModelUpload({ onClose }: { onClose: () => void }) {
     document.getElementById(id)!.click();
   };
 
-  // 替换当前的 pixelBlocks
-  const handleReplace = () => {
-    setPixelBlocks(excelData); // 将 excelData 替换当前的 pixelBlocks
-    onClose();
-  };
-
-  // 融入当前的 pixelBlocks
-  const handleMerge = () => {
-    let updatedBlocks = [...pixelBlocks]; // 复制现有的 pixelBlocks
-    const intersectingBlocks = new Set<PixelBlock>(); // 存储相交的 pixelBlocks
-
-    // 查找与 excelData 相交的 pixelBlocks
-    excelData.forEach((newBlock) => {
-      pixelBlocks.forEach((existingBlock: PixelBlock) => {
-        if (isRectIntersect(newBlock, existingBlock)) {
-          intersectingBlocks.add(existingBlock); // 找到相交的 block
-        }
-      });
-    });
-
-    if (intersectingBlocks.size > 0) {
-      // 从 pixelBlocks 中删除相交的 blocks
-      updatedBlocks = updatedBlocks.filter(
-        (block) => !intersectingBlocks.has(block)
-      );
-    }
-
-    // 将 excelData 融入到剩余的 pixelBlocks 中
-    updatedBlocks = [...updatedBlocks, ...excelData];
-    setPixelBlocks(updatedBlocks);
+  const handleMerge = (a: PixelBlock[], b: PixelBlock[]) => {
+    setPixelBlocks(IntegrationData(a, b));
     onClose();
   };
 
@@ -140,7 +154,7 @@ export default function ModelUpload({ onClose }: { onClose: () => void }) {
       {excelData.length > 0 && (
         <div>
           <TableShow pixelBlocks={excelData} />
-          <ButtonGroup className="w-full mt-4">
+          <ButtonGroup className="w-full my-4">
             <Button
               isIconOnly
               size="lg"
@@ -149,24 +163,44 @@ export default function ModelUpload({ onClose }: { onClose: () => void }) {
             >
               <TbTrash />
             </Button>
-            <Button
-              className="w-full"
-              size="lg"
-              aria-label="replace"
-              onClick={handleReplace}
-            >
-              替换
-            </Button>
-            <Button
-              className="w-full"
-              size="lg"
-              color="primary"
-              aria-label="merge"
-              onClick={handleMerge}
-            >
-              融入
-            </Button>
+            {hasIntersection ? ( // 如果存在相交块，显示累增和融入按钮
+              <>
+                <Button
+                  className="w-full"
+                  size="lg"
+                  aria-label="replace"
+                  onClick={() => handleMerge(excelData, pixelBlocks)}
+                >
+                  删除导入重复
+                </Button>
+                <Button
+                  className="w-full"
+                  size="lg"
+                  color="primary"
+                  aria-label="merge"
+                  onClick={() => handleMerge(pixelBlocks, excelData)}
+                >
+                  删除已有重复
+                </Button>
+              </>
+            ) : (
+              // 不存在相交块时，仅显示“保存”按钮
+              <Button
+                className="w-full"
+                size="lg"
+                color="primary"
+                aria-label="save"
+                onClick={handleSave}
+              >
+                保存
+              </Button>
+            )}
           </ButtonGroup>
+          {hasIntersection && (
+            <div className="flex gap-2 items-center text-sm text-gray-500 p-2">
+              <TbHelpOctagon /> 存在相交的冲突像素块
+            </div>
+          )}
         </div>
       )}
     </div>
