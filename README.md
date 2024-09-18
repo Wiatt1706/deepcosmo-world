@@ -37,4 +37,4 @@ npx supabase gen types typescript --project-id mazrpbjakqosxybtccqi --schema pub
 
 ---
 
-希望大家给出建议，不吝指教！
+希望大家给出建议，不吝指教！..

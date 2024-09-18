@@ -54,6 +54,9 @@ export default async function Home({
     .select("*")
     .eq("label_type", "0");
 
+    console.log("products", products);
+    console.log("keywords", keywords);
+    
   return (
     <Suspense fallback={<RouteLoader />}>
       <Navbar />

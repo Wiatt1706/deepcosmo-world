@@ -7,60 +7,60 @@
                     <path id="路径_8" data-name="路径 8"
                         d="M223.035,162.855a68.074,68.074,0,0,1-38.213,61.193,66.2,66.2,0,0,1-29.78,6.935H97.248V95h57.929a67.629,67.629,0,0,1,67.859,67.857Zm-31.28.136a36.736,36.736,0,0,0-36.716-36.716H129.475v73.432h26.109A36.534,36.534,0,0,0,191.755,162.99Z"
                         transform="translate(-97.248 -94.997)" fill="#fff" stroke="#fff"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                 </g>
                 <g id="path154846" transform="translate(163.196 0)">
                     <rect id="矩形_18" data-name="矩形 18" width="96.277" height="28.693"
                         transform="translate(0)" fill="#980c0c" stroke="#980c0c"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                     <path id="路径_9" data-name="路径 9"
                         d="M200.035,171.974v28.693H103.759V118.939h94.783v28.692H135.987v24.342Z"
                         transform="translate(-103.759 -64.681)" fill="#fff" stroke="#fff"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                 </g>
                 <g id="path154848" transform="translate(296.913 0)">
                     <rect id="矩形_19" data-name="矩形 19" width="96.277" height="28.693"
                         transform="translate(0)" fill="#980c0c" stroke="#980c0c"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                     <path id="路径_10" data-name="路径 10"
                         d="M200.035,171.974v28.693H103.759V118.939h94.783v28.692H135.987v24.342Z"
                         transform="translate(-103.759 -64.681)" fill="#fff" stroke="#fff"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                 </g>
                 <g id="path154850" transform="translate(430.63)">
                     <path id="路径_11" data-name="路径 11"
                         d="M210.209,138.784c0,23.8-16.316,43.924-45.69,43.924H133.107v48.275H100.878V95h63.641C194.028,95,210.209,114.988,210.209,138.784Zm-32.77,0c0-9.111-6.529-15.094-16.728-15.094h-27.6v30.188h27.6C170.64,153.879,177.3,147.9,177.439,138.784Z"
                         transform="translate(-100.878 -94.997)" fill="#fff" stroke="#fff"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                 </g>
                 <g id="path154852" transform="translate(577.494)">
                     <path id="路径_12" data-name="路径 12"
                         d="M192.4,202.29v28.693H105.919V95h32.229V202.29Z"
                         transform="translate(-105.919 -94.997)" fill="#fff" stroke="#fff"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                 </g>
                 <g id="path154854" transform="translate(701.252 0)">
                     <path id="路径_13" data-name="路径 13"
                         d="M182.733,95h-36.31L93.8,230.984h36.58l34.268-97.5,17.136,48.957h0l17,48.546h36.444Z"
                         transform="translate(-93.798 -94.997)" fill="#fff" stroke="#fff"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                     <path id="路径_14" data-name="路径 14" d="M137.11,173.684l-21.6-33.436h43.012Z"
                         transform="translate(-66.304 -37.698)" fill="#980c0c" stroke="#980c0c"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                 </g>
                 <g id="path154856" transform="translate(879.984)">
                     <path id="路径_15" data-name="路径 15"
                         d="M215.719,230.983H176.013l-37.261-49.227-7.207,8.568v40.659H99.318V95h32.229v51.4L172.2,95h39.845l-53.986,63.777Z"
                         transform="translate(-99.318 -94.997)" fill="#fff" stroke="#fff"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                 </g>
                 <g id="path154858" transform="translate(1033.619 0)">
                     <rect id="矩形_20" data-name="矩形 20" width="96.277" height="28.693" fill="#980c0c"
-                        stroke="#980c0c" stroke-miterlimit="2" stroke-width="0" />
+                        stroke="#980c0c" stroke-miterlimit="2" strokeWidth="0" />
                     <path id="路径_16" data-name="路径 16"
                         d="M200.035,171.974v28.693H103.759V118.939h94.783v28.692H135.987v24.342Z"
                         transform="translate(-103.758 -64.681)" fill="#fff" stroke="#fff"
-                        stroke-miterlimit="2" stroke-width="0" />
+                        stroke-miterlimit="2" strokeWidth="0" />
                 </g>
             </g>
         </g>

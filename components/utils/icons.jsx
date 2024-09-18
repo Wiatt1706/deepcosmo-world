@@ -269,9 +269,9 @@ export const LogoSvg = ({
       <path
         d="M5 5V37L13 29L21 21M5 5C5 5 9.87581 9.87581 13 13M5 5L13 13M37 5C37 5 32.1242 9.87581 29 13M37 37C33.8758 33.8758 29 29 29 29C29 29 24.1242 24.1242 21 21M21 21C17.8758 17.8758 16.1242 16.1242 13 13M21 21L13 13"
         stroke="#0070F0"
-        stroke-width="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -323,44 +323,44 @@ export const ImportModelSvg = ({
         <path
           d="M41.5 72.625L13.8333 57.0625V25.9375L41.5 10.375L69.1667 25.9375V41.5"
           stroke="#A1A1AA"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           d="M41.5 41.5L69.1667 25.9375"
           stroke="#A1A1AA"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           d="M41.5 41.5V72.625"
           stroke="#A1A1AA"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           d="M41.5 41.5L13.8333 25.9375"
           stroke="#A1A1AA"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           d="M76.0833 62.25H51.875"
           stroke="#A1A1AA"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           d="M62.25 51.875L51.875 62.25L62.25 72.625"
           stroke="#A1A1AA"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </g>
       <defs>
