@@ -76,7 +76,7 @@ export default function EditMapIndex({
   ]);
   const [isAct, setIsAct] = useState<boolean>(true);
   const [isRightAct, setIsRightAct] = useState<boolean>(false);
-  const { scale, setScale } = useScale(1, 0.2, 5, containerRef.current);
+  const { scale, setScale } = useScale(1, 0.5, 5, 0.5, containerRef.current);
   const [selectedModule, setSelectedModule] = useState<string>("");
 
   useUpdate(initLandInfo?.id, initData);
@@ -181,15 +181,11 @@ export default function EditMapIndex({
         </CSSTransition>
 
         <div
-          className={`h-[calc(100%-46px)] ${
+          className={`h-[calc(100%-46px)] transition-all ${
             model === "EDIT"
               ? "h-[calc(100%-46px-46px)]"
               : "h-[calc(100%-46px)]"
-          } ${styles["transition-all"]} ${
-            isRightAct
-              ? "w-[calc(100%-340px)] bg-gray-200"
-              : "w-[calc(100%)] bg-white"
-          }`}
+          }  ${isRightAct ? "w-[calc(100%-340px)]" : "w-[calc(100%)]"}`}
         >
           {model === "EDIT" && <EditToolView />}
 

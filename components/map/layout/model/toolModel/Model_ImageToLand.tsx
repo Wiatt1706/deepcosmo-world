@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import styles from "@/styles/canvas/ViewLeftTool.module.css";
+import styles from "@/styles/canvas/ViewLeftMenu.module.css";
 import { PixelBlock } from "@/types/MapTypes";
 import { TbPhoto, TbTrash, TbCheck, TbHelpOctagon } from "react-icons/tb";
 import { ImgToPixel } from "@/components/map/helpers/ImgToPixel";

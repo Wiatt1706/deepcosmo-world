@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: 'Noto Sans';
+    src: url('/public/fonts/static/NotoSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans';
+    src: url('/public/fonts/static/NotoSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 /*display 布局样式*/
 .d_c_b {
     display: flex;
@@ -24,6 +38,10 @@
     flex-direction: column
 }
 
+.transition-all {
+    transition: all 0.3s ease-in-out;
+    z-index: 1;
+}
 
 /* 针对Webkit内核浏览器 (如Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
@@ -63,5 +81,6 @@ html {
 /* 针对IE 10+和Edge (旧版) */
 body {
     -ms-overflow-style: -ms-autohiding-scrollbar;
+    font-family: 'Noto Sans', sans-serif;
     /* 自动隐藏滚动条 */
 }

@@ -1,6 +1,6 @@
 // pages/NewMapPage.tsx
 "use client";
-import styles from "@/styles/canvas/ViewLeftTool.module.css";
+import styles from "@/styles/canvas/ViewLeftMenu.module.css";
 import { RadioGroup, cn } from "@nextui-org/react";
 import { TbRefresh } from "react-icons/tb";
 import algorithm, { TerrainType } from "../helpers/algorithm";
@@ -10,7 +10,7 @@ import { NumInput } from "@/components/utils/NumInput";
 import { CustomRadio } from "@/components/utils/CustomRadio";
 import { ColorPicker } from "@/components/utils/ColorPicker";
 
-export default function LeftToolView() {
+export default function LeftToolViewCopy() {
   const [toolInfo, setToolInfo, initData] = useBaseStore((state: any) => [
     state.toolInfo,
     state.setToolInfo,

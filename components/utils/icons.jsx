@@ -597,9 +597,9 @@ export const GeminiSVG = ({
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(-126 209.192) scale(444 3619.89)"
         >
-          <stop offset="0.385135" stop-color="#9E72BA" />
-          <stop offset="0.734299" stop-color="#D65C67" />
-          <stop offset="0.931035" stop-color="#D6635C" />
+          <stop offset="0.385135" stopColor="#9E72BA" />
+          <stop offset="0.734299" stopColor="#D65C67" />
+          <stop offset="0.931035" stopColor="#D6635C" />
         </radialGradient>
         <radialGradient
           id="paint1_radial_0_1"
@@ -609,9 +609,9 @@ export const GeminiSVG = ({
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(249.569 384.221) scale(180.736 1442.52)"
         >
-          <stop offset="0.385135" stop-color="#9E72BA" />
-          <stop offset="0.734299" stop-color="#D65C67" />
-          <stop offset="0.931035" stop-color="#D6635C" />
+          <stop offset="0.385135" stopColor="#9E72BA" />
+          <stop offset="0.734299" stopColor="#D65C67" />
+          <stop offset="0.931035" stopColor="#D6635C" />
         </radialGradient>
       </defs>
     </svg>
@@ -665,8 +665,8 @@ export const BlockCoinsSvg = ({
           y2="379"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFF901" />
-          <stop offset="1" stop-color="#FCD003" />
+          <stop stopColor="#FFF901" />
+          <stop offset="1" stopColor="#FCD003" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_0_1"
@@ -676,8 +676,8 @@ export const BlockCoinsSvg = ({
           y2="52"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFF901" />
-          <stop offset="1" stop-color="#FCD003" />
+          <stop stopColor="#FFF901" />
+          <stop offset="1" stopColor="#FCD003" />
         </linearGradient>
       </defs>
     </svg>

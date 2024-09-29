@@ -4,14 +4,16 @@ import styles from "@/styles/canvas/map-canvas.module.css";
 import {
   drawAim,
   drawGrid,
+  drawRectFrame,
   drawRuler,
   getMouseupPixel,
+  throttle,
 } from "./helpers/BaseDraw";
 import { useEvent } from "../utils/GeneralEvent";
 import { PixelBlock } from "@/types/MapTypes";
 import { Position } from "@/types/CanvasTypes";
 import { useBaseStore, useEditMapStore } from "./SocketManager";
-const PUBLIC_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+import { useCanvasSize } from "../hook/canvas/useCanvasBase";
 const EditMapCanvas = ({
   initData,
   scale,
@@ -59,6 +61,8 @@ const EditMapCanvas = ({
 
   const dragStartRef = useRef<Position | null>(null);
 
+  const initializeCanvasSize = useCanvasSize(containerRef, buffRef);
+
   useEvent("mouseup", (e: MouseEvent) => {
     if (isDrag) {
       if (!isDragging) {
@@ -98,33 +102,19 @@ const EditMapCanvas = ({
     dragStartRef.current = { x: e.clientX, y: e.clientY };
   });
 
-  const initializeCanvasSize = useCallback(() => {
-    const container = containerRef.current;
-    const buffCtx = buffRef?.current?.getContext("2d");
-
-    if (!container || !buffCtx) return;
-
-    const dpr = window.devicePixelRatio;
-    buffCtx.canvas.width = Math.round(container.clientWidth * dpr);
-    buffCtx.canvas.height = Math.round(container.clientHeight * dpr);
-
-    buffCtx.canvas.style.width = `${container.clientWidth}px`;
-    buffCtx.canvas.style.height = `${container.clientHeight}px`;
-    buffCtx.scale(dpr, dpr);
-  }, []);
-
   const fetchCoordinates = async (viewport: {
     x: number;
     y: number;
     width: number;
     height: number;
   }): Promise<PixelBlock[]> => {
+    // Check for pixel blocks that overlap or intersect the viewport
     return pixelBlocks.filter(
-      (coord: PixelBlock) =>
-        coord.x >= viewport.x &&
-        coord.x <= viewport.x + viewport.width &&
-        coord.y >= viewport.y &&
-        coord.y <= viewport.y + viewport.height
+      (block: PixelBlock) =>
+        block.x + block.width >= viewport.x &&
+        block.x <= viewport.x + viewport.width &&
+        block.y + block.height >= viewport.y &&
+        block.y <= viewport.y + viewport.height
     );
   };
 
@@ -132,14 +122,21 @@ const EditMapCanvas = ({
     const buffCtx = buffRef.current?.getContext("2d");
     if (!buffCtx) return;
 
+    // Calculate viewport bounds based on current canvas dimensions and scale
+    const halfWidth = buffCtx.canvas.width / (2 * scale);
+    const halfHeight = buffCtx.canvas.height / (2 * scale);
+
     const viewport = {
-      x: mapCenter.x - buffCtx.canvas.width / (2 * scale),
-      y: mapCenter.y - buffCtx.canvas.height / (2 * scale),
+      x: mapCenter.x - halfWidth,
+      y: mapCenter.y - halfHeight,
       width: buffCtx.canvas.width / scale,
       height: buffCtx.canvas.height / scale,
     };
 
+    // Fetch and set pixel blocks that intersect with the current viewport
     const newCoordinates = await fetchCoordinates(viewport);
+
+    // Handle the loading of any land cover images
     for (const coord of newCoordinates) {
       if (coord.landCoverImg && !imagesRef.current[coord.landCoverImg]) {
         const img = new Image();
@@ -148,20 +145,8 @@ const EditMapCanvas = ({
       }
     }
 
+    // Update the state with the new coordinates
     setShowCoordinates(newCoordinates);
-  };
-
-  const throttle = (func: Function, limit: number) => {
-    let inThrottle: boolean;
-    return function (this: any) {
-      const args = arguments;
-      const context = this;
-      if (!inThrottle) {
-        func.apply(context, args);
-        inThrottle = true;
-        setTimeout(() => (inThrottle = false), limit);
-      }
-    };
   };
 
   const throttledFetchData = useCallback(throttle(fetchData, 500), [
@@ -380,7 +365,7 @@ const EditMapCanvas = ({
     const canvasWidth = buffCtx.canvas.width / dpr;
     const canvasHeight = buffCtx.canvas.height / dpr;
 
-    const padding = (toolInfo.pixelPadding * scale) / dpr + 0.1;
+    const padding = (toolInfo.pixelPadding * scale) / dpr;
 
     const CONVER_X = (x: number, p?: number) => {
       if (!p) p = padding;
@@ -434,20 +419,7 @@ const EditMapCanvas = ({
       const scaledY = CONVER_Y(selectedPixelBlock.y);
       const scaledWidth = CONVER_WIDTH(selectedPixelBlock.width);
       const scaledHeight = CONVER_HEIGHT(selectedPixelBlock.height);
-      // 被选中的像素块添加特殊样式，边框向内绘制
-      buffCtx.save();
-      buffCtx.beginPath();
-      buffCtx.rect(scaledX, scaledY, scaledWidth, scaledHeight);
-      buffCtx.clip();
-      buffCtx.strokeStyle = "#006fef";
-      buffCtx.lineWidth = 3 * dpr;
-      buffCtx.strokeRect(
-        scaledX + buffCtx.lineWidth / 2,
-        scaledY + buffCtx.lineWidth / 2,
-        scaledWidth - buffCtx.lineWidth,
-        scaledHeight - buffCtx.lineWidth
-      );
-      buffCtx.restore();
+      drawRectFrame(buffCtx, scaledX, scaledY, scaledWidth, scaledHeight, dpr);
     }
 
     if (model === "EDIT" && mousePosition) {
@@ -494,16 +466,6 @@ const EditMapCanvas = ({
     }
   };
 
-  useEffect(() => {
-    throttledFetchData();
-  }, [
-    mapCenter,
-    scale,
-    pixelBlocks,
-    toolInfo,
-    selectedPixelBlock,
-    throttledFetchData,
-  ]);
 
   useEffect(() => {
     const animationFrameId = requestAnimationFrame(render);

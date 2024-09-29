@@ -1,49 +1,72 @@
 "use client";
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import styles from "@/styles/canvas/map-canvas.module.css";
-import { drawGrid, getMouseupPixel } from "./helpers/BaseDraw";
+import {
+  drawGrid,
+  drawRectFrame,
+  drawRuler,
+  getMouseupPixel,
+  throttle,
+} from "./helpers/BaseDraw";
 import { useEvent } from "../utils/GeneralEvent";
 import { PixelBlock } from "@/types/MapTypes";
 import { Position } from "@/types/CanvasTypes";
-import { useBaseStore, useEditMapStore } from "./SocketManager";
+import { useCanvasSize } from "../hook/canvas/useCanvasBase";
+import { useShowBaseStore } from "./layout/ShowMapIndex";
+
 const ShowMapCanvas = ({
-  initData,
+  loadData,
   scale,
-  rectSize,
+  loadX,
+  loadY,
+  pixelPadding = 1,
 }: {
-  initData?: PixelBlock[];
+  loadData?: PixelBlock[];
   scale: number;
-  rectSize?: number;
+  loadX?: number;
+  loadY?: number;
+  pixelPadding?: number;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const buffRef = useRef<HTMLCanvasElement | null>(null);
   const imagesRef = useRef<{ [key: string]: HTMLImageElement }>({});
 
   const [
-    toolInfo,
     selectedPixelBlock,
     setSelectedPixelBlock,
-    setInitData,
-  ] = useBaseStore((state: any) => [
-    state.toolInfo,
+    lastListPixelBlock,
+    setLastListPixelBlock,
+    setViewport,
+    setViewMapCenter,
+  ] = useShowBaseStore((state: any) => [
     state.selectedPixelBlock,
     state.setSelectedPixelBlock,
-    state.setInitData,
+    state.lastListPixelBlock,
+    state.setLastListPixelBlock,
+    state.setViewport,
+    state.setViewMapCenter,
   ]);
 
-  const [pixelBlocks, setPixelBlocks] = useEditMapStore((state: any) => [
-    state.pixelBlocks,
-    state.setPixelBlocks,
-  ]);
-
-  const [showCoordinates, setShowCoordinates] = useState<PixelBlock[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isDrag, setIsDrag] = useState<boolean>(false);
-  const [mapCenter, setMapCenter] = useState<Position>({ x: 0, y: 0 });
-  const [mousePosition, setMousePosition] = useState<Position | null>(null);
-  const [flashOverlap, setFlashOverlap] = useState(false);
+  const [mapCenter, setMapCenter] = useState<Position>({
+    x: loadX || 0,
+    y: loadY || 0,
+  });
 
   const dragStartRef = useRef<Position | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDrag, setIsDrag] = useState<boolean>(false);
+
+  const initializeCanvasSize = useCanvasSize(containerRef, buffRef);
+
+  useEffect(() => {
+    loadData?.forEach((coord) => {
+      if (coord.landCoverImg && !imagesRef.current[coord.landCoverImg]) {
+        const img = new Image();
+        img.src = coord.landCoverImg;
+        imagesRef.current[coord.landCoverImg] = img;
+      }
+    });
+  }, loadData);
 
   useEvent("mouseup", (e: MouseEvent) => {
     if (isDrag) {
@@ -74,83 +97,34 @@ const ShowMapCanvas = ({
     const deltaY = (e.clientY - dragStartRef.current.y) / scale;
 
     setMapCenter((prev) => ({
-      x: prev.x - deltaX,
-      y: prev.y - deltaY,
+      x: Math.round(prev.x - deltaX),
+      y: Math.round(prev.y - deltaY),
     }));
 
     dragStartRef.current = { x: e.clientX, y: e.clientY };
   });
 
-  const initializeCanvasSize = useCallback(() => {
-    const container = containerRef.current;
-    const buffCtx = buffRef?.current?.getContext("2d");
-
-    if (!container || !buffCtx) return;
-
-    const dpr = window.devicePixelRatio;
-    buffCtx.canvas.width = Math.round(container.clientWidth * dpr);
-    buffCtx.canvas.height = Math.round(container.clientHeight * dpr);
-
-    buffCtx.canvas.style.width = `${container.clientWidth}px`;
-    buffCtx.canvas.style.height = `${container.clientHeight}px`;
-    buffCtx.scale(dpr, dpr);
-  }, []);
-
-  const fetchCoordinates = async (viewport: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  }): Promise<PixelBlock[]> => {
-    return pixelBlocks.filter(
-      (coord: PixelBlock) =>
-        coord.x >= viewport.x &&
-        coord.x <= viewport.x + viewport.width &&
-        coord.y >= viewport.y &&
-        coord.y <= viewport.y + viewport.height
-    );
-  };
-
-  const fetchData = async () => {
+  const fetchData = () => {
     const buffCtx = buffRef.current?.getContext("2d");
     if (!buffCtx) return;
 
+    const halfWidth = buffCtx.canvas.width / (2 * scale);
+    const halfHeight = buffCtx.canvas.height / (2 * scale);
+
     const viewport = {
-      x: mapCenter.x - buffCtx.canvas.width / (2 * scale),
-      y: mapCenter.y - buffCtx.canvas.height / (2 * scale),
+      x: mapCenter.x - halfWidth,
+      y: mapCenter.y - halfHeight,
       width: buffCtx.canvas.width / scale,
       height: buffCtx.canvas.height / scale,
     };
 
-    const newCoordinates = await fetchCoordinates(viewport);
-    for (const coord of newCoordinates) {
-      if (coord.landCoverImg && !imagesRef.current[coord.landCoverImg]) {
-        const img = new Image();
-        img.src = coord.landCoverImg;
-        imagesRef.current[coord.landCoverImg] = img;
-      }
-    }
-
-    setShowCoordinates(newCoordinates);
+    setViewport(viewport);
+    setViewMapCenter(mapCenter);
   };
 
-  const throttle = (func: Function, limit: number) => {
-    let inThrottle: boolean;
-    return function (this: any) {
-      const args = arguments;
-      const context = this;
-      if (!inThrottle) {
-        func.apply(context, args);
-        inThrottle = true;
-        setTimeout(() => (inThrottle = false), limit);
-      }
-    };
-  };
-
-  const throttledFetchData = useCallback(throttle(fetchData, 500), [
+  const throttledFetchData = useCallback(throttle(fetchData, 10000), [
     mapCenter,
     scale,
-    pixelBlocks,
   ]);
 
   const render = useCallback(() => {
@@ -158,14 +132,7 @@ const ShowMapCanvas = ({
     if (!buffCtx) return;
     buffCtx.clearRect(0, 0, buffCtx.canvas.width, buffCtx.canvas.height);
     drawBuff();
-  }, [
-    scale,
-    mapCenter,
-    showCoordinates,
-    selectedPixelBlock,
-    mousePosition,
-    flashOverlap,
-  ]);
+  }, [scale, mapCenter, selectedPixelBlock]);
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
@@ -188,14 +155,6 @@ const ShowMapCanvas = ({
     };
   }, [initializeCanvasSize, throttledFetchData, render]);
 
-  useEffect(() => {
-    if (initData) {
-      setInitData(initData);
-      setPixelBlocks(initData);
-      setShowCoordinates(initData);
-    }
-  }, [initData]);
-
   const handleMouseUp = (e: MouseEvent) => {
     e.preventDefault();
 
@@ -205,7 +164,7 @@ const ShowMapCanvas = ({
 
     const buffPosition = getMouseupPixel(e, buffCanvas, scale, mapCenter);
 
-    const clickedPixelBlock = showCoordinates.find(
+    const clickedPixelBlock = loadData?.find(
       (block) =>
         buffPosition.x >= block.x &&
         buffPosition.x < block.x + block.width &&
@@ -214,6 +173,20 @@ const ShowMapCanvas = ({
     );
 
     setSelectedPixelBlock(clickedPixelBlock || null);
+
+    if (clickedPixelBlock) {
+      const updatedSet = new Set([clickedPixelBlock, ...lastListPixelBlock]); // 用 Set 去重
+
+      // 将 Set 转换为数组以便进行操作
+      const updatedList = Array.from(updatedSet);
+
+      // 保留最新的 50 条数据
+      if (updatedList.length > 50) {
+        updatedList.splice(50); // 只保留前 50 条数据
+      }
+
+      setLastListPixelBlock(new Set(updatedList)); // 再次转回 Set
+    }
   };
 
   const drawBuff = () => {
@@ -227,7 +200,7 @@ const ShowMapCanvas = ({
     const canvasWidth = buffCtx.canvas.width / dpr;
     const canvasHeight = buffCtx.canvas.height / dpr;
 
-    const padding = (toolInfo.pixelPadding * scale) / dpr + 0.1;
+    const padding = (pixelPadding * scale) / dpr;
 
     const CONVER_X = (x: number, p?: number) => {
       if (!p) p = padding;
@@ -246,17 +219,9 @@ const ShowMapCanvas = ({
       return height * scale - 2 * p;
     };
 
-    drawGrid(
-      buffCtx,
-      mapCenter,
-      scale,
-      toolInfo.pixelSize,
-      canvasWidth,
-      canvasHeight,
-      rectSize
-    );
- 
-    showCoordinates.forEach((coord) => {
+    // drawGrid(buffCtx, mapCenter, scale, 20, canvasWidth, canvasHeight);
+
+    loadData?.forEach((coord) => {
       const scaledPadding = coord.borderSize
         ? padding + coord.borderSize * scale
         : padding;
@@ -279,33 +244,11 @@ const ShowMapCanvas = ({
       const scaledY = CONVER_Y(selectedPixelBlock.y);
       const scaledWidth = CONVER_WIDTH(selectedPixelBlock.width);
       const scaledHeight = CONVER_HEIGHT(selectedPixelBlock.height);
-      // 被选中的像素块添加特殊样式，边框向内绘制
-      buffCtx.save();
-      buffCtx.beginPath();
-      buffCtx.rect(scaledX, scaledY, scaledWidth, scaledHeight);
-      buffCtx.clip();
-      buffCtx.strokeStyle = "#006fef";
-      buffCtx.lineWidth = 3 * dpr;
-      buffCtx.strokeRect(
-        scaledX + buffCtx.lineWidth / 2,
-        scaledY + buffCtx.lineWidth / 2,
-        scaledWidth - buffCtx.lineWidth,
-        scaledHeight - buffCtx.lineWidth
-      );
-      buffCtx.restore();
+      drawRectFrame(buffCtx, scaledX, scaledY, scaledWidth, scaledHeight, dpr);
     }
-  };
 
-  useEffect(() => {
-    throttledFetchData();
-  }, [
-    mapCenter,
-    scale,
-    pixelBlocks,
-    toolInfo,
-    selectedPixelBlock,
-    throttledFetchData,
-  ]);
+    drawRuler(buffCtx, mapCenter, scale, 20, canvasWidth, canvasHeight);
+  };
 
   useEffect(() => {
     const animationFrameId = requestAnimationFrame(render);

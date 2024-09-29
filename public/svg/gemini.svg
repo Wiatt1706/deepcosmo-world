@@ -4,28 +4,28 @@
         <radialGradient id="paint0_radial_2525_777" cx="0" cy="0" r="1"
             gradientUnits="userSpaceOnUse"
             gradientTransform="translate(670.447 474.006) rotate(78.858) scale(665.5 665.824)">
-            <stop offset="0" stop-color="#1BA1E3" />
-            <stop offset="0.300221" stop-color="#5489D6" />
-            <stop offset="0.545524" stop-color="#9B72CB" />
-            <stop offset="0.825372" stop-color="#D96570" />
-            <stop offset="1" stop-color="#F49C46" />
+            <stop offset="0" stopColor="#1BA1E3" />
+            <stop offset="0.300221" stopColor="#5489D6" />
+            <stop offset="0.545524" stopColor="#9B72CB" />
+            <stop offset="0.825372" stopColor="#D96570" />
+            <stop offset="1" stopColor="#F49C46" />
         </radialGradient>
         <radialGradient id="paint1_radial_2525_777" cx="0" cy="0" r="1"
             gradientUnits="userSpaceOnUse"
             gradientTransform="translate(670.447 474.006) rotate(78.858) scale(665.5 665.824)">
-            <stop offset="0" stop-color="#1BA1E3" />
-            <stop offset="0.300221" stop-color="#5489D6" />
-            <stop offset="0.545524" stop-color="#9B72CB" />
-            <stop offset="0.825372" stop-color="#D96570" />
-            <stop offset="1" stop-color="#F49C46" />
+            <stop offset="0" stopColor="#1BA1E3" />
+            <stop offset="0.300221" stopColor="#5489D6" />
+            <stop offset="0.545524" stopColor="#9B72CB" />
+            <stop offset="0.825372" stopColor="#D96570" />
+            <stop offset="1" stopColor="#F49C46" />
         </radialGradient>
         <!-- Additional gradients -->
         <!-- Add more radial gradients with unique IDs here -->
     </defs>
-    <style> @keyframes gradientAnimation0 { 0% { stop-color: #1BA1E3; } 25% { stop-color: #5489D6; }
-        50% { stop-color: #9B72CB; } 75% { stop-color: #D96570; } 100% { stop-color: #F49C46; } }
-        @keyframes gradientAnimation1 { 0% { stop-color: #F49C46; } 25% { stop-color: #D96570; } 50%
-        { stop-color: #9B72CB; } 75% { stop-color: #5489D6; } 100% { stop-color: #1BA1E3; } } <!--
+    <style> @keyframes gradientAnimation0 { 0% { stopColor: #1BA1E3; } 25% { stopColor: #5489D6; }
+        50% { stopColor: #9B72CB; } 75% { stopColor: #D96570; } 100% { stopColor: #F49C46; } }
+        @keyframes gradientAnimation1 { 0% { stopColor: #F49C46; } 25% { stopColor: #D96570; } 50%
+        { stopColor: #9B72CB; } 75% { stopColor: #5489D6; } 100% { stopColor: #1BA1E3; } } <!--
         Additional keyframes -->
         <!-- Add more keyframes for additional gradients -->
     </style>

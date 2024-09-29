@@ -8,7 +8,7 @@ interface CssSize {
     width: number;
     height: number;
 }
-
+interface PositionAndSize extends Position, CssSize { }
 // 像素块存储实体
 interface PixelBlock {
     id: string;
@@ -132,4 +132,4 @@ export const OPTION_TEST_LIST_3 = [
     { value: "https://www.google.com/", name: "文字2" },
     { value: "https://www.baidu.com/", name: "资源3" },
 ];
-export type { Position, CssSize, Pixel, PixelBlock, ImgBlock, PixelBoardProps, PixelArtProps };
+export type { Position, CssSize, PositionAndSize, Pixel, PixelBlock, ImgBlock, PixelBoardProps, PixelArtProps };

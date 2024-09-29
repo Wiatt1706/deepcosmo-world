@@ -3,14 +3,10 @@ import { BlockCoinsSvg, LandsBoxSvg, LogoSvg } from "../utils/icons";
 import {
   TbBell,
   TbChevronDown,
-  TbChevronsLeft,
-  TbChevronsRight,
   TbInfoCircle,
-  TbInfoSmall,
   TbMessageQuestion,
   TbSettings,
 } from "react-icons/tb";
-import { useState } from "react";
 import { Link } from "@nextui-org/link";
 import {
   Button,

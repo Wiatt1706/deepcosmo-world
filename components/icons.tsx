@@ -445,10 +445,10 @@ export const PenToolSvg = () => {
           <stop stop-opacity="0.2"></stop>
           <stop
             offset="0.262579"
-            stop-color="white"
+            stopColor="white"
             stop-opacity="0.0823736"
           ></stop>
-          <stop offset="0.743368" stop-color="white" stop-opacity="0"></stop>
+          <stop offset="0.743368" stopColor="white" stop-opacity="0"></stop>
           <stop offset="1" stop-opacity="0.2"></stop>
         </linearGradient>
         <clipPath id="clip0_5757_63520">

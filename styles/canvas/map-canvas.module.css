@@ -109,10 +109,6 @@
 
 
 /* Add this to your CSS file */
-.transition-all {
-  transition: all 0.3s ease-in-out;
-  z-index: 1;
-}
 
 .right-view-enter {
   opacity: 0;
@@ -131,4 +127,23 @@
 
 .right-view-exit-active {
   transform: translateX(100%);
+}
+
+.left-view-enter {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.left-view-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.left-view-exit {
+  transform: translateX(0);
+}
+
+.left-view-exit-active {
+  transform: translateX(-100%);
 }

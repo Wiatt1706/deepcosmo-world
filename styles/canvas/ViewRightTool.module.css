@@ -1,3 +1,5 @@
+
+
 .right-view {
     position: absolute;
     z-index: 20;
@@ -9,6 +11,7 @@
     border-left: rgba(0, 0, 0, 0.1) 1px solid;
     overflow-y: auto;
     transition: all 0.3s ease-in-out;
+    font-family: 'Noto Sans', sans-serif;
 }
 
 .rightInfoView {

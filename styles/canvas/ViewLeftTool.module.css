@@ -1,56 +1,75 @@
 .left-view {
     position: absolute;
-    z-index: 9;
-    left: 0;
+    z-index: 20;
+    left: 64px;
     top: 0;
     bottom: 0;
-    width: 64px;
+    width: 340px;
     background: #fff;
     border-right: rgba(0, 0, 0, 0.1) 1px solid;
     overflow-y: auto;
+    transition: all 0.3s ease-in-out;
 }
 
-.left-tool-log {
+.rightInfoView {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.rightInfoContent {
+    overflow-y: auto;
+    max-height: calc(100% - 60px);
+    width: 100%;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.titleGroup {
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    padding: 16px;
-    cursor: pointer;
-    color: #4c5863;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 24px;
 }
 
-.left-tool-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    cursor: pointer;
-    color: #4c5863;
-    width: 38px;
-    height: 38px;
-    margin: auto;
-    border-radius: 50%;
-}
-
-.left-tool-box:hover {
-    background: #f3f6f8;
-}
-
-.left-tool-box h4 {
-    font-size: medium;
-    color: #242424;
+.title {
+    font-size: 14px;
+    color: #20272c;
     font-weight: 600;
-}
-
-.bottom-tool-box {
-    user-select: none;
-    margin: 5px 0;
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    min-height: 44px;
-    border: rgba(0, 0, 0, 0.1) 1px solid;
-    border-radius: 50px;
+    justify-content: space-between;
+}
+
+@font-face {
+    font-family: 'Noto Sans';
+    src: url('/public/fonts/static/NotoSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans';
+    src: url('/public/fonts/static/NotoSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+.col-title {
+    font-size: 14px;
+    color: #3d4853;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #202124;
+    -webkit-box-flex: 1;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.5rem;
+    font-family: "Noto Sans", sans-serif;
 }
