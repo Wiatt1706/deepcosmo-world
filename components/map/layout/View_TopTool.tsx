@@ -155,56 +155,6 @@ export default function TopToolView() {
               保存
             </Button>
           </div>
-
-          {/* <div className="flex items-center px-4">
-            <div className="flex items-center justify-center w-[38px] h-[38px] mr-1 rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
-              <TbHelp size={24} strokeWidth={1.1} />
-            </div>
-
-            <Popover placement="bottom-end" showArrow={true}>
-              <PopoverTrigger>
-                <div className="flex items-center justify-center w-[38px] h-[38px] mr-1 rounded-full hover:bg-[#f3f6f8] text-[#4c5863]">
-                  <TbBell size={24} strokeWidth={1.1} />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent>
-                <div className=" overflow-auto max-h-[300px] px-2">
-                  <NotificationList />
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              <div className="flex items-center">
-                <Avatar
-                  size="sm"
-                  as="button"
-                  isBordered
-                  className="transition-transform  cursor-pointer "
-                  src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                />
-                <TbChevronDown className="ml-2 text-default-500" />
-              </div>
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="profile" className="h-14 gap-2">
-                <p className="font-semibold">Signed in as</p>
-                <p className="font-semibold">zoey@example.com</p>
-              </DropdownItem>
-              <DropdownItem key="settings">My Settings</DropdownItem>
-              <DropdownItem key="team_settings">Team Settings</DropdownItem>
-              <DropdownItem key="analytics">Analytics</DropdownItem>
-              <DropdownItem key="system">System</DropdownItem>
-              <DropdownItem key="configurations">Configurations</DropdownItem>
-              <DropdownItem key="help_and_feedback">
-                Help & Feedback
-              </DropdownItem>
-              <DropdownItem key="logout" color="danger">
-                Log Out
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown> */}
         </div>
       </div>
     </div>

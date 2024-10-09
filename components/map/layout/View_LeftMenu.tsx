@@ -5,12 +5,10 @@ import { Link } from "@nextui-org/react";
 import {
   TbBookmark,
   TbHistory,
-  TbHome,
-  TbMapPin,
-  TbSearch,
 } from "react-icons/tb";
 import { LogoSvg } from "@/components/utils/icons";
-import { useShowBaseStore } from "./ShowMapIndex";
+import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
+
 
 export default function LeftMenuView({
   handleMenuClick,

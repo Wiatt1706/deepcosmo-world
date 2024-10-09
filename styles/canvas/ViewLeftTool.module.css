@@ -46,19 +46,6 @@
     justify-content: space-between;
 }
 
-@font-face {
-    font-family: 'Noto Sans';
-    src: url('/public/fonts/static/NotoSans-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Noto Sans';
-    src: url('/public/fonts/static/NotoSans-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
-}
 
 .col-title {
     font-size: 14px;
@@ -72,4 +59,23 @@
     letter-spacing: 0;
     line-height: 1.5rem;
     font-family: "Noto Sans", sans-serif;
+}
+
+.left-view-enter {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.left-view-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.left-view-exit {
+    transform: translateX(0);
+}
+
+.left-view-exit-active {
+    transform: translateX(-100%);
 }

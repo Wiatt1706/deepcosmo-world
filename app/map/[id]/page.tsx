@@ -1,8 +1,7 @@
-import React from "react";
-import ShowMapIndex from "@/components/map/layout/ShowMapIndex";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { PixelBlock } from "@/types/MapTypes";
+import ShowMapIndex from "@/components/map/layout/ShowMapIndex";
 export default async function EditInfo({
   searchParams,
   params,
@@ -15,14 +14,19 @@ export default async function EditInfo({
   const { zoom, x, y } = searchParams; // 默认页码为 1，每页显示数量为 12
 
   const supabase = createServerComponentClient<Database>({ cookies });
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   let { data: requestDTOs } = await supabase
     .from("land_info")
-    .select("*,author: profiles(*),ShowCoverImg(*)")
+    .select(
+      "id,land_name,world_coordinates_x,world_coordinates_y,world_size_x,world_size_y,fill_color,border_size,block_count,land_type,land_status,cover_icon_url"
+    )
     .eq("parent_land_id", landId);
 
   const pixelBlocks: PixelBlock[] =
-    requestDTOs?.map((requestDTO: Land) => {
+    requestDTOs?.map((requestDTO: any) => {
       return {
         id: requestDTO.id,
         name: requestDTO.land_name,
@@ -36,20 +40,18 @@ export default async function EditInfo({
         type: parseInt(requestDTO.land_type),
         status: parseInt(requestDTO.land_status),
         landCoverImg: requestDTO.cover_icon_url, // 如果没有封面图片，则设置为undefined
-        showCoverImgList: requestDTO.show_cover_list,
-        skipUrl: requestDTO.skip_url, // 处理可选的跳转URL
-        useExternalLink: requestDTO.use_external_link, // 布尔值直接映射
-        externalLinkType: requestDTO.external_link_type, // 处理可选的外部链接类型
-        externalLink: requestDTO.external_link, // 处理可选的外部链接
       } as PixelBlock;
     }) || [];
 
   return (
-    <ShowMapIndex
-      loadData={pixelBlocks}
-      loadScale={Number(zoom)}
-      loadX={Number(x)}
-      loadY={Number(y)}
-    />
+    <div className="flex relative w-full h-full overflow-hidden">
+      <ShowMapIndex
+        loadData={pixelBlocks}
+        loadScale={Number(zoom)}
+        loadX={Number(x)}
+        loadY={Number(y)}
+        session={session}
+      />
+    </div>
   );
 }

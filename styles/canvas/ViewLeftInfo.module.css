@@ -1,0 +1,154 @@
+.act-view {
+    position: absolute;
+    z-index: 9;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 400px;
+    background: #fff;
+    border-left: rgba(0, 0, 0, 0.1) 1px solid;
+}
+
+.topMenu {
+    background-color: #111111;
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.topMenu div {
+    cursor: pointer;
+    height: 50px;
+    width: 50%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.topMenu .active {
+    border-bottom: 2px solid #98F576;
+    color: dedede;
+}
+
+.columnGgroup {
+    padding: 16px;
+    /* border-bottom: rgba(0, 0, 0, 0.1) 1px solid; */
+}
+
+.colRow {
+    width: 100%;
+    font-size: small;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 5px 0;
+    padding: 0 5px;
+}
+
+.col {
+    height: 30px;
+    padding: 0 5px;
+    margin: 0 5px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.col-group {
+    overflow-y: auto;
+    height: calc(100% - 158px);
+}
+
+.col-text {
+    color: #242424;
+    font-weight: 600;
+    display: flex;
+    min-width: 50px;
+}
+
+.col-label {
+    color: #242424;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: medium;
+}
+
+.actInput {
+    background-color: #f3f6f8;
+}
+
+.col-title {
+    font-size: medium;
+    color: #242424;
+    font-weight: 600;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.col-title .btn {
+    font-size: 20px;
+    margin-right: -2px;
+    cursor: pointer;
+}
+
+.skipBtn {
+    text-align: center;
+    width: 100%;
+    background-color: #0276fb;
+    color: #fff;
+    border-radius: 5px;
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.editBtn {
+    cursor: pointer;
+    text-align: center;
+    width: 50px;
+    background-color: rgba(200,
+            200,
+            200, 0.2);
+    color: #000;
+    border-radius: 5px;
+    padding: 1rem;
+}
+
+.fixed-bottom {
+    position: absolute;
+    background: #fff;
+    bottom: 0;
+    border-top: rgba(0, 0, 0, 0.1) 1px solid;
+    width: 100%;
+}
+
+.photoSlider {
+    position: relative;
+    max-height: 200px;
+}
+
+.photoSliderContainer {
+    position: relative;
+}
+
+.manageButton {
+    font-size: small;
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.photoSliderContainer:hover .manageButton {
+    display: block;
+}

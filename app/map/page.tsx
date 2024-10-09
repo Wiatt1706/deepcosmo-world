@@ -1,8 +1,8 @@
 import React from "react";
-import ShowMapIndex from "@/components/map/layout/ShowMapIndex";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { PixelBlock } from "@/types/MapTypes";
+import ShowMapIndex from "@/components/map/layout/ShowMapIndex";
 export default async function EditInfo({
   searchParams,
   params,

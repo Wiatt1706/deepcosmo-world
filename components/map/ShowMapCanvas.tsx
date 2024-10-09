@@ -12,8 +12,7 @@ import { useEvent } from "../utils/GeneralEvent";
 import { PixelBlock } from "@/types/MapTypes";
 import { Position } from "@/types/CanvasTypes";
 import { useCanvasSize } from "../hook/canvas/useCanvasBase";
-import { useShowBaseStore } from "./layout/ShowMapIndex";
-
+import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 const ShowMapCanvas = ({
   loadData,
   scale,
