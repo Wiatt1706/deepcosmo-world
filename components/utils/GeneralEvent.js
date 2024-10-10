@@ -44,3 +44,5 @@ export function useEvent(eventName, callback, target) {
 export function removeEvent(event, callback, target = window) {
     target.removeEventListener(event, callback);
 }
+
+export const Sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));

@@ -1,6 +1,5 @@
 "use client";
 import styles from "@/styles/canvas/ViewLeftTool.module.css";
-import { SearchBox } from "./HistoryView";
 import {
   Button,
   Dropdown,
@@ -25,6 +24,7 @@ import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { useNotification } from "@/components/utils/NotificationBar";
+import { SearchBox } from "./SearchBox";
 
 const ListBoxs = ({
   userCustomList,

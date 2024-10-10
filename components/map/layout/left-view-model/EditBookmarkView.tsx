@@ -1,6 +1,5 @@
 "use client";
 import styles from "@/styles/canvas/ViewLeftTool.module.css";
-import { SearchBox } from "./HistoryView";
 import {
   Button,
   Dropdown,
@@ -10,15 +9,23 @@ import {
   Input,
   Textarea,
 } from "@nextui-org/react";
-import { TbArrowLeft, TbDotsVertical, TbLock, TbPlus } from "react-icons/tb";
+import { TbArrowLeft, TbCheck, TbDotsVertical, TbLock } from "react-icons/tb";
 import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { PixelBlock } from "@/types/MapTypes";
 import { PixelBoxItem } from "./PixelBoxItem";
+import { useEffect, useState } from "react";
+import { useRef } from "react";
+import { useNotification } from "@/components/utils/NotificationBar";
+import { Sleep } from "@/components/utils/GeneralEvent";
+import ListILinkAddBtn from "./ListILinkAddBtn";
+import { SearchBox } from "./SearchBox";
 
 export default function EditBookmarkView() {
   const supabase = createClientComponentClient<Database>();
-
+  const addNotification = useNotification(
+    (state: any) => state.addNotification
+  );
   const [
     setIsLeftAct,
     selectedListObj,
@@ -26,6 +33,8 @@ export default function EditBookmarkView() {
     selectedPixelBlock,
     setSelectedPixelBlock,
     lastListPixelBlock,
+    userCustomList,
+    setUserCustomList,
   ] = useShowBaseStore((state: any) => [
     state.setIsLeftAct,
     state.selectedListObj,
@@ -33,15 +42,79 @@ export default function EditBookmarkView() {
     state.selectedPixelBlock,
     state.setSelectedPixelBlock,
     state.lastListPixelBlock,
+    state.userCustomList,
+    state.setUserCustomList,
   ]);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for saving
+  const [listName, setListName] = useState<string | "">(
+    selectedListObj.name || ""
+  );
+  const [listDescribe, setListDescribe] = useState<string | "">(
+    selectedListObj.describe || ""
+  );
+
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  const initialListName = useRef(listName);
+  const initialListDescribe = useRef(listDescribe);
+
+  useEffect(() => {
+    // Prevent debounce logic from running on initial render
+    if (
+      listName === initialListName.current &&
+      listDescribe === initialListDescribe.current
+    ) {
+      return;
+    }
+
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current); // Clear the previous timeout if there is one
+    }
+
+    debounceTimeout.current = setTimeout(async () => {
+      setIsLoading(true);
+      const { error } = await supabase
+        .from("UserCustomList")
+        .update({
+          name: listName,
+          describe: listDescribe,
+        })
+        .eq("id", selectedListObj.id);
+
+      if (error) {
+        addNotification(error, "error", "保存异常");
+      } else {
+        setUserCustomList(
+          userCustomList.map((item: any) => {
+            if (item.id === selectedListObj.id) {
+              return {
+                ...item,
+                name: listName,
+                describe: listDescribe,
+              };
+            }
+            return item;
+          })
+        );
+      }
+      setIsLoading(false);
+    }, 2000);
+
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, [listName, listDescribe]);
 
   return (
     <div className={styles["columnGgroup"]}>
       <SearchBox
+        defaultValue={listName}
         startContent={
           <div
             onClick={() => setSelectedModule("Bookmark")}
-            className="w-[48px] h-[48px] pl-2 d_c_c rounded-full hover:text-[#0070f0] cursor-pointer"
+            className="p-2 hover:text-blue-500 cursor-pointer"
           >
             <TbArrowLeft size={22} strokeWidth={2.3} />
           </div>
@@ -56,7 +129,7 @@ export default function EditBookmarkView() {
       <hr />
       <div
         className="overflow-y-auto"
-        style={{ maxHeight: `calc(100vh - 132px)` }}
+        style={{ maxHeight: `calc(100vh - 190px)` }}
       >
         {selectedListObj.type === 2 && (
           <div className="p-6">
@@ -66,7 +139,8 @@ export default function EditBookmarkView() {
             </div>
             <Input
               variant="bordered"
-              defaultValue={selectedListObj.name}
+              value={listName}
+              onChange={(e) => setListName(e.target.value)}
               radius="none"
               placeholder="请输入列表名称"
               labelPlacement="outside"
@@ -78,9 +152,13 @@ export default function EditBookmarkView() {
             </div>
             <Textarea
               variant="bordered"
-              defaultValue={selectedListObj.describe}
+              value={listDescribe}
+              onChange={(e) => setListDescribe(e.target.value)}
               labelPlacement="outside"
               radius="none"
+              classNames={{
+                input: "resize-y max-h-[68px] h-[68px] w-full ",
+              }}
             />
           </div>
         )}
@@ -88,19 +166,7 @@ export default function EditBookmarkView() {
         <hr />
         <div className="d_c_b text-gray-500 text-[12px] m-2 px-1">
           <span>像素块</span>
-          <Button
-            variant="light"
-            size="sm"
-            startContent={
-              <TbPlus
-                size={18}
-                strokeWidth={3.3}
-                className="text-[#0070f0] cursor-pointer"
-              />
-            }
-          >
-            <span className="ml-1">添加块</span>
-          </Button>
+          <ListILinkAddBtn />
         </div>
         {Array.from(lastListPixelBlock as Set<PixelBlock>).map(
           (item: PixelBlock) => {
@@ -134,6 +200,22 @@ export default function EditBookmarkView() {
               />
             );
           }
+        )}
+      </div>
+      <div className=" flex items-center h-[58px] px-6 border-t absolute bottom-0 w-full">
+        {!isLoading && (
+          <button className="flex items-center justify-center w-[30px] h-[30px] rounded-full bg-[#e8ebeb]">
+            <TbCheck />
+          </button>
+        )}
+        <div className="text-xs ml-4">
+          <b>自动保存修改内容</b>
+          <p className="text-gray-500">更改将自动保存</p>
+        </div>
+        {isLoading && (
+          <div className="absolute top-0 left-0 w-full h-full bg-[#00000030] d_c_c">
+            <Button isLoading color="primary" variant="light" />
+          </div>
         )}
       </div>
     </div>

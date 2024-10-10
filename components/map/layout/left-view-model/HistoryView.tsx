@@ -1,61 +1,20 @@
 "use client";
 import styles from "@/styles/canvas/ViewLeftTool.module.css";
-import { Button, Image, ScrollShadow } from "@nextui-org/react";
-import { Listbox, ListboxItem } from "@nextui-org/react";
-import { Key, ReactNode, useMemo, useState } from "react";
+import { Button, ScrollShadow } from "@nextui-org/react";
+import { Key, useState } from "react";
 import {
-  TbBookmark,
   TbBookmarkFilled,
   TbCheck,
   TbInfoCircle,
   TbMapPin,
-  TbSearch,
   TbShare,
   TbSquare,
-  TbSquareCheck,
   TbSquareCheckFilled,
-  TbX,
 } from "react-icons/tb";
 import { PixelBlock } from "@/types/MapTypes";
 import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { PixelBoxItem } from "./PixelBoxItem";
-
-export const SearchBox = ({
-  startContent,
-  setIsAct,
-}: {
-  startContent?: ReactNode;
-  setIsAct: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
-  return (
-    <div className="p-4 w-full h-[80px]">
-      <div
-        className={
-          styles["searchBox"] +
-          " w-full border rounded-[48px] flex items-center text-[#70757A] px-2"
-        }
-      >
-        {startContent && startContent}
-        <input
-          type="text"
-          placeholder="搜索历史记录"
-          className="w-full text-[14px] focus:outline-none pl-2"
-        />
-        <div className="flex w-[90px]  rounded-[48px]">
-          <div className="w-[68px] h-[48px] d_c_c rounded-full hover:text-[#0070f0] cursor-pointer">
-            <TbSearch size={21} strokeWidth={2.3} />
-          </div>
-          <div
-            onClick={() => setIsAct(false)}
-            className="w-[68px] h-[48px] d_c_c rounded-full hover:text-[#0070f0] cursor-pointer"
-          >
-            <TbX size={21} strokeWidth={2.3} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { SearchBox } from "./SearchBox";
 
 export default function HistoryView({
   setIsAct,

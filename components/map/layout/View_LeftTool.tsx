@@ -1,4 +1,5 @@
 "use client";
+import { useRef } from "react";
 import styles from "@/styles/canvas/ViewLeftTool.module.css";
 import BookmarkView from "./left-view-model/BookmarkView";
 import HistoryView from "./left-view-model/HistoryView";
@@ -6,6 +7,7 @@ import { CSSTransition } from "react-transition-group";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { useShowBaseStore } from "./ShowMapIndex";
 import EditBookmarkView from "./left-view-model/EditBookmarkView";
+
 export default function LeftToolView({
   session,
 }: {
@@ -14,6 +16,9 @@ export default function LeftToolView({
   const [isLeftAct, setIsLeftAct, selectedModule] = useShowBaseStore(
     (state: any) => [state.isLeftAct, state.setIsLeftAct, state.selectedModule]
   );
+
+  // Create a ref for the CSSTransition to directly manage the DOM node
+  const leftViewRef = useRef(null);
 
   return (
     <CSSTransition
@@ -25,10 +30,12 @@ export default function LeftToolView({
         exit: styles["left-view-exit"],
         exitActive: styles["left-view-exit-active"],
       }}
+      nodeRef={leftViewRef} // Use nodeRef instead of relying on findDOMNode
       mountOnEnter
       unmountOnExit
     >
-      <div className={styles["left-view"] + " shadow"}>
+      {/* Assign the ref to the element */}
+      <div ref={leftViewRef} className={styles["left-view"] + " shadow"}>
         {selectedModule === "Bookmark" && <BookmarkView session={session} />}
         {selectedModule === "History" && (
           <HistoryView setIsAct={setIsLeftAct} />
