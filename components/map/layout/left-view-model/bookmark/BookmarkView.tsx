@@ -18,13 +18,14 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { TbDotsVertical, TbHeart, TbList, TbStar } from "react-icons/tb";
-import ListAddBtn from "./ListAddBtn";
-import { useEffect, useState } from "react";
+import ListAddBtn from "../ListAddBtn";
+import { useState } from "react";
 import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { useNotification } from "@/components/utils/NotificationBar";
-import { SearchBox } from "./SearchBox";
+import { SearchBox } from "../SearchBox";
+import { ShowBookmarkList } from "./ShowBookmarkView";
 
 const ListBoxs = ({
   userCustomList,
@@ -40,12 +41,11 @@ const ListBoxs = ({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectObj, setSelectObj] = useState<any | null>(null); // Track hovered item
 
-  const updateListBtnHandle = (id: string) => {
-    setSelectedModule("EditBookmark");
+  const checkSelectedListHandle = (module: string, id: string) => {
+    setSelectedModule(module);
     const selectedList = userCustomList.find((item: any) => item.id === id);
     setSelectedListObj(selectedList);
   };
-
   // Process and ensure default lists exist (Star and Like)
   const processedLists = () => {
     const customLists = userCustomList || [];
@@ -114,6 +114,9 @@ const ListBoxs = ({
     <>
       <Listbox
         aria-label="User Menu"
+        onAction={(key) =>
+          checkSelectedListHandle("ShowBookmark", key.toString())
+        }
         className="p-0 gap-0 divide-y divide-default-300/50 dark:divide-default-100/80 bg-content1 overflow-visible "
         itemClasses={{
           base: "px-3 rounded-none gap-3 data-[hover=true]:bg-default-100/80",
@@ -121,7 +124,6 @@ const ListBoxs = ({
       >
         {processedLists().map((item) => (
           <ListboxItem
-            onClick={(e) => alert(item.key + " aborted")}
             key={item.key}
             endContent={
               <Dropdown radius="sm">
@@ -138,7 +140,9 @@ const ListBoxs = ({
                   variant="faded"
                 >
                   <DropdownItem
-                    onClick={(e) => updateListBtnHandle(item.key)}
+                    onClick={(e) =>
+                      checkSelectedListHandle("EditBookmark", item.key)
+                    }
                     key="update"
                   >
                     修改列表
@@ -147,7 +151,6 @@ const ListBoxs = ({
                   <DropdownItem
                     key="delete"
                     onClick={(e) => {
-                      
                       if (item.type !== 0 && item.type !== 1) {
                         // 排除收藏 (type = 0) 和 喜欢 (type = 1)
                         setSelectObj(item);
@@ -183,7 +186,9 @@ const ListBoxs = ({
               <ModalHeader className="flex flex-col gap-1">
                 删除列表
               </ModalHeader>
-              <ModalBody>是否要删除</ModalBody>
+              <ModalBody>
+                删除此列表将会清除此列表中的所有块,是否要删除？
+              </ModalBody>
               <ModalFooter>
                 {/* 取消按钮 */}
                 <Button
@@ -239,30 +244,12 @@ export default function BookmarkView({
       .eq("id", id);
 
     if (error) {
-      addNotification(error, "error", "删除异常");
+      console.log(error.message);
+      addNotification("删除列表失败, 请重试", "error", "删除异常");
       return;
     }
     setUserCustomList(userCustomList.filter((item: any) => item.id !== id));
   };
-
-  const loadData = async () => {
-    if (!session) return [];
-    const { data } = await supabase
-      .from("UserCustomList")
-      .select("id, name, describe, type, status, sort")
-      .eq("owner", session?.user.id)
-      .order("created_at", { ascending: false });
-
-    return data;
-  };
-
-  useEffect(() => {
-    if (!userCustomList) {
-      loadData().then((data) => {
-        setUserCustomList(data || []);
-      });
-    }
-  }, []);
 
   return (
     <div className={styles["columnGgroup"]}>
@@ -298,13 +285,25 @@ export default function BookmarkView({
           <div
             className="w-full overflow-auto pt-2 text-left"
             style={{ maxHeight: `calc(100vh - 131px)` }}
-          ></div>
+          >
+            <ShowBookmarkList
+              selectedListId={
+                userCustomList.filter((item: any) => item.type == 0)[0].id
+              }
+            />
+          </div>
         </Tab>
         <Tab key="Geometry" title="喜欢" className="p-0">
           <div
             className="w-full overflow-auto pt-2 text-left"
             style={{ maxHeight: `calc(100vh - 131px)` }}
-          ></div>
+          >
+            <ShowBookmarkList
+              selectedListId={
+                userCustomList.filter((item: any) => item.type == 1)[0].id
+              }
+            />
+          </div>
         </Tab>
       </Tabs>
     </div>

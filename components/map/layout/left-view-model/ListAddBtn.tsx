@@ -17,8 +17,43 @@ import { useShowBaseStore } from "../ShowMapIndex";
 
 export default function ListAddBtn() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  return (
+    <div>
+      {/* 打开模态框按钮 */}
+      <Button
+        onClick={onOpen}
+        size="sm"
+        color="primary"
+        variant="light"
+        startContent={<TbPlus />}
+      >
+        <span className="text-[14px]">新建列表</span>
+      </Button>
+
+      {/* 模态框内容 */}
+      <Modal
+        radius="sm"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        scrollBehavior="inside"
+        classNames={{
+          backdrop: "backdrop-blur-lg bg-opacity-80 bg-[#010E18]",
+        }}
+      >
+        <ModalContent>
+          {(onClose) => <>{ListAddInput({ onOpenChange })}</>}
+        </ModalContent>
+      </Modal>
+    </div>
+  );
+}
+
+export function ListAddInput({ onOpenChange }: any) {
   const [listName, setListName] = useState(""); // 跟踪输入框的值
-  const addNotification = useNotification((state: any) => state.addNotification);
+  const addNotification = useNotification(
+    (state: any) => state.addNotification
+  );
   const [userCustomList, setUserCustomList] = useShowBaseStore((state: any) => [
     state.userCustomList,
     state.setUserCustomList,
@@ -56,58 +91,30 @@ export default function ListAddBtn() {
 
   return (
     <div>
-      {/* 打开模态框按钮 */}
-      <Button
-        onClick={onOpen}
-        size="sm"
-        color="primary"
-        variant="light"
-        startContent={<TbPlus />}
-      >
-        <span className="text-[14px]">新建列表</span>
-      </Button>
-
-      {/* 模态框内容 */}
-      <Modal
-        radius="sm"
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        scrollBehavior="inside"
-        classNames={{
-          backdrop: "backdrop-blur-lg bg-opacity-80 bg-[#010E18]",
-        }}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                新建列表
-              </ModalHeader>
-              <ModalBody>
-                {/* 输入框 */}
-                <Input
-                  label="列表名称"
-                  value={listName}
-                  onChange={handleInputChange} // 跟踪输入框变化
-                  placeholder="请输入列表名称"
-                />
-              </ModalBody>
-              <ModalFooter>
-                {/* 仅在有输入时才可点击 */}
-                <Button
-                  color="primary"
-                  variant="light"
-                  onPress={handleCreateList}
-                  isDisabled={!listName.trim()} // 如果输入为空，禁用按钮
-                  isLoading={isLoading} // 添加加载效果
-                >
-                  制作
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+      <>
+        <ModalHeader className="flex flex-col gap-1">新建列表</ModalHeader>
+        <ModalBody>
+          {/* 输入框 */}
+          <Input
+            label="列表名称"
+            value={listName}
+            onChange={handleInputChange} // 跟踪输入框变化
+            placeholder="请输入列表名称"
+          />
+        </ModalBody>
+        <ModalFooter>
+          {/* 仅在有输入时才可点击 */}
+          <Button
+            color="primary"
+            variant="light"
+            onPress={handleCreateList}
+            isDisabled={!listName.trim()} // 如果输入为空，禁用按钮
+            isLoading={isLoading} // 添加加载效果
+          >
+            制作
+          </Button>
+        </ModalFooter>
+      </>
     </div>
   );
 }

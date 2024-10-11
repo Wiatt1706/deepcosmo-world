@@ -13,13 +13,12 @@ import { TbArrowLeft, TbCheck, TbDotsVertical, TbLock } from "react-icons/tb";
 import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { PixelBlock } from "@/types/MapTypes";
-import { PixelBoxItem } from "./PixelBoxItem";
+import { PixelBoxItem } from "../PixelBoxItem";
 import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { useNotification } from "@/components/utils/NotificationBar";
-import { Sleep } from "@/components/utils/GeneralEvent";
-import ListILinkAddBtn from "./ListILinkAddBtn";
-import { SearchBox } from "./SearchBox";
+import ListILinkAddBtn from "../ListILinkAddBtn";
+import { SearchBox } from "../SearchBox";
 
 export default function EditBookmarkView() {
   const supabase = createClientComponentClient<Database>();

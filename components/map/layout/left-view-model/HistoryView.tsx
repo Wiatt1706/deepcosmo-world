@@ -1,20 +1,38 @@
 "use client";
 import styles from "@/styles/canvas/ViewLeftTool.module.css";
-import { Button, ScrollShadow } from "@nextui-org/react";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownSection,
+  DropdownTrigger,
+  Modal,
+  ModalContent,
+  ScrollShadow,
+  useDisclosure,
+} from "@nextui-org/react";
 import { Key, useState } from "react";
 import {
   TbBookmarkFilled,
   TbCheck,
+  TbHeart,
   TbInfoCircle,
+  TbList,
   TbMapPin,
+  TbPlus,
   TbShare,
   TbSquare,
   TbSquareCheckFilled,
+  TbStar,
 } from "react-icons/tb";
 import { PixelBlock } from "@/types/MapTypes";
 import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { PixelBoxItem } from "./PixelBoxItem";
 import { SearchBox } from "./SearchBox";
+import { ListAddInput } from "./ListAddBtn";
+import { post as postApi } from "@/utils/api";
+import { useNotification } from "@/components/utils/NotificationBar";
 
 export default function HistoryView({
   setIsAct,
@@ -22,16 +40,26 @@ export default function HistoryView({
   setIsAct: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [typeSelectedValue, setTypeSelectedValue] = useState("all"); // 默认选中的值
-  const [selectedPixelBlock, setSelectedPixelBlock, lastListPixelBlock] =
-    useShowBaseStore((state: any) => [
-      state.selectedPixelBlock,
-      state.setSelectedPixelBlock,
-      state.lastListPixelBlock,
-    ]);
+  const [
+    selectedPixelBlock,
+    setSelectedPixelBlock,
+    lastListPixelBlock,
+    userCustomList,
+  ] = useShowBaseStore((state: any) => [
+    state.selectedPixelBlock,
+    state.setSelectedPixelBlock,
+    state.lastListPixelBlock,
+    state.userCustomList,
+  ]);
 
   const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
   const [areAllSelected, setAreAllSelected] = useState(false); // Track if all are selected
   const [hoveredKey, setHoveredKey] = useState<string | null>(null); // Track hovered item
+  const [isLoading, setIsLoading] = useState(false); // 跟踪加载状态
+
+  const addNotification = useNotification(
+    (state: any) => state.addNotification
+  );
 
   const options = [
     { value: "all", label: "全部", icon: null },
@@ -64,7 +92,37 @@ export default function HistoryView({
     setSelectedKeys(newSelectedKeys); // Update the state
   };
 
-  // Check if any items are selected
+  const handleCreateListLink = async (listObj: any) => {
+    if (selectedKeys && selectedKeys.size > 0) {
+      const selectedIds = Array.from(selectedKeys);
+      setIsLoading(true); // 开始加载
+      await postApi(`/userCustomItem`, {
+        listId: listObj.key,
+        listLinkIds: selectedIds,
+      })
+        .then((response) => {
+          if (response.data) {
+            setSelectedKeys(new Set()); // 清空选中项
+            setAreAllSelected(false); // 清空全选状态
+            addNotification(
+              "已保存到" + listObj.textValue + "列表",
+              "success",
+              "保存成功"
+            );
+          } else {
+            addNotification(
+              response.message || "未知异常请稍后重试",
+              "error",
+              "保存异常"
+            );
+          }
+        })
+        .finally(() => {
+          setIsLoading(false); // 加载完成
+        });
+    }
+  };
+
   const isAnySelected = selectedKeys.size > 0;
 
   return (
@@ -153,16 +211,11 @@ export default function HistoryView({
             isAnySelected ? "" : "opacity-50 pointer-events-none"
           }`}
         >
-          <Button
-            radius="full"
-            color="primary"
-            size="sm"
-            startContent={<TbBookmarkFilled size={16} strokeWidth={1.5} />}
-            className="px-4 text-[14px] h-[36px]"
-            disabled={!isAnySelected} // Disable when no items are selected
-          >
-            保存
-          </Button>
+          {userCustomListBoxs({
+            isAnySelected: isAnySelected,
+            onListClick: handleCreateListLink,
+            isLoading: isLoading,
+          })}
 
           <div
             className={`w-[36px] h-[36px] d_c_c border rounded-full text-[#1967d2] ${
@@ -187,3 +240,178 @@ export default function HistoryView({
     </div>
   );
 }
+
+const userCustomListBoxs = ({
+  isAnySelected,
+  isLoading,
+  onListClick,
+}: {
+  isAnySelected: boolean;
+  isLoading: boolean;
+  onListClick: (listObj: any) => void;
+}) => {
+  const [userCustomList] = useShowBaseStore((state: any) => [
+    state.userCustomList,
+  ]);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  // Process and ensure default lists exist (Star and Like)
+  const processedLists = () => {
+    const customLists = userCustomList || [];
+    const hasStar = customLists.some((item: any) => item.type === 0);
+    const hasLike = customLists.some((item: any) => item.type === 1);
+
+    if (!hasStar) {
+      customLists.push({
+        id: "Star",
+        describe: "默认收藏",
+        name: "收藏",
+        status: 0,
+        type: 0,
+        sort: 0,
+      });
+    }
+
+    if (!hasLike) {
+      customLists.push({
+        id: "Like",
+        describe: "默认喜欢",
+        name: "喜欢",
+        status: 0,
+        type: 1,
+        sort: 0,
+      });
+    }
+
+    customLists.sort((a: any, b: any) => {
+      if (a.type !== b.type) {
+        return a.type - b.type;
+      } else {
+        return b.sort - a.sort;
+      }
+    });
+
+    return customLists.map((list: any) => {
+      let subLabel = `${list.status === 0 ? "不公开" : "公开"} · ${0} 个像素块`;
+      let icon;
+
+      switch (list.type) {
+        case 0:
+          icon = <TbStar size={20} color="#b06000" className="mx-1" />;
+          break;
+        case 1:
+          icon = <TbHeart size={20} color="#fa507d" className="mx-1" />;
+          break;
+        default:
+          icon = <TbList size={20} color="#606060" className="mx-1" />;
+      }
+
+      return {
+        key: list.id,
+        label: list.name,
+        type: list.type,
+        subLabel,
+        textValue: list.name,
+        icon,
+      };
+    });
+  };
+
+  return (
+    <>
+      <Dropdown
+        showArrow
+        radius="sm"
+        classNames={{
+          base: "before:bg-default-200", // change arrow background
+          content: "p-0 border-small border-divider bg-background",
+        }}
+      >
+        <DropdownTrigger>
+          <Button
+            isLoading={isLoading}
+            radius="full"
+            color="primary"
+            size="sm"
+            startContent={
+              !isLoading && <TbBookmarkFilled size={16} strokeWidth={1.5} />
+            }
+            className="px-4 text-[14px] h-[36px]"
+            disabled={!isAnySelected || isLoading} // Disable when no items are selected
+          >
+            保存
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu
+          disabledKeys={["title"]}
+          aria-label="Static Actions"
+          itemClasses={{
+            base: [
+              "rounded-md",
+              "text-default-500",
+              "transition-opacity",
+              "data-[hover=true]:text-foreground",
+              "data-[hover=true]:bg-default-100",
+              "dark:data-[hover=true]:bg-default-50",
+              "data-[selectable=true]:focus:bg-default-50",
+              "data-[pressed=true]:opacity-70",
+              "data-[focus-visible=true]:ring-default-500",
+            ],
+          }}
+        >
+          <DropdownItem
+            isReadOnly
+            key="title"
+            className="h-10 gap-2 text-[14px] text-[#272727] text-center justify-center items-center"
+          >
+            保存到您的列表中
+          </DropdownItem>
+
+          <DropdownSection
+            className="max-h-[300px] overflow-auto"
+            aria-label="Profile & Actions"
+            showDivider
+          >
+            {processedLists().map((item: any) => (
+              <DropdownItem
+                onClick={() => onListClick(item)}
+                key={item.key}
+                startContent={item.icon}
+              >
+                {item.textValue}
+              </DropdownItem>
+            ))}
+          </DropdownSection>
+          <DropdownItem
+            key={"add"}
+            onClick={onOpen}
+            startContent={
+              <TbPlus
+                size={20}
+                color="#0070f0"
+                strokeWidth={1.5}
+                className="mx-1"
+              />
+            }
+          >
+            新建列表
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+
+      <Modal
+        radius="sm"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        scrollBehavior="inside"
+        classNames={{
+          backdrop: "backdrop-blur-lg bg-opacity-80 bg-[#010E18]",
+        }}
+      >
+        <ModalContent>
+          {(onClose) => <>{ListAddInput({ onOpenChange })}</>}
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};

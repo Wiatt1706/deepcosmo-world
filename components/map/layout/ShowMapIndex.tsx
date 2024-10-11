@@ -20,6 +20,7 @@ export const useShowBaseStore = create((set) => ({
   userCustomList: null,
   isLeftAct: false,
   selectedListObj: null,
+  loadData: new Set() as Set<PixelBlock>,
   setSelectedPixelBlock: (selectedPixelBlock: PixelBlock | null) =>
     set({ selectedPixelBlock }),
   setViewport: (viewport: PositionAndSize) => set({ viewport }),
@@ -30,6 +31,7 @@ export const useShowBaseStore = create((set) => ({
   setUserCustomList: (userCustomList: any) => set({ userCustomList }),
   setIsLeftAct: (isLeftAct: boolean) => set({ isLeftAct }),
   setSelectedListObj: (selectedListObj: any) => set({ selectedListObj }),
+  setLoadData: (loadData: PixelBlock[]) => set({ loadData }),
 }));
 
 export default function ShowMapIndex({
@@ -57,6 +59,7 @@ export default function ShowMapIndex({
   );
 
   const [
+    setLoadData,
     isLeftAct,
     setIsLeftAct,
     selectedPixelBlock,
@@ -65,6 +68,7 @@ export default function ShowMapIndex({
     selectedModule,
     setSelectedModule,
   ] = useShowBaseStore((state: any) => [
+    state.setLoadData,
     state.isLeftAct,
     state.setIsLeftAct,
     state.selectedPixelBlock,
@@ -92,6 +96,10 @@ export default function ShowMapIndex({
   };
 
   useEffect(() => {
+    setLoadData(loadData || new Set());
+  }, [loadData]);
+
+  useEffect(() => {
     if (!isLeftAct) {
       setSelectedModule("");
     }
@@ -112,7 +120,7 @@ export default function ShowMapIndex({
         className={`transition-all h-full  absolute right-0 ${
           isRightMenu
             ? isLeftAct
-              ? "w-[calc(100%-404px)]"
+              ? "w-[calc(100%-424px)]"
               : "w-[calc(100%-64px)]"
             : "w-full"
         }`}
@@ -161,6 +169,7 @@ export default function ShowMapIndex({
             </div>
           </div>
         </div>
+
         <ShowMapCanvas
           scale={scale}
           loadX={loadX}
