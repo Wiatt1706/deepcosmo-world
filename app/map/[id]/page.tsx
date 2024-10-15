@@ -2,6 +2,8 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { PixelBlock } from "@/types/MapTypes";
 import ShowMapIndex from "@/components/map/layout/ShowMapIndex";
+import LeftToolView from "@/components/map/layout/View_LeftTool";
+import LeftMenuView from "@/components/map/layout/View_LeftMenu";
 export default async function EditInfo({
   searchParams,
   params,
@@ -43,14 +45,17 @@ export default async function EditInfo({
       } as PixelBlock;
     }) || [];
 
+  console.log("pixelBlocks-wwww");
+
   return (
     <div className="flex relative w-full h-full overflow-hidden">
+      <LeftMenuView />
+      <LeftToolView session={session} />
       <ShowMapIndex
         loadData={pixelBlocks}
         loadScale={Number(zoom)}
         loadX={Number(x)}
         loadY={Number(y)}
-        session={session}
       />
     </div>
   );

@@ -30,16 +30,15 @@ const ShowMapCanvas = ({
   const buffRef = useRef<HTMLCanvasElement | null>(null);
   const imagesRef = useRef<{ [key: string]: HTMLImageElement }>({});
 
+  const [selectedPixelBlock, setSelectedPixelBlock] =
+    useState<PixelBlock | null>(null);
+
   const [
-    selectedPixelBlock,
-    setSelectedPixelBlock,
     lastListPixelBlock,
     setLastListPixelBlock,
     setViewport,
     setViewMapCenter,
   ] = useShowBaseStore((state: any) => [
-    state.selectedPixelBlock,
-    state.setSelectedPixelBlock,
     state.lastListPixelBlock,
     state.setLastListPixelBlock,
     state.setViewport,

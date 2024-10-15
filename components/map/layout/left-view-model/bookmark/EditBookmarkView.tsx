@@ -1,5 +1,6 @@
-"use client";
-import styles from "@/styles/canvas/ViewLeftTool.module.css";
+import { useEffect, useState, useRef } from "react";
+import { SkeletonLoader } from "@/components/utils/SkeletonLoader";
+import { TbArrowLeft, TbCheck, TbDotsVertical, TbLock } from "react-icons/tb";
 import {
   Button,
   Dropdown,
@@ -9,29 +10,28 @@ import {
   Input,
   Textarea,
 } from "@nextui-org/react";
-import { TbArrowLeft, TbCheck, TbDotsVertical, TbLock } from "react-icons/tb";
 import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { PixelBlock } from "@/types/MapTypes";
 import { PixelBoxItem } from "../PixelBoxItem";
-import { useEffect, useState } from "react";
-import { useRef } from "react";
 import { useNotification } from "@/components/utils/NotificationBar";
 import ListILinkAddBtn from "../ListILinkAddBtn";
 import { SearchBox } from "../SearchBox";
+import { useUserCustomItemBlock } from "@/components/hook/service/useUserCustomItemBlock";
+import styles from "@/styles/canvas/ViewLeftTool.module.css";
 
 export default function EditBookmarkView() {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createClientComponentClient();
   const addNotification = useNotification(
     (state: any) => state.addNotification
   );
+
   const [
     setIsLeftAct,
     selectedListObj,
     setSelectedModule,
     selectedPixelBlock,
     setSelectedPixelBlock,
-    lastListPixelBlock,
     userCustomList,
     setUserCustomList,
   ] = useShowBaseStore((state: any) => [
@@ -40,25 +40,38 @@ export default function EditBookmarkView() {
     state.setSelectedModule,
     state.selectedPixelBlock,
     state.setSelectedPixelBlock,
-    state.lastListPixelBlock,
     state.userCustomList,
     state.setUserCustomList,
   ]);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for saving
-  const [listName, setListName] = useState<string | "">(
-    selectedListObj.name || ""
-  );
-  const [listDescribe, setListDescribe] = useState<string | "">(
+  const { pixelBlocks, loading, error } = useUserCustomItemBlock({
+    column: "user_custom_list_id",
+    value: selectedListObj.id,
+  });
+
+  const [isLoading, setIsLoading] = useState(false); // State for overall save loading
+  const [listName, setListName] = useState(selectedListObj.name || "");
+  const [listDescribe, setListDescribe] = useState(
     selectedListObj.describe || ""
   );
+  const [showPixelBlocks, setShowPixelBlocks] = useState<PixelBlock[] | null>(
+    null
+  );
+  const [deletingPixelBlockId, setDeletingPixelBlockId] = useState<
+    string | null
+  >(null); // State for tracking the deleting pixel block
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const initialListName = useRef(listName);
   const initialListDescribe = useRef(listDescribe);
 
   useEffect(() => {
-    // Prevent debounce logic from running on initial render
+    if (pixelBlocks) {
+      setShowPixelBlocks(pixelBlocks);
+    }
+  }, [pixelBlocks]);
+
+  useEffect(() => {
     if (
       listName === initialListName.current &&
       listDescribe === initialListDescribe.current
@@ -67,7 +80,7 @@ export default function EditBookmarkView() {
     }
 
     if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current); // Clear the previous timeout if there is one
+      clearTimeout(debounceTimeout.current);
     }
 
     debounceTimeout.current = setTimeout(async () => {
@@ -106,6 +119,26 @@ export default function EditBookmarkView() {
     };
   }, [listName, listDescribe]);
 
+  const deletePixelBlock = async (land_id: string) => {
+    setDeletingPixelBlockId(land_id); // Set the pixel block being deleted
+    const { error } = await supabase
+      .from("UserCustomItem")
+      .delete()
+      .eq("user_custom_list_id", selectedListObj.id)
+      .eq("land_id", land_id);
+
+    if (!error && showPixelBlocks) {
+      setShowPixelBlocks(
+        showPixelBlocks?.filter((item: PixelBlock) => item.id !== land_id)
+      );
+      addNotification("删除成功", "success", "删除成功");
+    } else {
+      addNotification("删除失败", "error", "删除异常");
+    }
+
+    setDeletingPixelBlockId(null); // Reset after deletion is complete
+  };
+
   return (
     <div className={styles["columnGgroup"]}>
       <SearchBox
@@ -120,10 +153,10 @@ export default function EditBookmarkView() {
         }
         setIsAct={setIsLeftAct}
       />
-      <h2 className="flex items-center px-6 ">修改列表</h2>
+      <h2 className="flex items-center px-6">修改列表</h2>
       <div className="mb-2 px-6 flex items-center text-[12px] text-gray-500">
         <TbLock />
-        <span className="ml-1 ">不公开</span>
+        <span className="ml-1">不公开</span>
       </div>
       <hr />
       <div
@@ -167,24 +200,37 @@ export default function EditBookmarkView() {
           <span>像素块</span>
           <ListILinkAddBtn />
         </div>
-        {Array.from(lastListPixelBlock as Set<PixelBlock>).map(
-          (item: PixelBlock) => {
-            const key = item.id; // Correctly form the key
-            return (
-              <PixelBoxItem
-                key={key}
-                item={item}
-                selected={selectedPixelBlock?.id === key}
-                hovered={true}
-                onClick={() => setSelectedPixelBlock(item)}
-                endContent={
+        {loading && <SkeletonLoader count={3} />}
+        {showPixelBlocks?.map((item: PixelBlock) => {
+          const key = item.id;
+          const isDeleting = deletingPixelBlockId === item.id; // Check if this block is being deleted
+
+          return (
+            <PixelBoxItem
+              key={key}
+              item={item}
+              selected={selectedPixelBlock?.id === key}
+              hovered={true}
+              onClick={() => setSelectedPixelBlock(item)}
+              endContent={
+                isDeleting ? (
+                  <Button isLoading size="sm" />
+                ) : (
                   <Dropdown radius="sm">
                     <DropdownTrigger>
                       <button className="flex items-center justify-center w-[42px] h-[42px] rounded-full hover:bg-[#e8ebeb] focus:outline-none">
                         <TbDotsVertical />
                       </button>
                     </DropdownTrigger>
-                    <DropdownMenu aria-label="Static Actions" variant="faded">
+                    <DropdownMenu
+                      onAction={(key) => {
+                        if (key === "delete") {
+                          deletePixelBlock(item.id);
+                        }
+                      }}
+                      aria-label="Static Actions"
+                      variant="faded"
+                    >
                       <DropdownItem key="share">分享列表</DropdownItem>
                       <DropdownItem
                         key="delete"
@@ -195,13 +241,13 @@ export default function EditBookmarkView() {
                       </DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
-                }
-              />
-            );
-          }
-        )}
+                )
+              }
+            />
+          );
+        })}
       </div>
-      <div className=" flex items-center h-[58px] px-6 border-t absolute bottom-0 w-full">
+      <div className="flex items-center h-[58px] px-6 border-t absolute bottom-0 w-full">
         {!isLoading && (
           <button className="flex items-center justify-center w-[30px] h-[30px] rounded-full bg-[#e8ebeb]">
             <TbCheck />

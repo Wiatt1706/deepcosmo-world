@@ -2,22 +2,29 @@
 "use client";
 import styles from "@/styles/canvas/ViewLeftMenu.module.css";
 import { Link } from "@nextui-org/react";
-import {
-  TbBookmark,
-  TbHistory,
-} from "react-icons/tb";
+import { TbBookmark, TbHistory } from "react-icons/tb";
 import { LogoSvg } from "@/components/utils/icons";
 import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 
+export default function LeftMenuView() {
+  console.log("LeftMenuView");
 
-export default function LeftMenuView({
-  handleMenuClick,
-}: {
-  handleMenuClick: (module: string) => void;
-}) {
-  const [selectedModule] = useShowBaseStore((state: any) => [
-    state.selectedModule,
-  ]);
+  const [selectedModule, setSelectedModule, isLeftAct, setIsLeftAct] =
+    useShowBaseStore((state: any) => [
+      state.selectedModule,
+      state.setSelectedModule,
+      state.isLeftAct,
+      state.setIsLeftAct,
+    ]);
+
+  const handleModuleClick = (module: string) => {
+    if (isLeftAct && selectedModule === module) {
+      setIsLeftAct(false);
+    } else if (!isLeftAct || selectedModule !== module) {
+      setIsLeftAct(true);
+      setSelectedModule(module);
+    }
+  };
 
   return (
     <div className={styles["left-view"] + " shadow"}>
@@ -28,7 +35,7 @@ export default function LeftMenuView({
       </div>
       <div className="flex flex-col gap-3 justify-center align-center mt-3">
         <div
-          onClick={() => handleMenuClick("Bookmark")}
+          onClick={() => handleModuleClick("Bookmark")}
           className={`${styles["left-tool-box"]} ${
             selectedModule === "Bookmark" ? styles["active"] : ""
           }`}
@@ -36,7 +43,7 @@ export default function LeftMenuView({
           <TbBookmark size={24} strokeWidth={1.5} />
         </div>
         <div
-          onClick={() => handleMenuClick("History")}
+          onClick={() => handleModuleClick("History")}
           className={`${styles["left-tool-box"]} ${
             selectedModule === "History" ? styles["active"] : ""
           }`}
