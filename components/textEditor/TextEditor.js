@@ -12,10 +12,10 @@ import { isKeyHotkey } from 'is-hotkey'
 
 const initialValue = [
     {
-        type: ParagraphType,
-        children: toChildren(''),
+        type: 'paragraph', // 确保 'ParagraphType' 有正确的值，例如 'paragraph'
+        children: [{ text: '' }], // 确保 'toChildren' 返回正确的结构
     },
-]
+];
 
 const TextEditor = ({ editor, setTitle, setTags, setBannerImg }) => {
     const [slateData, setSlateData] = useState(initialValue);
@@ -55,7 +55,7 @@ const TextEditor = ({ editor, setTitle, setTags, setBannerImg }) => {
 
     return (
         <div className={styles['container']}>
-            <Slate editor={editor} value={slateData}>
+            <Slate editor={editor} initialValue={slateData}>
                 <Headbar maxLength='50' setTitle={setTitle} setTags={setTags} setBannerImg={setBannerImg} />
                 <Toolbar editor={editor} />
                 <MarkToolbar editor={editor} editableNode={editableRef.current} />

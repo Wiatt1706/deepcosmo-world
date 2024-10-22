@@ -4,7 +4,7 @@ import styles from '@/styles/blogs/Editor.module.css';
 import { createEditor } from 'slate';
 import { withImages, withHtml, withInlines } from './helpers';
 import Element from './Element';
-import { useDecorate, SetNodeToDecorations} from './CodeHighlighting';
+import { useDecorate, SetNodeToDecorations } from './CodeHighlighting';
 import Leaf from './Leaf';
 
 const ReadEditor = ({ content }) => {
@@ -14,9 +14,16 @@ const ReadEditor = ({ content }) => {
   const editableRef = useRef(null);
   const decorate = useDecorate(editor);
 
+  const initialValue = content || [
+    {
+      type: 'paragraph', // 确保 'ParagraphType' 有正确的值，例如 'paragraph'
+      children: [{ text: '' }], // 确保 'toChildren' 返回正确的结构
+    },
+  ];
+
   return (
     <div className={styles['container']}>
-      <Slate editor={editor} initialValue={content}>
+      <Slate editor={editor} initialValue={initialValue}>
         <div ref={editableRef}>
           <SetNodeToDecorations />
           <Editable

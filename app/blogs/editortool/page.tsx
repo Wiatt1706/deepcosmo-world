@@ -9,85 +9,77 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useNotification } from "@/components/utils/NotificationBar";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
 export default function EditorPage() {
   const supabase = createClientComponentClient();
   const router = useRouter();
   const textEditorRef = useRef<any>(null);
-
-  const [isPublish, setIsPublish] = useState(false); // 添加一个状态来跟踪提交状态
+  const [isPublishing, setIsPublishing] = useState(false); // State to track publishing status
   const addNotification = useNotification((state) => state.addNotification);
 
   const handleClearEditor = () => {
     const confirmed = window.confirm("确定要清空编辑器内容吗？");
     if (confirmed) {
-      if (textEditorRef.current) {
-        window.location.reload();
-        localStorage.removeItem("slateData");
-      }
+      localStorage.removeItem("slateData");
+      window.location.reload(); // Resetting the editor
     }
   };
 
-  const handleSaveDraftEditor = () => {
-    if (textEditorRef.current) {
-      textEditorRef.current.save();
-    }
+  const handleSaveDraft = () => {
+    textEditorRef.current?.save(); // Using optional chaining to call save if ref exists
   };
 
   const handlePublish = async () => {
-    if (textEditorRef.current) {
-      const { title, tags, bannerImg, editorContent, description } =
-        textEditorRef.current.get();
+    if (!textEditorRef.current) return;
 
-      if (!title) {
-        addNotification("请提供标题", "error", "保存异常");
-        return;
-      }
+    const { title, tags, bannerImg, editorContent, description } =
+      textEditorRef.current.get();
 
-      if (!tags || tags.length == 0) {
-        addNotification("请至少提供一个标签", "error", "保存异常");
-        return;
-      }
-
-      setIsPublish(true);
-      let bannerImgUrl = null;
-      if (bannerImg) {
-        const filePath = `public/bannerImg/${uuidv4()}.jpg`;
-        // 上传封面图片
-        const { data, error } = await supabase.storage
-          .from("deepcosmo_img")
-          .upload(filePath, bannerImg);
-
-        if (data) {
-          bannerImgUrl = filePath;
-        } else {
-          // Handle saving failure
-          addNotification(error, "error", "保存异常");
-          console.log(error);
-          setIsPublish(false);
-        }
-      }
-
-      const pxCmtyArticlesData = {
-        title,
-        description: description,
-        content: JSON.stringify(editorContent),
-        banner_img_url: bannerImgUrl,
-        keywords: tags.map((obj: any) => obj.id),
-      };
-
-      const { data, error } = await supabase
-        .from("PxCmtyArticles")
-        .insert([pxCmtyArticlesData])
-        .select();
-
-      if (data) {
-        addNotification("内容已成功发布");
-        router.push("/community");
-      } else {
-        addNotification("发布内容失败", "error", "保存异常");
-      }
-      setIsPublish(false);
+    if (!title) {
+      addNotification("请提供标题", "error", "保存异常");
+      return;
     }
+    if (!tags || tags.length === 0) {
+      addNotification("请至少提供一个标签", "error", "保存异常");
+      return;
+    }
+
+    setIsPublishing(true);
+    let bannerImgUrl = null;
+
+    if (bannerImg) {
+      const filePath = `public/bannerImg/${uuidv4()}.jpg`;
+      const { data, error } = await supabase.storage
+        .from("deepcosmo_img")
+        .upload(filePath, bannerImg);
+
+      if (error) {
+        addNotification(error.message || "上传失败", "error", "保存异常");
+        setIsPublishing(false);
+        return;
+      }
+      bannerImgUrl = filePath;
+    }
+
+    const articleData = {
+      title,
+      description,
+      content: JSON.stringify(editorContent),
+      banner_img_url: bannerImgUrl,
+      keywords: tags.map((tag: any) => tag.id),
+    };
+
+    const { error } = await supabase
+      .from("PxCmtyArticles")
+      .insert([articleData]);
+
+    if (error) {
+      addNotification("发布内容失败", "error", "保存异常");
+    } else {
+      addNotification("内容已成功发布");
+      router.push("/community");
+    }
+    setIsPublishing(false);
   };
 
   return (
@@ -97,7 +89,7 @@ export default function EditorPage() {
           <Editor ref={textEditorRef} />
 
           <div className={styles["footer-body"]}>
-            {isPublish ? (
+            {isPublishing ? (
               <BlockButton
                 className={styles["c-btn--primary"]}
                 value={<Loader2 />}
@@ -110,9 +102,8 @@ export default function EditorPage() {
                 className={styles["c-btn--primary"]}
               />
             )}
-
             <button
-              onClick={handleSaveDraftEditor}
+              onClick={handleSaveDraft}
               type="button"
               className={styles["c-btn"]}
             >

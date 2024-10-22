@@ -113,18 +113,10 @@ interface ScoreRecord {
 }
 
 // 从本地存储中获取历史排行榜数据
-const getStoredScores = (): ScoreRecord[] => {
-  const scores = localStorage.getItem("scores");
-  return scores ? JSON.parse(scores) : [];
-};
+
 
 // 将当前得分保存到本地存储
-const storeScore = (newScore: ScoreRecord) => {
-  const scores = getStoredScores();
-  scores.push(newScore);
-  scores.sort((a, b) => b.score - a.score); // 按分数从高到低排序
-  localStorage.setItem("scores", JSON.stringify(scores.slice(0, 10))); // 保留前10名
-};
+
 
 // 主页面组件定义
 const CommunityPage: React.FC = () => {
@@ -269,7 +261,7 @@ const CommunityPage: React.FC = () => {
     setGameState("end");
     const endTime = Date.now();
     const timeTaken = (endTime - startTime) / 1000; // 计算用时（秒）
-    storeScore({ score, level, time: elapsedTime }); // 保存当前得分
+    // storeScore({ score, level, time: elapsedTime }); // 保存当前得分
   };
   const handleStartGame = () => {
     setGameState("playing");
@@ -288,12 +280,12 @@ const CommunityPage: React.FC = () => {
       <div className="text-center mb-4">
         <h2 className="text-2xl mb-2">历史排行榜</h2>
         <ol>
-          {getStoredScores().map((record, index) => (
+          {/* {getStoredScores().map((record, index) => (
             <li key={index}>
               第{index + 1}名 - 分数: {record.score} - 关卡: {record.level} -
               时间: {record.time.toFixed(1)}秒
             </li>
-          ))}
+          ))} */}
         </ol>
       </div>
       <Button onClick={handleStartGame} className="text-2xl">
@@ -314,12 +306,12 @@ const CommunityPage: React.FC = () => {
       <div className="text-center mb-4">
         <h2 className="text-2xl mb-2">历史排行榜</h2>
         <ol>
-          {getStoredScores().map((record, index) => (
+          {/* {getStoredScores().map((record, index) => (
             <li key={index}>
               第{index + 1}名 - 分数: {record.score} - 关卡: {record.level} -
               时间: {record.time.toFixed(1)}秒
             </li>
-          ))}
+          ))} */}
         </ol>
       </div>
       <Button onClick={handleStartGame} className="text-2xl">
