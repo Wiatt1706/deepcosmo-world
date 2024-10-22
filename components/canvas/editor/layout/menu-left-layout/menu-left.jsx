@@ -1,10 +1,10 @@
 "use client";
 import styles from "./menu-left.module.css";
-import NumInput from "@/components/utils/NumInput";
 import {
   useStatusStore,
   useCanvasEditorStore,
 } from "@/components/canvas/editor/SocketManager";
+import { NumInput } from "@/components/utils/NumInput";
 import { Input } from "@nextui-org/input";
 export default function EditorMenuLeft() {
   const [isOpenElement, wallThickness, setWallThickness] = useStatusStore(

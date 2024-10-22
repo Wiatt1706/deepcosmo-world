@@ -211,7 +211,7 @@ export default function HistoryView({
             isAnySelected ? "" : "opacity-50 pointer-events-none"
           }`}
         >
-          {userCustomListBoxs({
+          {useUserCustomListBoxs({
             isAnySelected: isAnySelected,
             onListClick: handleCreateListLink,
             isLoading: isLoading,
@@ -241,7 +241,7 @@ export default function HistoryView({
   );
 }
 
-const userCustomListBoxs = ({
+const useUserCustomListBoxs = ({
   isAnySelected,
   isLoading,
   onListClick,

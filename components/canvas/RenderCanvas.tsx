@@ -100,7 +100,7 @@ const RenderCanvas = (props: BoardProps) => {
     right: false,
   });
 
-  const scale = useScale(1.5, 0.5, 30); // 使用自定义
+  const { scale } = useScale(1.5, 0.5, 30); // 使用自定义
   const { legOffsetX, legOffsetY } = useLegMovement(keys, player, scale);
   useBaseKeyPress(setKeys);
 

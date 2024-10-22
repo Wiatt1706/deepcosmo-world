@@ -1,5 +1,4 @@
 "use client";
-import style from "./index.css";
 import React, { useEffect } from "react";
 import { useMyStore, useElementStore } from "@/components/SocketManager";
 import { Position } from "./input-position";
@@ -9,7 +8,6 @@ import { Input } from "@nextui-org/react";
 import { Color } from "three";
 import { useState } from "react";
 import { SwitchBtn } from "../system-layout/SwitchBtn";
-import { TbBrightnessUp } from "react-icons/tb";
 
 export const InfoView = () => {
   const [modelList, setModelList] = useMyStore((state) => [

@@ -9,7 +9,6 @@ import {
   TbHeart,
   TbMoodSad,
   TbPennant,
-  TbPlayerStop,
   TbPlayerStopFilled,
 } from "react-icons/tb";
 

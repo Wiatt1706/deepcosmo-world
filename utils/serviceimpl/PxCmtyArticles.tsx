@@ -8,7 +8,7 @@ type PxCmtyArticlesDTO = {
   keywords?: number[] | null;
   like_array?: number[] | null;
   title?: string | null;
-  user_id?: string | null;
+  user_id?: string | undefined;
 };
 
 const PxCmtyArticlesService = {

@@ -13,17 +13,8 @@ const CanvasBoard: React.FC<CanvasModuleProps> = observer((props) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null); // 主画布引用
   const maskRef = useRef<HTMLCanvasElement | null>(null); // 遮罩画布引用
   const bufferRef = useRef<HTMLCanvasElement | null>(null); // 缓冲画布引用
-
   let isDragging: boolean = false; // 是否被拖拽
   let lastCoord: { left: number; top: number };
-
-  // // 添加一个 useEffect 监听 scroll 的变化
-  // useEffect(() => {
-  //   draw(); // 当 scroll 变化时触发绘制
-  //   if (props.onRealTimeImg) {
-  //     props.onRealTimeImg(clipImage());
-  //   }
-  // }, [canvasStore.scroll, canvasStore.scale]);
 
   useEffect(() => {
     initializeCanvasSize();
@@ -74,11 +65,12 @@ const CanvasBoard: React.FC<CanvasModuleProps> = observer((props) => {
     // 清晰度调整
     _.adaptDPR({
       canvas,
+      dpr,
       cssWidth: containerWidth,
       cssHeight: containerHeight,
     });
 
-    _.adaptDPR({ canvas: buffer, cssWidth: ocWidth, cssHeight: ocHeight });
+    _.adaptDPR({ canvas: buffer, dpr, cssWidth: ocWidth, cssHeight: ocHeight });
 
     canvasStore.setScale(1);
     bufferCtx.drawImage(props.imageFile, 0, 0);

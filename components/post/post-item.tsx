@@ -74,12 +74,14 @@ export default function PostItem({ postInfo }: { postInfo: PxCmtyArticles }) {
 
         <div className={styles.storyCounts}>
           <ReactionButton post={postInfo} />
-          {postInfo.comment_record_num > 0 && (
-            <div className={styles.storyCount}>
-              <MessageCircle className={styles.storyCountsIcon} />
-              <span>{postInfo.comment_record_num}</span>
-            </div>
-          )}
+          {postInfo &&
+            postInfo.comment_record_num &&
+            postInfo.comment_record_num > 0 && (
+              <div className={styles.storyCount}>
+                <MessageCircle className={styles.storyCountsIcon} />
+                <span>{postInfo.comment_record_num}</span>
+              </div>
+            )}
         </div>
       </Link>
     </div>

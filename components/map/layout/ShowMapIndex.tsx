@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import useScale from "@/components/hook/canvas/useScale";
-import { Session } from "@supabase/auth-helpers-nextjs";
 import { PixelBlock, Position, PositionAndSize } from "@/types/MapTypes";
 import { create } from "zustand";
 import LeftInfoView from "./View_LeftInfo";

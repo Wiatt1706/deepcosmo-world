@@ -11,11 +11,12 @@ import { useSlate, useSlateStatic } from 'slate-react';
 import { LIST_TYPES, TEXT_ALIGN_TYPES, insertImage } from '../helpers';
 import CodeBlockButton from './CodeBlockButton';
 import { v4 as uuidv4 } from 'uuid';
-import supabase from "../../../util/Supabase";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 const PUBLIC_URL = process.env.NEXT_PUBLIC_SUPABASE_URL + '/storage/v1/object/public/deepcosmo_img/';
-import { BlockButton as DLCButton } from '../../widget/DLCModule';
+import { BlockButton as DLCButton } from '@/components/assembly/DLCModule';
 
 const Toolbar = () => {
+    const supabase = createClientComponentClient();
     const [isUpload, setIsUpload] = useState(false); // 添加一个状态来跟踪上传状态
     const [showFormatToolbar, setShowFormatToolbar] = useState(false);
     const formatToolbarRef = useRef(null);

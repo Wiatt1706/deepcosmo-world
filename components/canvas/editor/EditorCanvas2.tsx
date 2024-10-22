@@ -1,22 +1,11 @@
 "use client";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/canvas/canvas.module.css";
-import {
-  BoardProps,
-  CanvasInfo,
-  Geometry,
-  Point,
-  Segment,
-} from "@/types/CanvasTypes";
+import { CanvasInfo, Geometry, Point, Segment } from "@/types/CanvasTypes";
 import { useCanvasEditorStore, useStatusStore } from "./SocketManager";
-import EditorMenuLeft from "@/components/canvas/editor/layout/menu-left-layout/menu-left";
 import { useEvent } from "@/components/utils/GeneralEvent";
 import { useBaseKeyPress } from "@/components/hook/useKeyPress";
-import {
-  calculateRectangleVertices,
-  generateRectangleAndMerge,
-} from "../helpers/BaseDraw";
-import { render } from "react-dom";
+import { calculateRectangleVertices } from "../helpers/BaseDraw";
 
 const EditorCanvas = () => {
   const containerRef = useRef<HTMLDivElement>(null);

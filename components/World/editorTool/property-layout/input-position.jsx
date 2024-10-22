@@ -1,8 +1,7 @@
 "use client";
-import style from "./index.css";
 import React from "react";
 import { useElementStore } from "@/components/SocketManager";
-import NumInput from "@/components/utils/NumInput";
+import { NumInput } from "@/components/utils/NumInput";
 
 export const Position = ({ handleUpdate }) => {
   // 鼠标可操作阶段

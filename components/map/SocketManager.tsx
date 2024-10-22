@@ -55,7 +55,7 @@ export const useBaseStore = create((set) => ({
   setCanSave: (canSave: boolean) => set({ canSave }),
 }));
 
-export const temporalEditMapStore = <T,>(
+export const useTemporalEditMapStore = <T,>(
   selector: (state: any) => T,
   equality?: (a: T, b: T) => boolean
 ) => useStore(useEditMapStore.temporal, selector, equality);

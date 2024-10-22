@@ -5,7 +5,7 @@ import { createEditor, Node } from 'slate';
 import { withHistory } from 'slate-history';
 import { withImages, withHtml, withInlines, clearEditor } from './helpers';
 import TextEditor from './TextEditor';
-import PortalContext from '../system/PortalContext';
+import PortalContext from './system/PortalContext';
 
 const Editor = forwardRef((props, ref) => {
     const [parentElement, setParentElement] = useState(null);

@@ -188,26 +188,26 @@ export const drawGrid = (
 
 // 防抖
 export const throttle = (func: Function, limit: number) => {
-  const inThrottle = useRef(false);
-  const lastCall = useRef<{ args: any[]; context: any } | null>(null);
+  let inThrottle = false;
+  let lastCall: { args: any[]; context: any } | null = null;
 
   return function (this: any, ...args: any[]) {
     const context = this;
 
-    if (!inThrottle.current) {
+    if (!inThrottle) {
       func.apply(context, args);
-      inThrottle.current = true;
+      inThrottle = true;
 
       setTimeout(() => {
-        inThrottle.current = false;
-        if (lastCall.current) {
-          func.apply(lastCall.current.context, lastCall.current.args);
-          lastCall.current = null; // 重置最后一次调用
+        inThrottle = false;
+        if (lastCall) {
+          func.apply(lastCall.context, lastCall.args);
+          lastCall = null; // 重置最后一次调用
         }
       }, limit);
     } else {
       // 仅在有新调用时记录最后一次调用
-      lastCall.current = { args, context };
+      lastCall = { args, context };
     }
   };
 };

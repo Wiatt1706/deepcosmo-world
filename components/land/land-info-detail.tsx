@@ -31,7 +31,7 @@ import Locked from "../utils/Locked";
 
 import { put as putApi } from "@/utils/api";
 
-export const temporalLandDetailStore = <T,>(
+export const useTemporalLandDetailStore = <T,>(
   selector: (state: any) => T,
   equality?: (a: T, b: T) => boolean
 ) => useStore(useLandDetailStore.temporal, selector, equality);
@@ -72,7 +72,7 @@ export default function LandInfoDetails({
     ]
   );
 
-  const { undo, redo } = temporalLandDetailStore((state: any) => ({
+  const { undo, redo } = useTemporalLandDetailStore((state: any) => ({
     undo: state.undo,
     redo: state.redo,
   }));

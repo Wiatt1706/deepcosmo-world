@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
-import TextEditor from "../../../components/textEditor";
+import Editor from "../../../components/textEditor";
 import styles from "./Editortool.module.css";
 import { BiCog } from "react-icons/bi";
 import { v4 as uuidv4 } from "uuid";
@@ -8,10 +8,11 @@ import { BlockButton } from "@/components/assembly/DLCModule";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useNotification } from "@/components/utils/NotificationBar";
-
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 export default function EditorPage() {
+  const supabase = createClientComponentClient();
   const router = useRouter();
-  const textEditorRef = useRef(null);
+  const textEditorRef = useRef<any>(null);
 
   const [isPublish, setIsPublish] = useState(false); // 添加一个状态来跟踪提交状态
   const addNotification = useNotification((state) => state.addNotification);
@@ -71,7 +72,7 @@ export default function EditorPage() {
         description: description,
         content: JSON.stringify(editorContent),
         banner_img_url: bannerImgUrl,
-        keywords: tags.map((obj) => obj.id),
+        keywords: tags.map((obj: any) => obj.id),
       };
 
       const { data, error } = await supabase
@@ -93,7 +94,7 @@ export default function EditorPage() {
     <div className={styles["crayons-article-form"]}>
       <div className={styles["crayons-article-form__content"]}>
         <div className={styles["container"]}>
-          <TextEditor ref={textEditorRef} />
+          <Editor ref={textEditorRef} />
 
           <div className={styles["footer-body"]}>
             {isPublish ? (

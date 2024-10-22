@@ -17,7 +17,7 @@ import {
 } from "react-icons/tb";
 import useScale from "@/components/hook/canvas/useScale";
 import {
-  temporalEditMapStore,
+  useTemporalEditMapStore,
   useBaseStore,
   useEditMapStore,
 } from "../SocketManager";
@@ -133,7 +133,7 @@ export default function EditMapIndex({
     }
   };
 
-  const { undo, redo } = temporalEditMapStore((state: any) => ({
+  const { undo, redo } = useTemporalEditMapStore((state: any) => ({
     undo: state.undo,
     redo: state.redo,
   }));

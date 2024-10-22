@@ -1,7 +1,7 @@
 import React from "react";
 import { NumInput } from "@/components/utils/NumInput";
 import styles from "@/styles/canvas/ViewEditTool.module.css";
-import { useBaseStore, temporalEditMapStore } from "../SocketManager";
+import { useBaseStore, useTemporalEditMapStore } from "../SocketManager";
 import { ColorPicker } from "@/components/utils/ColorPicker";
 import {
   TbArrowBackUp,
@@ -18,7 +18,7 @@ export default function EditToolView() {
     state.setToolInfo,
   ]);
 
-  const { undo, redo } = temporalEditMapStore((state: any) => ({
+  const { undo, redo } = useTemporalEditMapStore((state: any) => ({
     undo: state.undo,
     redo: state.redo,
   }));

@@ -1,5 +1,4 @@
 "use client";
-import style from "./index.css";
 import React from "react";
 import { useElementStore } from "@/components/SocketManager";
 import { DegreeNumInput } from "@/components/utils/NumInput";

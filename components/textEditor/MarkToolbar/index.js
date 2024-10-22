@@ -3,8 +3,8 @@ import { Editor } from 'slate';
 import { useFocused } from 'slate-react';
 import { BiBold, BiItalic, BiUnderline, BiCode } from 'react-icons/bi';
 import styles from './MarkToolbar.module.css';
-import Portal from '../../layout/Portal'
-import PortalContext from '../../system/PortalContext';
+import Portal from '../system/Portal'
+import PortalContext from '../system/PortalContext';
 import isHotkey from 'is-hotkey';
 import LinkButton from './LinkButton';
 import { isMultilineSelection } from './../helpers';

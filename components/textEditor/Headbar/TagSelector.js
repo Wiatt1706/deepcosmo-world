@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "./TagSelector.module.css";
 import { BiX, BiHash, BiPlusCircle } from 'react-icons/bi';
-import supabase from "./../../../util/Supabase";
-
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 const COLOR_LEVELS = ['#FFA500', '#0099CC', '#FF4500', '#CC66FF', '#00CC66', '#666666']; // 定义颜色档次
 
 const TagSelector = ({ selectedTags, onTagSelect, onTagRemove }) => {
+    const supabase = createClientComponentClient();
     const [tagInput, setTagInput] = useState("");
     const [tagsList, setTagsList] = useState();
     const [filteredTags, setFilteredTags] = useState();

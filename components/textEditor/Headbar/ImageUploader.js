@@ -1,6 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import styles from './ImageUploader.module.css';
-import Alerts from "../../system/Alerts";
 
 const MAX_SIZE = 2 * 1024 * 1024; // 最大文件大小限制（2MB）
 
@@ -187,7 +186,7 @@ const ImageUploader = ({ onCanvasChange }) => {
             if (typeof onCanvasChange === 'function') {
                 onCanvasChange(file);
             }
-            
+
             drawCanvas(); // 在确保imageRef.current已设置后调用drawCanvas
             setShowCanvas(true); // 在hiddenCanvas设置完宽高后显示canvas
 
@@ -261,7 +260,9 @@ const ImageUploader = ({ onCanvasChange }) => {
             <canvas ref={hiddenCanvasRef} style={{ display: 'none' }} />
 
             {error && ( // 根据错误状态显示错误提示
-                <Alerts type="error" message={error} onClose={() => setError(null)} />
+                <div className={styles['image-error']}>
+                    {error}
+                </div>
             )}
 
             {!showCanvas && (

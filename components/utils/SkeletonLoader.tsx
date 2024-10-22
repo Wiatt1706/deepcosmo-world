@@ -9,11 +9,8 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({ count }) => {
   return (
     <>
       {Array.from({ length: count }).map((_, index) => (
-        <div className="d_c_c w-full">
-          <div
-            key={index}
-            className="max-w-[300px] w-full flex items-center gap-3 mb-4"
-          >
+        <div key={index} className="d_c_c w-full">
+          <div className="max-w-[300px] w-full flex items-center gap-3 mb-4">
             <div>
               <Skeleton className="flex rounded-md w-12 h-12" />
             </div>
