@@ -2,7 +2,14 @@
 import { Listbox, ListboxItem } from "@nextui-org/react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { TbBookmark, TbMapPin, TbSearch, TbX } from "react-icons/tb";
-import { useShowBaseStore } from "../ShowMapIndex";
+import { useAtomValue, useSetAtom } from "jotai";
+import {
+  loadDataAtom,
+  selectedListObjAtom,
+  selectedModuleAtom,
+  selectedPixelBlockAtom,
+  userCustomListAtom,
+} from "../../store/ShowBaseAtomStore";
 
 export const SearchBox = ({
   startContent,
@@ -19,19 +26,11 @@ export const SearchBox = ({
   const [loading, setLoading] = useState(false); // 是否正在加载新数据
   const resultsPerPage = 10; // 每页展示多少条结果
 
-  const [
-    userCustomList,
-    loadData,
-    setSelectedModule,
-    setSelectedListObj,
-    setSelectedPixelBlock,
-  ] = useShowBaseStore((state: any) => [
-    state.userCustomList,
-    state.loadData,
-    state.setSelectedModule,
-    state.setSelectedListObj,
-    state.setSelectedPixelBlock,
-  ]);
+  const userCustomList = useAtomValue(userCustomListAtom);
+  const loadData = useAtomValue(loadDataAtom);
+  const setSelectedModule = useSetAtom(selectedModuleAtom);
+  const setSelectedListObj = useSetAtom(selectedListObjAtom);
+  const setSelectedPixelBlock = useSetAtom(selectedPixelBlockAtom);
 
   const [filteredResults, setFilteredResults] = useState<
     Array<{ name: string; source: "custom" | "load"; obj: any }>

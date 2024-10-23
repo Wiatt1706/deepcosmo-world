@@ -13,7 +13,8 @@ import { TbPlus } from "react-icons/tb";
 import { useState } from "react";
 import { post as postApi } from "@/utils/api";
 import { useNotification } from "@/components/utils/NotificationBar";
-import { useShowBaseStore } from "../ShowMapIndex";
+import { useAtom } from "jotai";
+import { userCustomListAtom } from "../../store/ShowBaseAtomStore";
 
 export default function ListAddBtn() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -54,10 +55,8 @@ export function ListAddInput({ onOpenChange }: any) {
   const addNotification = useNotification(
     (state: any) => state.addNotification
   );
-  const [userCustomList, setUserCustomList] = useShowBaseStore((state: any) => [
-    state.userCustomList,
-    state.setUserCustomList,
-  ]);
+  const [userCustomList, setUserCustomList] = useAtom(userCustomListAtom);
+
   const [isLoading, setIsLoading] = useState(false); // 跟踪加载状态
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

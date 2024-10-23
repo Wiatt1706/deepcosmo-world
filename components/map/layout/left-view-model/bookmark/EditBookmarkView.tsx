@@ -10,7 +10,6 @@ import {
   Input,
   Textarea,
 } from "@nextui-org/react";
-import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { PixelBlock } from "@/types/MapTypes";
 import { PixelBoxItem } from "../PixelBoxItem";
@@ -19,6 +18,14 @@ import ListILinkAddBtn from "../ListILinkAddBtn";
 import { SearchBox } from "../SearchBox";
 import { useUserCustomItemBlock } from "@/components/hook/service/useUserCustomItemBlock";
 import styles from "@/styles/canvas/ViewLeftTool.module.css";
+import {
+  isLeftActAtom,
+  selectedListObjAtom,
+  selectedModuleAtom,
+  selectedPixelBlockAtom,
+  userCustomListAtom,
+} from "@/components/map/store/ShowBaseAtomStore";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 
 export default function EditBookmarkView() {
   const supabase = createClientComponentClient();
@@ -26,23 +33,13 @@ export default function EditBookmarkView() {
     (state: any) => state.addNotification
   );
 
-  const [
-    setIsLeftAct,
-    selectedListObj,
-    setSelectedModule,
-    selectedPixelBlock,
-    setSelectedPixelBlock,
-    userCustomList,
-    setUserCustomList,
-  ] = useShowBaseStore((state: any) => [
-    state.setIsLeftAct,
-    state.selectedListObj,
-    state.setSelectedModule,
-    state.selectedPixelBlock,
-    state.setSelectedPixelBlock,
-    state.userCustomList,
-    state.setUserCustomList,
-  ]);
+  const setIsLeftAct = useSetAtom(isLeftActAtom);
+  const setSelectedModule = useSetAtom(selectedModuleAtom);
+  const selectedListObj = useAtomValue(selectedListObjAtom);
+  const [selectedPixelBlock, setSelectedPixelBlock] = useAtom(
+    selectedPixelBlockAtom
+  );
+  const [userCustomList, setUserCustomList] = useAtom(userCustomListAtom);
 
   const { pixelBlocks, loading, error } = useUserCustomItemBlock({
     column: "user_custom_list_id",

@@ -20,12 +20,18 @@ import {
 import { TbDotsVertical, TbHeart, TbList, TbStar } from "react-icons/tb";
 import ListAddBtn from "../ListAddBtn";
 import { useState } from "react";
-import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { useNotification } from "@/components/utils/NotificationBar";
 import { SearchBox } from "../SearchBox";
 import { ShowBookmarkList } from "./ShowBookmarkView";
+import {
+  isLeftActAtom,
+  selectedListObjAtom,
+  selectedModuleAtom,
+  userCustomListAtom,
+} from "@/components/map/store/ShowBaseAtomStore";
+import { useAtom, useSetAtom } from "jotai";
 
 const ListBoxs = ({
   userCustomList,
@@ -34,9 +40,8 @@ const ListBoxs = ({
   userCustomList: any[];
   onDeleteConfirm: (id: string) => void;
 }) => {
-  const [setSelectedModule, setSelectedListObj] = useShowBaseStore(
-    (state: any) => [state.setSelectedModule, state.setSelectedListObj]
-  );
+  const setSelectedModule = useSetAtom(selectedModuleAtom);
+  const setSelectedListObj = useSetAtom(selectedListObjAtom);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectObj, setSelectObj] = useState<any | null>(null); // Track hovered item
@@ -228,13 +233,9 @@ export default function BookmarkView({
   const addNotification = useNotification(
     (state: any) => state.addNotification
   );
-  const [userCustomList, setUserCustomList, setIsLeftAct] = useShowBaseStore(
-    (state: any) => [
-      state.userCustomList,
-      state.setUserCustomList,
-      state.setIsLeftAct,
-    ]
-  );
+
+  const [userCustomList, setUserCustomList] = useAtom(userCustomListAtom);
+  const setIsLeftAct = useSetAtom(isLeftActAtom);
 
   const deleteListBtnHandle = async (id: string) => {
     // TODO: 删除

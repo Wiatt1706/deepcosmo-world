@@ -1,7 +1,8 @@
 "use client";
 import styles from "@/styles/canvas/map-canvas.module.css";
 import { TbGrid4X4, TbMinus, TbPlus, TbTable } from "react-icons/tb";
-import { useShowBaseStore } from "./ShowMapIndex";
+import { isLeftActAtom, selectedModuleAtom } from "../store/ShowBaseAtomStore";
+import { useAtomValue } from "jotai";
 
 export default function CanavsToolView({
   scale,
@@ -10,10 +11,8 @@ export default function CanavsToolView({
   scale: number;
   setScale: React.Dispatch<React.SetStateAction<number>>;
 }) {
-  const [isLeftAct, selectedModule] = useShowBaseStore((state: any) => [
-    state.isLeftAct,
-    state.selectedModule,
-  ]);
+  const isLeftAct = useAtomValue(isLeftActAtom);
+  const selectedModule = useAtomValue(selectedModuleAtom);
 
   const handleIncreaseScale = () => {
     setScale((prevScale) => Math.min(prevScale + 0.5, 5));

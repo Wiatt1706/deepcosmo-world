@@ -27,12 +27,17 @@ import {
   TbStar,
 } from "react-icons/tb";
 import { PixelBlock } from "@/types/MapTypes";
-import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { PixelBoxItem } from "./PixelBoxItem";
 import { SearchBox } from "./SearchBox";
 import { ListAddInput } from "./ListAddBtn";
 import { post as postApi } from "@/utils/api";
 import { useNotification } from "@/components/utils/NotificationBar";
+import { useAtom, useAtomValue } from "jotai";
+import {
+  lastListPixelBlockAtom,
+  selectedPixelBlockAtom,
+  userCustomListAtom,
+} from "../../store/ShowBaseAtomStore";
 
 export default function HistoryView({
   setIsAct,
@@ -40,17 +45,11 @@ export default function HistoryView({
   setIsAct: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [typeSelectedValue, setTypeSelectedValue] = useState("all"); // 默认选中的值
-  const [
-    selectedPixelBlock,
-    setSelectedPixelBlock,
-    lastListPixelBlock,
-    userCustomList,
-  ] = useShowBaseStore((state: any) => [
-    state.selectedPixelBlock,
-    state.setSelectedPixelBlock,
-    state.lastListPixelBlock,
-    state.userCustomList,
-  ]);
+
+  const [selectedPixelBlock, setSelectedPixelBlock] = useAtom(
+    selectedPixelBlockAtom
+  );
+  const lastListPixelBlock = useAtomValue(lastListPixelBlockAtom);
 
   const [selectedKeys, setSelectedKeys] = useState<Set<Key>>(new Set());
   const [areAllSelected, setAreAllSelected] = useState(false); // Track if all are selected
@@ -74,9 +73,7 @@ export default function HistoryView({
     if (areAllSelected) {
       setSelectedKeys(new Set()); // Deselect all
     } else {
-      const allKeys = Array.from(lastListPixelBlock as Set<PixelBlock>).map(
-        (item: PixelBlock) => item.id
-      );
+      const allKeys = lastListPixelBlock.map((item: PixelBlock) => item.id);
       setSelectedKeys(new Set(allKeys)); // Select all
     }
     setAreAllSelected(!areAllSelected); // Toggle the state
@@ -171,38 +168,36 @@ export default function HistoryView({
         className="overflow-y-auto"
         style={{ maxHeight: `calc(100vh - 260px)` }}
       >
-        {Array.from(lastListPixelBlock as Set<PixelBlock>).map(
-          (item: PixelBlock) => {
-            const key = item.id; // Correctly form the key
-            const isSelected = selectedKeys.has(key); // Check if selected
-            const isHovered = hoveredKey === key; // Check if hovered
-            return (
-              <PixelBoxItem
-                key={key}
-                item={item}
-                selected={selectedPixelBlock?.id === key}
-                hovered={isHovered || isSelected}
-                onClick={() => setSelectedPixelBlock(item)}
-                onHover={setHoveredKey}
-                endContent={
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToggleSelection(key);
-                    }}
-                    className="cursor-pointer h-[60px] px-2 d_c_c"
-                  >
-                    {isSelected ? (
-                      <TbSquareCheckFilled color="#006fef" size={20} />
-                    ) : (
-                      <TbSquare size={20} />
-                    )}
-                  </div>
-                }
-              />
-            );
-          }
-        )}
+        {Array.from(lastListPixelBlock).map((item: PixelBlock) => {
+          const key = item.id; // Correctly form the key
+          const isSelected = selectedKeys.has(key); // Check if selected
+          const isHovered = hoveredKey === key; // Check if hovered
+          return (
+            <PixelBoxItem
+              key={key}
+              item={item}
+              selected={selectedPixelBlock?.id === key}
+              hovered={isHovered || isSelected}
+              onClick={() => setSelectedPixelBlock(item)}
+              onHover={setHoveredKey}
+              endContent={
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleSelection(key);
+                  }}
+                  className="cursor-pointer h-[60px] px-2 d_c_c"
+                >
+                  {isSelected ? (
+                    <TbSquareCheckFilled color="#006fef" size={20} />
+                  ) : (
+                    <TbSquare size={20} />
+                  )}
+                </div>
+              }
+            />
+          );
+        })}
       </div>
 
       <div className="w-full h-[68px] border-t absolute bottom-0 flex items-center justify-between px-4">
@@ -250,9 +245,8 @@ const useUserCustomListBoxs = ({
   isLoading: boolean;
   onListClick: (listObj: any) => void;
 }) => {
-  const [userCustomList] = useShowBaseStore((state: any) => [
-    state.userCustomList,
-  ]);
+  const userCustomList = useAtomValue(userCustomListAtom);
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   // Process and ensure default lists exist (Star and Like)

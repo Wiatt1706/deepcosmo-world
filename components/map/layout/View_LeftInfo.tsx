@@ -4,17 +4,17 @@ import styles from "@/styles/canvas/ViewLeftInfo.module.css";
 import { Button } from "@nextui-org/react";
 import { clsx } from "clsx";
 import { TbX } from "react-icons/tb";
-import { useShowBaseStore } from "./ShowMapIndex";
 import { useQueryPixelBlockByColumn } from "@/components/hook/service/useQueryPixelBlock";
 import { useEffect, useState } from "react";
+import { selectedPixelBlockAtom } from "../store/ShowBaseAtomStore";
+import { useAtomValue } from "jotai";
 
 export default function LeftInfoView() {
   console.log("LeftInfoView");
 
   const [isLeftInfoAct, setIsLeftInfoAct] = useState<boolean>(false);
-  const [selectedPixelBlock] = useShowBaseStore((state: any) => [
-    state.selectedPixelBlock,
-  ]);
+
+  const selectedPixelBlock = useAtomValue(selectedPixelBlockAtom);
 
   useEffect(() => {
     if (selectedPixelBlock) {

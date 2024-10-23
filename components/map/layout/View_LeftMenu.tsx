@@ -4,26 +4,18 @@ import styles from "@/styles/canvas/ViewLeftMenu.module.css";
 import { Link } from "@nextui-org/react";
 import { TbBookmark, TbHistory } from "react-icons/tb";
 import { LogoSvg } from "@/components/utils/icons";
-import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
+import { isLeftActAtom, selectedModuleAtom } from "../store/ShowBaseAtomStore";
+import { useAtom, useSetAtom } from "jotai";
 
 export default function LeftMenuView() {
   console.log("LeftMenuView");
 
-  const [selectedModule, setSelectedModule, isLeftAct, setIsLeftAct] =
-    useShowBaseStore((state: any) => [
-      state.selectedModule,
-      state.setSelectedModule,
-      state.isLeftAct,
-      state.setIsLeftAct,
-    ]);
+  const [selectedModule, setSelectedModule] = useAtom(selectedModuleAtom);
+  const setIsLeftAct = useSetAtom(isLeftActAtom);
 
   const handleModuleClick = (module: string) => {
-    if (isLeftAct && selectedModule === module) {
-      setIsLeftAct(false);
-    } else if (!isLeftAct || selectedModule !== module) {
-      setIsLeftAct(true);
-      setSelectedModule(module);
-    }
+    setIsLeftAct(true);
+    setSelectedModule(module);
   };
 
   return (

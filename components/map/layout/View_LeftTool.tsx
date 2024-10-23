@@ -8,9 +8,14 @@ import {
   Session,
   createClientComponentClient,
 } from "@supabase/auth-helpers-nextjs";
-import { useShowBaseStore } from "./ShowMapIndex";
 import EditBookmarkView from "./left-view-model/bookmark/EditBookmarkView";
 import ShowBookmarkView from "./left-view-model/bookmark/ShowBookmarkView";
+import { useAtom, useAtomValue } from "jotai";
+import {
+  isLeftActAtom,
+  selectedModuleAtom,
+  userCustomListAtom,
+} from "../store/ShowBaseAtomStore";
 
 export default function LeftToolView({
   session,
@@ -19,20 +24,10 @@ export default function LeftToolView({
 }) {
   const supabase = createClientComponentClient<Database>();
 
-  const [
-    isLeftAct,
-    setIsLeftAct,
-    selectedModule,
-    userCustomList,
-    setUserCustomList,
-  ] = useShowBaseStore((state: any) => [
-    state.isLeftAct,
-    state.setIsLeftAct,
-    state.selectedModule,
-    state.userCustomList,
-    state.setUserCustomList,
-  ]);
-  // Create a ref for the CSSTransition to directly manage the DOM node
+  const [isLeftAct, setIsLeftAct] = useAtom(isLeftActAtom);
+  const [userCustomList, setUserCustomList] = useAtom(userCustomListAtom);
+  const selectedModule = useAtomValue(selectedModuleAtom);
+
   const leftViewRef = useRef(null);
 
   const loadData = async () => {

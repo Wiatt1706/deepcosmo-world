@@ -12,7 +12,12 @@ import { useEvent } from "../utils/GeneralEvent";
 import { PixelBlock } from "@/types/MapTypes";
 import { Position } from "@/types/CanvasTypes";
 import { useCanvasSize } from "../hook/canvas/useCanvasBase";
-import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
+import { useAtom, useSetAtom } from "jotai";
+import {
+  lastListPixelBlockAtom,
+  viewMapCenterAtom,
+  viewportAtom,
+} from "./store/ShowBaseAtomStore";
 const ShowMapCanvas = ({
   loadData,
   scale,
@@ -33,17 +38,12 @@ const ShowMapCanvas = ({
   const [selectedPixelBlock, setSelectedPixelBlock] =
     useState<PixelBlock | null>(null);
 
-  const [
-    lastListPixelBlock,
-    setLastListPixelBlock,
-    setViewport,
-    setViewMapCenter,
-  ] = useShowBaseStore((state: any) => [
-    state.lastListPixelBlock,
-    state.setLastListPixelBlock,
-    state.setViewport,
-    state.setViewMapCenter,
-  ]);
+  const [lastListPixelBlock, setLastListPixelBlock] = useAtom(
+    lastListPixelBlockAtom
+  );
+
+  const setViewport = useSetAtom(viewportAtom);
+  const setViewMapCenter = useSetAtom(viewMapCenterAtom);
 
   const [mapCenter, setMapCenter] = useState<Position>({
     x: loadX || 0,
@@ -183,7 +183,7 @@ const ShowMapCanvas = ({
         updatedList.splice(50); // 只保留前 50 条数据
       }
 
-      setLastListPixelBlock(new Set(updatedList)); // 再次转回 Set
+      setLastListPixelBlock(updatedList); // 再次转回 Set
     }
   };
 

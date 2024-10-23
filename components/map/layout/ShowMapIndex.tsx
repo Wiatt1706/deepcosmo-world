@@ -1,34 +1,16 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { LegacyRef, useEffect, useRef, useState } from "react";
 import useScale from "@/components/hook/canvas/useScale";
-import { PixelBlock, Position, PositionAndSize } from "@/types/MapTypes";
-import { create } from "zustand";
+import { PixelBlock } from "@/types/MapTypes";
 import LeftInfoView from "./View_LeftInfo";
 import ShowMapCanvas from "../ShowMapCanvas";
 import CanavsToolView from "./View_CanvasTool";
-
-export const useShowBaseStore = create((set) => ({
-  selectedPixelBlock: null as PixelBlock | null,
-  lastListPixelBlock: new Set() as Set<PixelBlock>,
-  viewport: {} as PositionAndSize,
-  viewMapCenter: {} as Position,
-  selectedModule: "",
-  userCustomList: null,
-  isLeftAct: false,
-  selectedListObj: null,
-  loadData: new Set() as Set<PixelBlock>,
-  setSelectedPixelBlock: (selectedPixelBlock: PixelBlock | null) =>
-    set({ selectedPixelBlock }),
-  setViewport: (viewport: PositionAndSize) => set({ viewport }),
-  setViewMapCenter: (viewMapCenter: Position) => set({ viewMapCenter }),
-  setSelectedModule: (selectedModule: string) => set({ selectedModule }),
-  setLastListPixelBlock: (lastListPixelBlock: PixelBlock[]) =>
-    set({ lastListPixelBlock }),
-  setUserCustomList: (userCustomList: any) => set({ userCustomList }),
-  setIsLeftAct: (isLeftAct: boolean) => set({ isLeftAct }),
-  setSelectedListObj: (selectedListObj: any) => set({ selectedListObj }),
-  setLoadData: (loadData: PixelBlock[]) => set({ loadData }),
-}));
+import { useAtomValue, useSetAtom } from "jotai";
+import {
+  isLeftActAtom,
+  loadDataAtom,
+  selectedModuleAtom,
+} from "../store/ShowBaseAtomStore";
 
 export default function ShowMapIndex({
   loadData,
@@ -50,16 +32,12 @@ export default function ShowMapIndex({
     0.5,
     containerRef.current
   );
-  const [setLoadData, isLeftAct, setSelectedModule] = useShowBaseStore(
-    (state: any) => [
-      state.setLoadData,
-      state.isLeftAct,
-      state.setSelectedModule,
-    ]
-  );
+  const setLoadData = useSetAtom(loadDataAtom);
+  const setSelectedModule = useSetAtom(selectedModuleAtom);
+  const isLeftAct = useAtomValue(isLeftActAtom);
 
   useEffect(() => {
-    setLoadData(loadData || new Set());
+    setLoadData(loadData || []);
   }, [loadData]);
 
   useEffect(() => {
@@ -70,7 +48,7 @@ export default function ShowMapIndex({
 
   return (
     <div
-      ref={containerRef}
+      ref={containerRef as LegacyRef<HTMLDivElement>}
       className={`transition-all h-full  absolute right-0 ${
         isRightMenu
           ? isLeftAct

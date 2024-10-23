@@ -1,26 +1,28 @@
 "use client";
 import styles from "@/styles/canvas/ViewLeftTool.module.css";
 import { TbArrowLeft, TbLock } from "react-icons/tb";
-import { useShowBaseStore } from "@/components/map/layout/ShowMapIndex";
 import { PixelBlock } from "@/types/MapTypes";
 import { PixelBoxItem } from "../PixelBoxItem";
 import { SearchBox } from "../SearchBox";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { useUserCustomItemBlock } from "@/components/hook/service/useUserCustomItemBlock";
 import { SkeletonLoader } from "@/components/utils/SkeletonLoader";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import {
+  isLeftActAtom,
+  selectedListObjAtom,
+  selectedModuleAtom,
+  selectedPixelBlockAtom,
+} from "@/components/map/store/ShowBaseAtomStore";
 
 export default function ShowBookmarkView({
   session,
 }: {
   session?: Session | null;
 }) {
-  const [setIsLeftAct, selectedListObj, setSelectedModule] = useShowBaseStore(
-    (state: any) => [
-      state.setIsLeftAct,
-      state.selectedListObj,
-      state.setSelectedModule,
-    ]
-  );
+  const setIsLeftAct = useSetAtom(isLeftActAtom);
+  const setSelectedModule = useSetAtom(selectedModuleAtom);
+  const selectedListObj = useAtomValue(selectedListObjAtom);
 
   return (
     <div className={styles["columnGgroup"]}>
@@ -59,8 +61,8 @@ export function ShowBookmarkList({
   selectedListId?: string;
   endContent?: JSX.Element;
 }) {
-  const [selectedPixelBlock, setSelectedPixelBlock] = useShowBaseStore(
-    (state: any) => [state.selectedPixelBlock, state.setSelectedPixelBlock]
+  const [selectedPixelBlock, setSelectedPixelBlock] = useAtom(
+    selectedPixelBlockAtom
   );
 
   const { pixelBlocks, loading, error } = useUserCustomItemBlock({
