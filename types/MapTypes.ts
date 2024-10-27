@@ -21,6 +21,7 @@ interface PixelBlock {
     borderSize?: number;
     blockCount: number;
     type: number;
+    description?: string;
     status?: number;
     landCoverImg?: string | null;
     showCoverImgList?: Photo[] | [];
@@ -89,30 +90,30 @@ export const SIZE_LEVELS = [[30, 30], [60, 60], [90, 90], [120, 120], [150, 150]
 export const PROB_LEVELS = [0.90, 0.05, 0.025, 0.015, 0.01]; // 定义概率档次
 
 export const LAND_LEVEL = [
-    { value: "1", name: "1x1" },
-    { value: "2", name: "2x2" },
-    { value: "3", name: "3x3" },
-    { value: "4", name: "4x4" },
-    { value: "5", name: "5x5" },
-    { value: "6", name: "6x6" },
-    { value: "7", name: "7x7" },
-    { value: "8", name: "8x8" },
-    { value: "9", name: "9x9" },
-    { value: "10", name: "10x10" },
+    { value: "0", name: "1x1" },
+    { value: "1", name: "2x2" },
+    { value: "2", name: "3x3" },
+    { value: "3", name: "4x4" },
+    { value: "4", name: "5x5" },
+    { value: "5", name: "6x6" },
+    { value: "6", name: "7x7" },
+    { value: "7", name: "8x8" },
+    { value: "8", name: "9x9" },
+    { value: "9", name: "10x10" },
 ];
 
 export const LAND_TYPE = [
-    { value: "1", name: "像素块" },
-    { value: "2", name: "地图块" },
-    { value: "3", name: "展示块" },
-    { value: "4", name: "Game" },
+    { value: "0", name: "像素块" },
+    { value: "1", name: "地图块" },
+    { value: "2", name: "展示块" },
+    { value: "3", name: "Game" },
 ];
 export const OPTION_TEST_LIST4 = [
-    { value: "1", name: "空置", color: "#0d2235" },
-    { value: "2", name: "预公开", color: "#f9721f" },
-    { value: "3", name: "公开", color: "#0080ff" },
-    { value: "4", name: "上架", color: "#2e4065" },
-    { value: "5", name: "停止", color: "#c0d3e8" },
+    { value: "0", name: "空置", color: "#0d2235" },
+    { value: "1", name: "预公开", color: "#f9721f" },
+    { value: "2", name: "公开", color: "#0080ff" },
+    { value: "3", name: "上架", color: "#2e4065" },
+    { value: "4", name: "停止", color: "#c0d3e8" },
 ];
 export const OPTION_TEST_LIST5 = [
     { value: "1", name: "小组1号", color: "#2e4065" },

@@ -2,7 +2,7 @@
 import { LegacyRef, useEffect, useRef, useState } from "react";
 import useScale from "@/components/hook/canvas/useScale";
 import { PixelBlock } from "@/types/MapTypes";
-import LeftInfoView from "./View_LeftInfo";
+import LeftInfoView from "./left-view-model/View_LeftInfo";
 import ShowMapCanvas from "../ShowMapCanvas";
 import CanavsToolView from "./View_CanvasTool";
 import { useAtomValue, useSetAtom } from "jotai";

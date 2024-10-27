@@ -15,6 +15,7 @@ import { useCanvasSize } from "../hook/canvas/useCanvasBase";
 import { useAtom, useSetAtom } from "jotai";
 import {
   lastListPixelBlockAtom,
+  selectedPixelBlockAtom,
   viewMapCenterAtom,
   viewportAtom,
 } from "./store/ShowBaseAtomStore";
@@ -35,9 +36,9 @@ const ShowMapCanvas = ({
   const buffRef = useRef<HTMLCanvasElement | null>(null);
   const imagesRef = useRef<{ [key: string]: HTMLImageElement }>({});
 
-  const [selectedPixelBlock, setSelectedPixelBlock] =
-    useState<PixelBlock | null>(null);
-
+  const [selectedPixelBlock, setSelectedPixelBlock] = useAtom(
+    selectedPixelBlockAtom
+  );
   const [lastListPixelBlock, setLastListPixelBlock] = useAtom(
     lastListPixelBlockAtom
   );
@@ -182,7 +183,7 @@ const ShowMapCanvas = ({
       if (updatedList.length > 50) {
         updatedList.splice(50); // 只保留前 50 条数据
       }
-
+      // setSelectedPixelBlock(null);
       setLastListPixelBlock(updatedList); // 再次转回 Set
     }
   };

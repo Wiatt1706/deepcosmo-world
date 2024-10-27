@@ -74,7 +74,7 @@ export function ListAddInput({ onOpenChange }: any) {
         .then((response) => {
           console.log("response", response.data);
 
-          if (response.data) {
+          if (response?.data) {
             setListName(""); // 清空输入框
             onOpenChange(); // 关闭模态框
             setUserCustomList([...userCustomList, response.data]);

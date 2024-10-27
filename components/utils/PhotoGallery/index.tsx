@@ -5,6 +5,7 @@ import Slider, { Settings } from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Image from "next/image";
+import { Photo } from "@/types/MapTypes";
 
 interface ArrowProps {
   className?: string;
@@ -34,12 +35,6 @@ function SamplePrevArrow(props: ArrowProps) {
   );
 }
 
-export interface Photo {
-  id: string;
-  src: string;
-  alt?: string;
-  type?: string;
-}
 
 interface PhotoSliderProps {
   iframeSrc?: string;

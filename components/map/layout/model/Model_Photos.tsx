@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import PhotoSlider, { Photo } from "@/components/utils/PhotoGallery";
+import PhotoSlider from "@/components/utils/PhotoGallery";
 import styles from "@/styles/canvas/ViewAct.module.css";
 import { clsx } from "clsx";
 import {
@@ -30,6 +30,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useBaseStore } from "../../SocketManager";
 import { CustomRadio } from "@/components/utils/CustomRadio";
 import Locked from "@/components/utils/Locked";
+import { Photo } from "@/types/MapTypes";
 
 export default function PhotosModel({
   showCoverImgs,
