@@ -9,6 +9,8 @@ export async function POST(request: Request) {
         const listId: string = requestBody.listId || null;
         const listLinkIds: string[] = requestBody.listLinkIds || null;
 
+        console.log("requestBody", requestBody);
+        
         if (!listId || !listLinkIds || listLinkIds.length === 0) {
             return new Response(JSON.stringify({ error: "请提供合法入参" }), { status: 500, headers: { "Content-Type": "application/json" } });
         }

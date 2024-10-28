@@ -19,7 +19,10 @@ import { useAtom } from "jotai";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { LAND_LEVEL, LAND_TYPE, OPTION_TEST_LIST4 } from "@/types/MapTypes";
 import PhotoSlider from "@/components/utils/PhotoGallery";
-
+import ShareBtn from "./ShareBtn";
+import CustomListSaveWrapper from "./ListILinkSaveBtn";
+import { post as postApi } from "@/utils/api";
+import { useNotification } from "@/components/utils/NotificationBar";
 export default function LeftInfoView() {
   const supabase = createClientComponentClient();
   const [loading, setLoading] = useState(false);
@@ -29,6 +32,7 @@ export default function LeftInfoView() {
   const [selectedPixelBlock, setSelectedPixelBlock] = useAtom(
     selectedPixelBlockAtom
   );
+
   useEffect(() => {
     setLoading(true);
     if (selectedPixelBlock) {
@@ -117,6 +121,37 @@ export default function LeftInfoView() {
 }
 
 const ViewLeftInfo = ({ pixelBlock }: any) => {
+  const [isLoading, setIsLoading] = useState(false); // 跟踪加载状态
+  const addNotification = useNotification(
+    (state: any) => state.addNotification
+  );
+
+  const handleCreateListLink = async (listObj: any) => {
+    setIsLoading(true); // 开始加载
+    await postApi(`/userCustomItem`, {
+      listId: listObj.key,
+      listLinkIds: [pixelBlock.id],
+    })
+      .then((response) => {
+        if (response?.data) {
+          addNotification(
+            "已保存到" + listObj.textValue + "列表",
+            "success",
+            "保存成功"
+          );
+        } else {
+          addNotification(
+            response.message || "未知异常请稍后重试",
+            "error",
+            "保存异常"
+          );
+        }
+      })
+      .finally(() => {
+        setIsLoading(false); // 加载完成
+      });
+  };
+
   return (
     <div className={clsx([styles["col-group"]])}>
       <div
@@ -151,12 +186,17 @@ const ViewLeftInfo = ({ pixelBlock }: any) => {
         </div>
       </div>
       <div className="border-t border-b w-full p-3 d_c_c gap-9 ">
-        <IconButton
-          icon={<TbBookmarkFilled size={16} strokeWidth={1.5} />}
-          filled
-          label="保存"
-          onClick={() => {}}
-        />
+        <CustomListSaveWrapper onListClick={handleCreateListLink}>
+          <a>
+            <IconButton
+              icon={<TbBookmarkFilled size={16} strokeWidth={1.5} />}
+              filled
+              label="保存"
+              isLoading={isLoading}
+            />
+          </a>
+        </CustomListSaveWrapper>
+
         {pixelBlock.isInland && (
           <IconButton
             icon={<TbDoor size={16} strokeWidth={2} />}
@@ -173,13 +213,12 @@ const ViewLeftInfo = ({ pixelBlock }: any) => {
           label="定位"
           onClick={() => {}}
         />
-        <IconButton
-          icon={<TbShare size={16} strokeWidth={1.5} />}
-          label="分享"
-          onClick={() => {
-            console.log("分享");
-          }}
-        />
+        <ShareBtn pixelBlock={pixelBlock}>
+          <IconButton
+            icon={<TbShare size={16} strokeWidth={1.5} />}
+            label="分享"
+          />
+        </ShareBtn>
       </div>
 
       <div className="flex items-center text-[14px] p-4 gap-2 border-b">
@@ -240,12 +279,14 @@ export const IconButton = ({
   icon,
   label,
   filled,
+  isLoading,
   onClick,
 }: {
   icon: JSX.Element;
   label: string;
   filled?: boolean;
-  onClick: () => void;
+  isLoading?: boolean;
+  onClick?: () => void;
 }) => {
   return (
     <div
@@ -254,12 +295,12 @@ export const IconButton = ({
     >
       <div
         className={`w-[36px] h-[36px] d_c_c border border-[#1a73e8] rounded-full ${
-          filled
+          filled && !isLoading
             ? "text-[#e8f0fe] bg-[#1a73e8] group-hover:bg-[#1967d2]"
             : "text-[#1967d2] group-hover:bg-[#e8f0fe]"
         }`}
       >
-        {icon}
+        {isLoading ? <Spinner size="sm" /> : icon}
       </div>
       <span>{label}</span>
     </div>
