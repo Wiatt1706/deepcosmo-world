@@ -30,6 +30,7 @@ interface PixelBlock {
     useExternalLink?: boolean; // 是否使用外部链接
     externalLinkType?: string; // 外部链接类型
     externalLink?: string; // 外部链接
+    isInland?: boolean; // 是否存在里世界
 }
 
 export interface Photo {
@@ -88,7 +89,12 @@ export const ZOOM_LEVELS = [0.15, 0.25, 0.5, 1, 2]; // 定义缩放档次
 export const COLOR_LEVELS = ['#2e4065', '#0080ff', '#f9721f', '#c0d3e8', '#0d2235']; // 定义颜色档次
 export const SIZE_LEVELS = [[30, 30], [60, 60], [90, 90], [120, 120], [150, 150],]; // 定义尺寸档次
 export const PROB_LEVELS = [0.90, 0.05, 0.025, 0.015, 0.01]; // 定义概率档次
-
+export const defaultSginImages = [
+    { id: 'sign_home', src: '/images/sign/home.png' },
+    { id: 'sign_location', src: '/images/sign/location.png' },
+    { id: 'sign_play', src: '/images/sign/play.png' },
+    { id: 'sign_gold', src: '/images/sign/gold.png' },
+];
 export const LAND_LEVEL = [
     { value: "0", name: "1x1" },
     { value: "1", name: "2x2" },

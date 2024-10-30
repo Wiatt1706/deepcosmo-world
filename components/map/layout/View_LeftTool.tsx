@@ -16,6 +16,7 @@ import {
   selectedModuleAtom,
   userCustomListAtom,
 } from "../store/ShowBaseAtomStore";
+import LeftInfoView from "./left-view-model/View_LeftInfo";
 
 export default function LeftToolView({
   session,

@@ -24,6 +24,7 @@ export default function ShowMapIndex({
   loadY?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+
   const [isRightMenu, setIsRightMenu] = useState<boolean>(true);
   const { scale, setScale } = useScale(
     loadScale || 1,
@@ -32,6 +33,7 @@ export default function ShowMapIndex({
     0.5,
     containerRef.current
   );
+
   const setLoadData = useSetAtom(loadDataAtom);
   const setSelectedModule = useSetAtom(selectedModuleAtom);
   const isLeftAct = useAtomValue(isLeftActAtom);
@@ -58,14 +60,9 @@ export default function ShowMapIndex({
       }`}
     >
       <LeftInfoView />
-      <CanavsToolView scale={scale} setScale={setScale} />
 
-      <ShowMapCanvas
-        scale={scale}
-        loadX={loadX}
-        loadY={loadY}
-        loadData={loadData}
-      />
+      <CanavsToolView scale={scale} setScale={setScale} />
+      <ShowMapCanvas scale={scale} loadX={loadX} loadY={loadY} />
     </div>
   );
 }

@@ -31,7 +31,9 @@ const useScale = (
     console.log("eventTarget", eventTarget);
 
     if (eventTarget) {
-      eventTarget.addEventListener("wheel", handleWheel as EventListener);
+      eventTarget.addEventListener("wheel", handleWheel as EventListener, {
+        passive: false,
+      });
     }
 
     return () => {
@@ -42,7 +44,7 @@ const useScale = (
         cancelAnimationFrame(requestRef.current);
       }
     };
-  }, [minScale, maxScale, step, target]);
+  }, [target, minScale, maxScale, step]);
 
   return { scale, setScale };
 };

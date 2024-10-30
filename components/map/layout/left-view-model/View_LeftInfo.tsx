@@ -4,11 +4,9 @@ import styles from "@/styles/canvas/ViewLeftInfo.module.css";
 import { Button, Image, Skeleton, Spinner } from "@nextui-org/react";
 import { clsx } from "clsx";
 import {
-  TbBookmark,
   TbBookmarkFilled,
   TbDoor,
   TbMapPin,
-  TbPhotoPlus,
   TbShare,
   TbUser,
   TbX,
@@ -23,6 +21,7 @@ import ShareBtn from "./ShareBtn";
 import CustomListSaveWrapper from "./ListILinkSaveBtn";
 import { post as postApi } from "@/utils/api";
 import { useNotification } from "@/components/utils/NotificationBar";
+import LocateBtn from "./LocateBtn";
 export default function LeftInfoView() {
   const supabase = createClientComponentClient();
   const [loading, setLoading] = useState(false);
@@ -45,8 +44,6 @@ export default function LeftInfoView() {
             .eq("id", selectedPixelBlock.id);
 
           if (error) throw new Error(error.message);
-
-          console.log(data);
 
           const fetchedBlocks: any[] =
             data?.map((requestDTO: any) => {
@@ -72,6 +69,7 @@ export default function LeftInfoView() {
                 author: requestDTO.author,
                 isInland: requestDTO.is_inland,
                 landLevel: requestDTO.land_level,
+                parentLandId: requestDTO.parent_land_id,
               };
             }) || [];
           setPixelBlock(fetchedBlocks[0] ?? null);
@@ -89,7 +87,6 @@ export default function LeftInfoView() {
     <div
       className={clsx(
         styles["info-view"],
-        "",
         selectedPixelBlock ? "block" : "hidden"
       )}
     >
@@ -208,11 +205,14 @@ const ViewLeftInfo = ({ pixelBlock }: any) => {
           />
         )}
 
-        <IconButton
-          icon={<TbMapPin size={16} strokeWidth={1.5} />}
-          label="定位"
-          onClick={() => {}}
-        />
+        <LocateBtn pixelBlock={pixelBlock}>
+          <IconButton
+            icon={<TbMapPin size={16} strokeWidth={1.5} />}
+            label="定位"
+            onClick={() => {}}
+          />
+        </LocateBtn>
+
         <ShareBtn pixelBlock={pixelBlock}>
           <IconButton
             icon={<TbShare size={16} strokeWidth={1.5} />}

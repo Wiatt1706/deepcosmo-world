@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback } from "react";
 export const useCanvasSize = (containerRef: any, buffRef: any) => {
   const initializeCanvasSize = useCallback(() => {
     const container = containerRef.current;
@@ -17,4 +17,3 @@ export const useCanvasSize = (containerRef: any, buffRef: any) => {
 
   return initializeCanvasSize;
 };
-

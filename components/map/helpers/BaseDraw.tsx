@@ -80,6 +80,21 @@ export const getMouseupPixel = (
   return { x: buffX, y: buffY };
 };
 
+export const drawSignImage = (
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  scaledX: number,
+  scaledY: number,
+  scaledWidth: number,
+  scaledHeight: number,
+  dpr: number
+) => {
+  const { width: imgWidth, height: imgHeight } = img;
+  const centeredX = scaledX + scaledWidth / 2 - imgWidth / dpr / 2;
+  const centeredY = scaledY + scaledHeight / 2 - imgHeight / dpr;
+  ctx.drawImage(img, centeredX, centeredY, imgWidth / dpr, imgHeight / dpr);
+};
+
 export const drawRectFrame = (
   ctx: CanvasRenderingContext2D,
   scaledX: number,

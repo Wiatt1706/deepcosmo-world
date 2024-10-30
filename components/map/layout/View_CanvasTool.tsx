@@ -1,8 +1,24 @@
 "use client";
 import styles from "@/styles/canvas/map-canvas.module.css";
-import { TbGrid4X4, TbMinus, TbPlus, TbTable } from "react-icons/tb";
-import { isLeftActAtom, selectedModuleAtom } from "../store/ShowBaseAtomStore";
-import { useAtomValue } from "jotai";
+import {
+  TbDeviceGamepad2,
+  TbEye,
+  TbEyeOff,
+  TbGrid4X4,
+  TbHome,
+  TbMinus,
+  TbPennant2,
+  TbPlus,
+  TbTable,
+} from "react-icons/tb";
+import {
+  isLeftActAtom,
+  isShowSignImageAtom,
+  selectedModuleAtom,
+  signImageModuleAtom,
+} from "../store/ShowBaseAtomStore";
+import { useAtom, useAtomValue } from "jotai";
+import { Button } from "@nextui-org/button";
 
 export default function CanavsToolView({
   scale,
@@ -13,7 +29,8 @@ export default function CanavsToolView({
 }) {
   const isLeftAct = useAtomValue(isLeftActAtom);
   const selectedModule = useAtomValue(selectedModuleAtom);
-
+  const [isShowSignImage, setIsShowSignImage] = useAtom(isShowSignImageAtom);
+  const [signImageModule, setSignImageModule] = useAtom(signImageModuleAtom);
   const handleIncreaseScale = () => {
     setScale((prevScale) => Math.min(prevScale + 0.5, 5));
   };
@@ -22,48 +39,121 @@ export default function CanavsToolView({
     setScale((prevScale) => Math.max(prevScale - 0.5, 0.5));
   };
 
-  return (
-    <div className={`${styles["right-tool-view"]}`}>
-      <div>
-        <div
-          className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] ${
-            isLeftAct && selectedModule === "table" && "text-[#006fef]"
-          }`}
-        >
-          <TbTable size={20} />
-        </div>
-      </div>
-      <div>
-        <div
-          className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] `}
-        >
-          <TbGrid4X4 size={20} />
-        </div>
+  const handleSignImageButtonClick = (v: string) => {
+    if (signImageModule === v) {
+      setSignImageModule(""); // 清空
+    } else {
+      setSignImageModule(v); // 设为新值，替换为你需要的值
+      setIsShowSignImage(true);
+    }
+  };
 
-        <div
-          className={`bg-[#fff] shadow justify-center items-center w-[40px] rounded`}
-        >
-          <div
-            onClick={handleIncreaseScale}
-            className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-tl rounded-tr border-b`}
+  const handleToggleShowSignImage = () => {
+    setIsShowSignImage((prev) => {
+      const newValue = !prev;
+      setSignImageModule(""); // 重置 signImageModule
+      return newValue;
+    });
+  };
+  return (
+    <>
+      <div>
+        <div className="absolute flex top-5 left-5 gap-2">
+          <Button
+            onClick={() => handleSignImageButtonClick("sign_home")}
+            className={`border-2 border-white shadow ${
+              signImageModule === "sign_home"
+                ? "bg-[#0080ff] text-white"
+                : "bg-white"
+            }`}
+            radius="full"
+            size="sm"
+            startContent={<TbHome size={16} />}
           >
-            <TbPlus size={20} />
+            里世界
+          </Button>
+          <Button
+            onClick={() => handleSignImageButtonClick("sign_play")}
+            className={`border-2 border-white shadow ${
+              signImageModule === "sign_play"
+                ? "bg-[#ff8024] text-white"
+                : "bg-white"
+            }`}
+            radius="full"
+            size="sm"
+            startContent={<TbDeviceGamepad2 size={16} />}
+          >
+            游戏
+          </Button>
+          <Button
+            onClick={() => handleSignImageButtonClick("sign_gold")}
+            className={`border-2 border-white shadow ${
+              signImageModule === "sign_gold"
+                ? "bg-[#eeb902] text-white"
+                : "bg-white"
+            }`}
+            radius="full"
+            size="sm"
+            startContent={<TbPennant2 size={16} />}
+          >
+            活动
+          </Button>
+          <Button
+            onClick={handleToggleShowSignImage}
+            isIconOnly
+            className={`border-2 border-white shadow ${
+              isShowSignImage ? "bg-white" : "bg-primary text-white"
+            }`} // 根据状态切换颜色
+            radius="full"
+            size="sm"
+            startContent={
+              isShowSignImage ? <TbEye size={16} /> : <TbEyeOff size={16} />
+            }
+          />
+        </div>
+      </div>
+      <div className={`${styles["right-tool-view"]}`}>
+        <div>
+          <div
+            className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] ${
+              isLeftAct && selectedModule === "table" && "text-[#006fef]"
+            }`}
+          >
+            <TbTable size={20} />
           </div>
+        </div>
+        <div>
           <div
-            className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px]`}
+            className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] `}
           >
-            <span className="text-[#000] text-[10px]">{`${(scale * 100).toFixed(
-              0
-            )}%`}</span>
+            <TbGrid4X4 size={20} />
           </div>
+
           <div
-            onClick={handleDecreaseScale}
-            className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-bl rounded-br border-t`}
+            className={`bg-[#fff] shadow justify-center items-center w-[40px] rounded`}
           >
-            <TbMinus size={20} />
+            <div
+              onClick={handleIncreaseScale}
+              className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-tl rounded-tr border-b`}
+            >
+              <TbPlus size={20} />
+            </div>
+            <div
+              className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px]`}
+            >
+              <span className="text-[#000] text-[10px]">{`${(
+                scale * 100
+              ).toFixed(0)}%`}</span>
+            </div>
+            <div
+              onClick={handleDecreaseScale}
+              className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-bl rounded-br border-t`}
+            >
+              <TbMinus size={20} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
