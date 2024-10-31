@@ -22,10 +22,12 @@ import {
   selectedPixelBlockAtom,
 } from "../../store/ShowBaseAtomStore";
 import CustomListSaveWrapper from "./ListILinkSaveBtn";
-
+import { Session } from "@supabase/auth-helpers-nextjs";
 export default function HistoryView({
+  session,
   setIsAct,
 }: {
+  session?: Session | null;
   setIsAct: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [typeSelectedValue, setTypeSelectedValue] = useState("all"); // 默认选中的值
@@ -190,7 +192,10 @@ export default function HistoryView({
             isAnySelected ? "" : "opacity-50 pointer-events-none"
           }`}
         >
-          <CustomListSaveWrapper onListClick={handleCreateListLink}>
+          <CustomListSaveWrapper
+            session={session}
+            onListClick={handleCreateListLink}
+          >
             <Button
               isLoading={isLoading}
               radius="full"

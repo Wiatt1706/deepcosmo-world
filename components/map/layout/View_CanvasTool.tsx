@@ -9,7 +9,6 @@ import {
   TbMinus,
   TbPennant2,
   TbPlus,
-  TbTable,
 } from "react-icons/tb";
 import {
   isLeftActAtom,
@@ -19,16 +18,18 @@ import {
 } from "../store/ShowBaseAtomStore";
 import { useAtom, useAtomValue } from "jotai";
 import { Button } from "@nextui-org/button";
+import AuthButtonClient from "@/components/layout/auth-button-client";
+import { Session } from "@supabase/auth-helpers-nextjs";
 
 export default function CanavsToolView({
   scale,
   setScale,
+  session,
 }: {
   scale: number;
   setScale: React.Dispatch<React.SetStateAction<number>>;
+  session?: Session | null;
 }) {
-  const isLeftAct = useAtomValue(isLeftActAtom);
-  const selectedModule = useAtomValue(selectedModuleAtom);
   const [isShowSignImage, setIsShowSignImage] = useAtom(isShowSignImageAtom);
   const [signImageModule, setSignImageModule] = useAtom(signImageModuleAtom);
   const handleIncreaseScale = () => {
@@ -57,71 +58,63 @@ export default function CanavsToolView({
   };
   return (
     <>
-      <div>
-        <div className="absolute flex top-5 left-5 gap-2">
-          <Button
-            onClick={() => handleSignImageButtonClick("sign_home")}
-            className={`border-2 border-white shadow ${
-              signImageModule === "sign_home"
-                ? "bg-[#0080ff] text-white"
-                : "bg-white"
-            }`}
-            radius="full"
-            size="sm"
-            startContent={<TbHome size={16} />}
-          >
-            里世界
-          </Button>
-          <Button
-            onClick={() => handleSignImageButtonClick("sign_play")}
-            className={`border-2 border-white shadow ${
-              signImageModule === "sign_play"
-                ? "bg-[#ff8024] text-white"
-                : "bg-white"
-            }`}
-            radius="full"
-            size="sm"
-            startContent={<TbDeviceGamepad2 size={16} />}
-          >
-            游戏
-          </Button>
-          <Button
-            onClick={() => handleSignImageButtonClick("sign_gold")}
-            className={`border-2 border-white shadow ${
-              signImageModule === "sign_gold"
-                ? "bg-[#eeb902] text-white"
-                : "bg-white"
-            }`}
-            radius="full"
-            size="sm"
-            startContent={<TbPennant2 size={16} />}
-          >
-            活动
-          </Button>
-          <Button
-            onClick={handleToggleShowSignImage}
-            isIconOnly
-            className={`border-2 border-white shadow ${
-              isShowSignImage ? "bg-white" : "bg-primary text-white"
-            }`} // 根据状态切换颜色
-            radius="full"
-            size="sm"
-            startContent={
-              isShowSignImage ? <TbEye size={16} /> : <TbEyeOff size={16} />
-            }
-          />
-        </div>
+      <div className="absolute flex top-5 left-5 gap-2">
+        <Button
+          onClick={() => handleSignImageButtonClick("sign_home")}
+          className={`border-2 border-white shadow ${
+            signImageModule === "sign_home"
+              ? "bg-[#0080ff] text-white"
+              : "bg-white"
+          }`}
+          radius="full"
+          size="sm"
+          startContent={<TbHome size={16} />}
+        >
+          里世界
+        </Button>
+        <Button
+          onClick={() => handleSignImageButtonClick("sign_play")}
+          className={`border-2 border-white shadow ${
+            signImageModule === "sign_play"
+              ? "bg-[#ff8024] text-white"
+              : "bg-white"
+          }`}
+          radius="full"
+          size="sm"
+          startContent={<TbDeviceGamepad2 size={16} />}
+        >
+          游戏
+        </Button>
+        <Button
+          onClick={() => handleSignImageButtonClick("sign_gold")}
+          className={`border-2 border-white shadow ${
+            signImageModule === "sign_gold"
+              ? "bg-[#eeb902] text-white"
+              : "bg-white"
+          }`}
+          radius="full"
+          size="sm"
+          startContent={<TbPennant2 size={16} />}
+        >
+          活动
+        </Button>
+        <Button
+          onClick={handleToggleShowSignImage}
+          isIconOnly
+          className={`border-2 border-white shadow ${
+            isShowSignImage ? "bg-white" : "bg-primary text-white"
+          }`} // 根据状态切换颜色
+          radius="full"
+          size="sm"
+          startContent={
+            isShowSignImage ? <TbEye size={16} /> : <TbEyeOff size={16} />
+          }
+        />
       </div>
-      <div className={`${styles["right-tool-view"]}`}>
-        <div>
-          <div
-            className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] ${
-              isLeftAct && selectedModule === "table" && "text-[#006fef]"
-            }`}
-          >
-            <TbTable size={20} />
-          </div>
-        </div>
+      <div className="absolute flex top-5 right-5 gap-2">
+        <AuthButtonClient session={session} />
+      </div>
+      <div className={`${styles["right-tool-view"]} right-5 bottom-5`}>
         <div>
           <div
             className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] `}

@@ -338,13 +338,13 @@ export default function LandInfoDetails({
           <div className="flex items-center gap-2">
             <span className="text-sm">类型：</span>
             <span className="px-2 py-[2px] bg-[#f3f6f8] text-[12px] rounded">
-              {OPTION_TEST_LIST4[landInfo?.land_type]?.name}
+              {OPTION_TEST_LIST4[landInfo?.land_type]?.label}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm">级别：</span>
             <span className="px-2 py-[2px] bg-[#f3f6f8] text-[12px] rounded">
-              {LAND_LEVEL[landInfo?.land_level]?.name}
+              {LAND_LEVEL[landInfo?.land_level]?.label}
             </span>
           </div>
 

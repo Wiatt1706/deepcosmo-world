@@ -4,7 +4,6 @@ import { PixelBlock } from "@/types/MapTypes";
 import ShowMapIndex from "@/components/map/layout/ShowMapIndex";
 import LeftToolView from "@/components/map/layout/View_LeftTool";
 import LeftMenuView from "@/components/map/layout/View_LeftMenu";
-import LeftInfoView from "@/components/map/layout/left-view-model/View_LeftInfo";
 export default async function EditInfo({
   searchParams,
   params,
@@ -20,6 +19,8 @@ export default async function EditInfo({
   const {
     data: { session },
   } = await supabase.auth.getSession();
+
+  console.log("session:", session);
 
   let { data: requestDTOs } = await supabase
     .from("land_info")
@@ -47,14 +48,13 @@ export default async function EditInfo({
       } as PixelBlock;
     }) || [];
 
-  console.log("pixelBlocks-wwww");
-
   return (
     <div className="flex relative w-full h-full overflow-hidden">
-      <LeftMenuView />
+      <LeftMenuView session={session} />
       <LeftToolView session={session} />
 
       <ShowMapIndex
+        session={session}
         loadData={pixelBlocks}
         loadScale={Number(zoom)}
         loadX={Number(x)}

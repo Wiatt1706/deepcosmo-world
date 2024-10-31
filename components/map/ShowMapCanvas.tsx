@@ -122,28 +122,28 @@ const ShowMapCanvas = ({
     dragStartRef.current = { x: e.clientX, y: e.clientY };
   });
 
-  const fetchData = () => {
-    const buffCtx = buffRef.current?.getContext("2d");
-    if (!buffCtx) return;
+  // const fetchData = () => {
+  //   const buffCtx = buffRef.current?.getContext("2d");
+  //   if (!buffCtx) return;
 
-    const halfWidth = buffCtx.canvas.width / (2 * scale);
-    const halfHeight = buffCtx.canvas.height / (2 * scale);
+  //   const halfWidth = buffCtx.canvas.width / (2 * scale);
+  //   const halfHeight = buffCtx.canvas.height / (2 * scale);
 
-    const viewport = {
-      x: mapCenter.x - halfWidth,
-      y: mapCenter.y - halfHeight,
-      width: buffCtx.canvas.width / scale,
-      height: buffCtx.canvas.height / scale,
-    };
+  //   const viewport = {
+  //     x: mapCenter.x - halfWidth,
+  //     y: mapCenter.y - halfHeight,
+  //     width: buffCtx.canvas.width / scale,
+  //     height: buffCtx.canvas.height / scale,
+  //   };
 
-    // setViewport(viewport);
-    // setViewMapCenter(mapCenter);
-  };
+  //   // setViewport(viewport);
+  //   // setViewMapCenter(mapCenter);
+  // };
 
-  const throttledFetchData = useCallback(throttle(fetchData, 10000), [
-    mapCenter,
-    scale,
-  ]);
+  // const throttledFetchData = useCallback(throttle(fetchData, 10000), [
+  //   mapCenter,
+  //   scale,
+  // ]);
 
   const render = useCallback(() => {
     const buffCtx = buffRef.current?.getContext("2d");
@@ -317,7 +317,7 @@ const ShowMapCanvas = ({
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
       initializeCanvasSize();
-      throttledFetchData(); // Fetch data after resizing
+      // throttledFetchData(); // Fetch data after resizing
       render(); // Render after fetching data
     });
 
@@ -327,13 +327,13 @@ const ShowMapCanvas = ({
 
     // Initial render
     initializeCanvasSize();
-    throttledFetchData();
+    // throttledFetchData();
     render();
 
     return () => {
       resizeObserver.disconnect();
     };
-  }, [initializeCanvasSize, throttledFetchData, render]);
+  }, [initializeCanvasSize, render]);
 
   useEffect(() => {
     const animationFrameId = requestAnimationFrame(render);

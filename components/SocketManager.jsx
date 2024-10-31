@@ -4,7 +4,7 @@ import { temporal } from "zundo";
 import { create, useStore } from "zustand";
 
 export const useUserStore = create((set) => ({
-  checkLogin: null,
+  checkLogin: () => {},
   setCheckLogin: (checkLogin) => set({ checkLogin }),
 }));
 

@@ -238,7 +238,6 @@ export default function BookmarkView({
   const setIsLeftAct = useSetAtom(isLeftActAtom);
 
   const deleteListBtnHandle = async (id: string) => {
-    // TODO: 删除
     const { error } = await supabase
       .from("UserCustomList")
       .delete()
@@ -289,7 +288,7 @@ export default function BookmarkView({
           >
             <ShowBookmarkList
               selectedListId={
-                userCustomList?.filter((item: any) => item.type == 0)[0].id
+                userCustomList?.filter((item: any) => item.type == 0)[0]?.id
               }
             />
           </div>
@@ -301,7 +300,7 @@ export default function BookmarkView({
           >
             <ShowBookmarkList
               selectedListId={
-                userCustomList?.filter((item: any) => item.type == 1)[0].id
+                userCustomList?.filter((item: any) => item.type == 1)[0]?.id
               }
             />
           </div>

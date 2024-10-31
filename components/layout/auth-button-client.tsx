@@ -17,6 +17,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
+  Avatar,
 } from "@nextui-org/react";
 import Link from "next/link";
 import { GithubSvg, GoogleSvg } from "@/components/utils/icons";
@@ -26,7 +27,7 @@ type Provider = "github" | "google";
 export default function AuthButtonClient({
   session,
 }: {
-  session: Session | null;
+  session?: Session | null;
 }) {
   const supabase = createClientComponentClient();
   const router = useRouter();
@@ -37,29 +38,26 @@ export default function AuthButtonClient({
   };
 
   return session ? (
-    <div className="px-4 flex items-center h-[48px]">
-      <Dropdown placement="bottom-start">
-        <DropdownTrigger>
-          <User
-            as="button"
-            avatarProps={{
-              size: "sm",
-              src: session?.user?.user_metadata?.avatar_url,
-            }}
-            className="transition-transform"
-            name={session?.user?.user_metadata?.user_name || "User"}
-          />
-        </DropdownTrigger>
-        <DropdownMenu aria-label="User Actions" variant="flat">
-          <DropdownItem key="analytics" href="/home">
-            Home
-          </DropdownItem>
-          <DropdownItem key="logout" color="danger" onClick={handleSignOut}>
-            Log Out
-          </DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-    </div>
+    <Dropdown placement="bottom-start">
+      <DropdownTrigger>
+        <Avatar
+          className="m-1"
+          as="button"
+          isBordered
+          radius="lg"
+          size="sm"
+          src={session?.user?.user_metadata?.avatar_url}
+        />
+      </DropdownTrigger>
+      <DropdownMenu aria-label="User Actions" variant="flat">
+        <DropdownItem key="analytics" href="/home">
+          Home
+        </DropdownItem>
+        <DropdownItem key="logout" color="danger" onClick={handleSignOut}>
+          Log Out
+        </DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
   ) : (
     <LoginBtn />
   );
@@ -91,16 +89,17 @@ const LoginBtn = () => {
     <>
       <Button
         onPress={onOpen}
-        className="bg-primary text-white border border-conditionalborder-transparent mx-2"
+        className="bg-[#fff] border-2 border-white shadow "
         size="sm"
-        radius="none"
+        radius="sm"
       >
-        Login
+        登录
       </Button>
 
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
+        backdrop="blur"
         placement="bottom-center"
       >
         <ModalContent>

@@ -28,13 +28,13 @@ import { NumInput } from "@/components/utils/NumInput";
 export default function RightActView({ setIsAct }: { setIsAct: any }) {
   const addNotification = useNotification((state) => state.addNotification);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPixelBlock, setSelectedPixelBlock, model, setIsSaveing] =
-    useBaseStore((state: any) => [
+  const [selectedPixelBlock, setSelectedPixelBlock, model] = useBaseStore(
+    (state: any) => [
       state.selectedPixelBlock,
       state.setSelectedPixelBlock,
       state.model,
-      state.setIsSaveing,
-    ]);
+    ]
+  );
   const [pixelBlocks, setPixelBlocks] = useEditMapStore((state: any) => [
     state.pixelBlocks,
     state.setPixelBlocks,
@@ -44,7 +44,7 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
     if (model === "EDIT") {
       setSelectedPixelBlock(null);
     }
-  }, [model, setSelectedPixelBlock]);
+  }, [model]);
 
   const updateData = useCallback(() => {
     const updatedPixelBlocks = pixelBlocks.map((block: PixelBlock) =>
@@ -176,9 +176,11 @@ export function InfoSection({
           aria-label="type_select"
           options={LAND_TYPE}
           value={
-            LAND_TYPE.some((option) => option.value === selectedPixelBlock.type)
-              ? selectedPixelBlock.type
-              : LAND_TYPE[0].value
+            LAND_TYPE.some(
+              (option) => option.key === selectedPixelBlock.type.toString()
+            )
+              ? selectedPixelBlock.type.toString()
+              : LAND_TYPE[0].key
           }
           onChange={(v) =>
             setSelectedPixelBlock({ ...selectedPixelBlock, type: v })
@@ -194,19 +196,18 @@ export function InfoSection({
         <NextSelect
           aria-label="status_select"
           items={OPTION_TEST_LIST4}
-          key={selectedPixelBlock.status}
           classNames={{
             base: "shadow-none p-1",
             trigger: "shadow-none bg-[#f3f6f8]",
           }}
-          onChange={(v) =>
+          onChange={(v) => {
             setSelectedPixelBlock({
               ...selectedPixelBlock,
               status: v.target.value,
-            })
-          }
-          value={selectedPixelBlock.status || "1"}
-          defaultSelectedKeys={[selectedPixelBlock.status || "1"]}
+            });
+          }}
+          key={selectedPixelBlock.status?.toString()}
+          defaultSelectedKeys={[selectedPixelBlock.status?.toString()]}
           placeholder="请选择"
           labelPlacement="outside"
           size="sm"
@@ -241,25 +242,21 @@ export function InfoSection({
                   }}
                 />
                 <div className="flex flex-col">
-                  <span>{item.data?.name}</span>
+                  <span>{item.data?.label}</span>
                 </div>
               </div>
             ));
           }}
         >
           {(item) => (
-            <SelectItem
-              key={item.value}
-              textValue={item.name}
-              value={item.value}
-            >
+            <SelectItem key={item.key} textValue={item.label} value={item.key}>
               <div className="flex gap-2 items-center">
                 <div
                   className="w-4 h-4 rounded-full"
                   style={{ backgroundColor: item?.color || "#272727" }}
                 />
                 <div className="flex flex-col">
-                  <span className="text-small">{item.name}</span>
+                  <span className="text-small">{item.label}</span>
                 </div>
               </div>
             </SelectItem>
@@ -274,7 +271,6 @@ export function InfoSection({
         <NextSelect
           aria-label="group-select"
           items={OPTION_TEST_LIST5}
-          key={selectedPixelBlock.groupId}
           classNames={{
             base: "shadow-none p-1",
             trigger: "shadow-none bg-[#f3f6f8]",
@@ -285,8 +281,8 @@ export function InfoSection({
               groupId: v.target.value,
             })
           }
-          value={selectedPixelBlock.groupId}
-          defaultSelectedKeys={[selectedPixelBlock.groupId]}
+          key={selectedPixelBlock.groupId?.toString()}
+          defaultSelectedKeys={[selectedPixelBlock.groupId?.toString()]}
           placeholder="无分组"
           labelPlacement="outside"
           size="sm"
@@ -321,25 +317,21 @@ export function InfoSection({
                   }}
                 />
                 <div className="flex flex-col">
-                  <span>{item.data?.name}</span>
+                  <span>{item.data?.label}</span>
                 </div>
               </div>
             ));
           }}
         >
           {(item) => (
-            <SelectItem
-              key={item.value}
-              textValue={item.name}
-              value={item.value}
-            >
+            <SelectItem key={item.key} textValue={item.label} value={item.key}>
               <div className="flex gap-2 items-center">
                 <div
                   className="w-4 h-4 rounded-full"
                   style={{ backgroundColor: item?.color || "#272727" }}
                 />
                 <div className="flex flex-col">
-                  <span className="text-small">{item.name}</span>
+                  <span className="text-small">{item.label}</span>
                 </div>
               </div>
             </SelectItem>

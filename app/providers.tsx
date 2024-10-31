@@ -30,7 +30,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
       <NextUIProvider>
         <NextThemesProvider {...themeProps}>
           <NotificationBar />
-          <NotificationInfo />
+          {/* <NotificationInfo /> */}
           {children}
         </NextThemesProvider>
       </NextUIProvider>

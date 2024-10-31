@@ -96,47 +96,47 @@ export const defaultSginImages = [
     { id: 'sign_gold', src: '/images/sign/gold.png' },
 ];
 export const LAND_LEVEL = [
-    { value: "0", name: "1x1" },
-    { value: "1", name: "2x2" },
-    { value: "2", name: "3x3" },
-    { value: "3", name: "4x4" },
-    { value: "4", name: "5x5" },
-    { value: "5", name: "6x6" },
-    { value: "6", name: "7x7" },
-    { value: "7", name: "8x8" },
-    { value: "8", name: "9x9" },
-    { value: "9", name: "10x10" },
+    { key: "0", label: "1x1" },
+    { key: "1", label: "2x2" },
+    { key: "2", label: "3x3" },
+    { key: "3", label: "4x4" },
+    { key: "4", label: "5x5" },
+    { key: "5", label: "6x6" },
+    { key: "6", label: "7x7" },
+    { key: "7", label: "8x8" },
+    { key: "8", label: "9x9" },
+    { key: "9", label: "10x10" },
 ];
 
 export const LAND_TYPE = [
-    { value: "0", name: "像素块" },
-    { value: "1", name: "地图块" },
-    { value: "2", name: "展示块" },
-    { value: "3", name: "Game" },
+    { key: "0", label: "像素块" },
+    { key: "1", label: "地图块" },
+    { key: "2", label: "展示块" },
+    { key: "3", label: "Game" },
 ];
 export const OPTION_TEST_LIST4 = [
-    { value: "0", name: "空置", color: "#0d2235" },
-    { value: "1", name: "预公开", color: "#f9721f" },
-    { value: "2", name: "公开", color: "#0080ff" },
-    { value: "3", name: "上架", color: "#2e4065" },
-    { value: "4", name: "停止", color: "#c0d3e8" },
+    { key: "0", label: "空置", color: "#0d2235" },
+    { key: "1", label: "预公开", color: "#f9721f" },
+    { key: "2", label: "公开", color: "#0080ff" },
+    { key: "3", label: "上架", color: "#2e4065" },
+    { key: "4", label: "停止", color: "#c0d3e8" },
 ];
 export const OPTION_TEST_LIST5 = [
-    { value: "1", name: "小组1号", color: "#2e4065" },
-    { value: "2", name: "小组2号", color: "#0080ff" },
-    { value: "3", name: "小组3号", color: "#f9721f" },
-    { value: "4", name: "小组4号", color: "#c0d3e8" },
-    { value: "5", name: "小组5号", color: "#0d2235" },
+    { key: "1", label: "小组1号", color: "#2e4065" },
+    { key: "2", label: "小组2号", color: "#0080ff" },
+    { key: "3", label: "小组3号", color: "#f9721f" },
+    { key: "4", label: "小组4号", color: "#c0d3e8" },
+    { key: "5", label: "小组5号", color: "#0d2235" },
 ];
 export const OPTION_TEST_LIST_2 = [
-    { value: "1", name: "已发布内容" },
-    { value: "2", name: "自定义路径" },
+    { key: "1", label: "已发布内容" },
+    { key: "2", label: "自定义路径" },
 ];
 
 export const OPTION_TEST_LIST_3 = [
-    { value: "", name: "未绑定" },
-    { value: "https://developer.mozilla.org/zh-CN/docs/Web/CSS/::placeholder", name: "文章1" },
-    { value: "https://www.google.com/", name: "文字2" },
-    { value: "https://www.baidu.com/", name: "资源3" },
+    { key: "", label: "未绑定" },
+    { key: "https://developer.mozilla.org/zh-CN/docs/Web/CSS/::placeholder", label: "文章1" },
+    { key: "https://www.google.com/", label: "文字2" },
+    { key: "https://www.baidu.com/", label: "资源3" },
 ];
 export type { Position, CssSize, PositionAndSize, Pixel, PixelBlock, ImgBlock, PixelBoardProps, PixelArtProps };

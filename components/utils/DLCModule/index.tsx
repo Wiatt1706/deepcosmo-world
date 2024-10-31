@@ -250,8 +250,8 @@ export const Checkbox: React.FC<CheckboxProps> = ({
 };
 
 interface Option {
-  value: string;
-  name: string;
+  key: string;
+  label: string;
 }
 
 interface SelectProps
@@ -292,9 +292,9 @@ export const Select: React.FC<SelectProps> = ({
   // 如果设置为只读，渲染一个类似 Input 的输入框
   if (readOnly) {
     // 查找匹配的 Option 对象
-    const selectedOption = options.find((option) => option.value === value);
+    const selectedOption = options.find((option) => option.key === value);
 
-    return <Input readOnly value={selectedOption?.name || ""} />;
+    return <Input readOnly value={selectedOption?.label || ""} />;
   }
 
   return (
@@ -315,14 +315,14 @@ export const Select: React.FC<SelectProps> = ({
         ref={selectRef}
         style={selectStyle}
         value={value}
-        defaultSelectedKeys={[value]}
+        defaultSelectedKeys={[value.toString()]}
         placeholder="请选择"
         labelPlacement="outside"
         size="sm"
       >
         {options.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
-            {option.name}
+          <SelectItem key={option.key} value={option.key}>
+            {option.label}
           </SelectItem>
         ))}
       </NextSelect>

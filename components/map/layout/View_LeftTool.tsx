@@ -16,7 +16,6 @@ import {
   selectedModuleAtom,
   userCustomListAtom,
 } from "../store/ShowBaseAtomStore";
-import LeftInfoView from "./left-view-model/View_LeftInfo";
 
 export default function LeftToolView({
   session,
@@ -68,7 +67,7 @@ export default function LeftToolView({
       <div ref={leftViewRef} className={styles["left-view"] + " shadow"}>
         {selectedModule === "Bookmark" && <BookmarkView session={session} />}
         {selectedModule === "History" && (
-          <HistoryView setIsAct={setIsLeftAct} />
+          <HistoryView session={session} setIsAct={setIsLeftAct} />
         )}
         {selectedModule === "EditBookmark" && <EditBookmarkView />}
         {selectedModule === "ShowBookmark" && <ShowBookmarkView />}

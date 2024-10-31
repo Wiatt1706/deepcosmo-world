@@ -6,14 +6,26 @@ import { TbBookmark, TbHistory } from "react-icons/tb";
 import { LogoSvg } from "@/components/utils/icons";
 import { isLeftActAtom, selectedModuleAtom } from "../store/ShowBaseAtomStore";
 import { useAtom, useSetAtom } from "jotai";
+import { useUserStore } from "@/components/SocketManager";
+import { Session } from "@supabase/auth-helpers-nextjs";
 
-export default function LeftMenuView() {
-  console.log("LeftMenuView");
-
+export default function LeftMenuView({
+  session,
+}: {
+  session?: Session | null;
+}) {
+  const checkLogin = useUserStore((state) => state.checkLogin);
   const [selectedModule, setSelectedModule] = useAtom(selectedModuleAtom);
   const setIsLeftAct = useSetAtom(isLeftActAtom);
 
   const handleModuleClick = (module: string) => {
+    console.log("session:", session);
+
+    if (!session && module !== "History") {
+      checkLogin();
+      return;
+    }
+
     setIsLeftAct(true);
     setSelectedModule(module);
   };

@@ -190,7 +190,9 @@ export default function EditMapIndex({
           {model === "EDIT" && <EditToolView />}
 
           <div ref={containerRef} className="w-full h-full relative">
-            <div className={`${styles["right-tool-view"]}`}>
+            <div
+              className={`${styles["right-tool-view"]} right-5 bottom-5 top-5`}
+            >
               <div>
                 <div
                   onClick={() => handleModuleClick("table")}

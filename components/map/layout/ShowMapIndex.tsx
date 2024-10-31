@@ -11,13 +11,16 @@ import {
   loadDataAtom,
   selectedModuleAtom,
 } from "../store/ShowBaseAtomStore";
+import { Session } from "@supabase/auth-helpers-nextjs";
 
 export default function ShowMapIndex({
+  session,
   loadData,
   loadScale,
   loadX,
   loadY,
 }: {
+  session?: Session | null;
   loadData?: PixelBlock[];
   loadScale?: number;
   loadX?: number;
@@ -59,9 +62,8 @@ export default function ShowMapIndex({
           : "w-full"
       }`}
     >
-      <LeftInfoView />
-
-      <CanavsToolView scale={scale} setScale={setScale} />
+      <LeftInfoView session={session} />
+      <CanavsToolView scale={scale} setScale={setScale} session={session} />
       <ShowMapCanvas scale={scale} loadX={loadX} loadY={loadY} />
     </div>
   );

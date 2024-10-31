@@ -14,7 +14,10 @@ import {
 import { useEffect, useState } from "react";
 import { selectedPixelBlockAtom } from "../../store/ShowBaseAtomStore";
 import { useAtom } from "jotai";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import {
+  Session,
+  createClientComponentClient,
+} from "@supabase/auth-helpers-nextjs";
 import { LAND_LEVEL, LAND_TYPE, OPTION_TEST_LIST4 } from "@/types/MapTypes";
 import PhotoSlider from "@/components/utils/PhotoGallery";
 import ShareBtn from "./ShareBtn";
@@ -22,7 +25,12 @@ import CustomListSaveWrapper from "./ListILinkSaveBtn";
 import { post as postApi } from "@/utils/api";
 import { useNotification } from "@/components/utils/NotificationBar";
 import LocateBtn from "./LocateBtn";
-export default function LeftInfoView() {
+
+export default function LeftInfoView({
+  session,
+}: {
+  session?: Session | null;
+}) {
   const supabase = createClientComponentClient();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -111,13 +119,13 @@ export default function LeftInfoView() {
           <Spinner color="primary" size="lg" />
         </div>
       ) : (
-        pixelBlock && <ViewLeftInfo pixelBlock={pixelBlock} />
+        pixelBlock && <ViewLeftInfo session={session} pixelBlock={pixelBlock} />
       )}
     </div>
   );
 }
 
-const ViewLeftInfo = ({ pixelBlock }: any) => {
+const ViewLeftInfo = ({ session, pixelBlock }: any) => {
   const [isLoading, setIsLoading] = useState(false); // 跟踪加载状态
   const addNotification = useNotification(
     (state: any) => state.addNotification
@@ -183,7 +191,10 @@ const ViewLeftInfo = ({ pixelBlock }: any) => {
         </div>
       </div>
       <div className="border-t border-b w-full p-3 d_c_c gap-9 ">
-        <CustomListSaveWrapper onListClick={handleCreateListLink}>
+        <CustomListSaveWrapper
+          session={session}
+          onListClick={handleCreateListLink}
+        >
           <a>
             <IconButton
               icon={<TbBookmarkFilled size={16} strokeWidth={1.5} />}
@@ -234,19 +245,19 @@ const ViewLeftInfo = ({ pixelBlock }: any) => {
         <div className="d_c_c gap-2">
           <div className="flex flex-col px-2 gap-1">
             <span className="text-[14px] font-semibold">大小</span>
-            <span>{LAND_LEVEL[Number(pixelBlock.landLevel || 0)]?.name}</span>
+            <span>{LAND_LEVEL[Number(pixelBlock.landLevel || 0)]?.label}</span>
           </div>
 
           <div className="flex flex-col px-2 gap-1">
             <span className="text-[14px] font-semibold">状态</span>
             <span>
-              {OPTION_TEST_LIST4[Number(pixelBlock.status || 0)]?.name}
+              {OPTION_TEST_LIST4[Number(pixelBlock.status || 0)]?.label}
             </span>
           </div>
 
           <div className="flex flex-col px-2 gap-1">
             <span className="text-[14px] font-semibold">类型</span>
-            <span>{LAND_TYPE[Number(pixelBlock.type || 0)]?.name}</span>
+            <span>{LAND_TYPE[Number(pixelBlock.type || 0)]?.label}</span>
           </div>
         </div>
       </div>

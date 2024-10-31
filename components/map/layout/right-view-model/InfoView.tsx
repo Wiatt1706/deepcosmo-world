@@ -79,13 +79,13 @@ export default function RightInfoView({
           <div className="flex items-center justify-between">
             <span className="text-sm">级别</span>
             <span className="px-2 py-[2px] bg-[#f3f6f8] text-[12px] rounded">
-              {LAND_LEVEL[Number(landInfo?.land_level || 0) - 1]?.name}
+              {LAND_LEVEL[Number(landInfo?.land_level || 0) - 1]?.label}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm">类型</span>
             <span className="px-2 py-[2px] bg-[#f3f6f8] text-[12px] rounded">
-              {LAND_TYPE[Number(landInfo?.land_type || 0)].name}
+              {LAND_TYPE[Number(landInfo?.land_type || 0)].label}
             </span>
           </div>
           <div className="flex items-center justify-between">
@@ -122,13 +122,13 @@ export default function RightInfoView({
           </h4>
 
           {OPTION_TEST_LIST4.map((item) => (
-            <div key={item.value} className="flex items-center justify-between">
+            <div key={item.key} className="flex items-center justify-between">
               <div
                 className="w-6 h-6 rounded border"
                 style={{ backgroundColor: item.color }}
               />
               <span className="px-2 py-[2px] bg-[#f3f6f8] text-[12px] rounded">
-                {item.name}
+                {item.label}
               </span>
             </div>
           ))}
@@ -141,13 +141,13 @@ export default function RightInfoView({
           </h4>
 
           {OPTION_TEST_LIST5.map((item) => (
-            <div key={item.value} className="flex items-center justify-between">
+            <div key={item.key} className="flex items-center justify-between">
               <div
                 className="w-6 h-6 rounded border"
                 style={{ backgroundColor: item.color }}
               />
               <span className="px-2 py-[2px] bg-[#f3f6f8] text-[12px] rounded">
-                {item.name}
+                {item.label}
               </span>
             </div>
           ))}

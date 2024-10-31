@@ -10,7 +10,7 @@ import {
   throttle,
 } from "./helpers/BaseDraw";
 import { useEvent } from "../utils/GeneralEvent";
-import { PixelBlock } from "@/types/MapTypes";
+import { defaultSginImages, PixelBlock } from "@/types/MapTypes";
 import { Position } from "@/types/CanvasTypes";
 import { useBaseStore, useEditMapStore } from "./SocketManager";
 import { useCanvasSize } from "../hook/canvas/useCanvasBase";
@@ -52,7 +52,6 @@ const EditMapCanvas = ({
     state.setPixelBlocks,
   ]);
 
-  const [showCoordinates, setShowCoordinates] = useState<PixelBlock[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isDrag, setIsDrag] = useState<boolean>(false);
   const [mapCenter, setMapCenter] = useState<Position>({ x: 0, y: 0 });
@@ -118,42 +117,42 @@ const EditMapCanvas = ({
     );
   };
 
-  const fetchData = async () => {
-    const buffCtx = buffRef.current?.getContext("2d");
-    if (!buffCtx) return;
+  // const fetchData = async () => {
+  //   const buffCtx = buffRef.current?.getContext("2d");
+  //   if (!buffCtx) return;
 
-    // Calculate viewport bounds based on current canvas dimensions and scale
-    const halfWidth = buffCtx.canvas.width / (2 * scale);
-    const halfHeight = buffCtx.canvas.height / (2 * scale);
+  //   // Calculate viewport bounds based on current canvas dimensions and scale
+  //   const halfWidth = buffCtx.canvas.width / (2 * scale);
+  //   const halfHeight = buffCtx.canvas.height / (2 * scale);
 
-    const viewport = {
-      x: mapCenter.x - halfWidth,
-      y: mapCenter.y - halfHeight,
-      width: buffCtx.canvas.width / scale,
-      height: buffCtx.canvas.height / scale,
-    };
+  //   const viewport = {
+  //     x: mapCenter.x - halfWidth,
+  //     y: mapCenter.y - halfHeight,
+  //     width: buffCtx.canvas.width / scale,
+  //     height: buffCtx.canvas.height / scale,
+  //   };
 
-    // Fetch and set pixel blocks that intersect with the current viewport
-    const newCoordinates = await fetchCoordinates(viewport);
+  //   // Fetch and set pixel blocks that intersect with the current viewport
+  //   const newCoordinates = await fetchCoordinates(viewport);
 
-    // Handle the loading of any land cover images
-    for (const coord of newCoordinates) {
-      if (coord.landCoverImg && !imagesRef.current[coord.landCoverImg]) {
-        const img = new Image();
-        img.src = coord.landCoverImg;
-        imagesRef.current[coord.landCoverImg] = img;
-      }
-    }
+  //   // Handle the loading of any land cover images
+  //   for (const coord of newCoordinates) {
+  //     if (coord.landCoverImg && !imagesRef.current[coord.landCoverImg]) {
+  //       const img = new Image();
+  //       img.src = coord.landCoverImg;
+  //       imagesRef.current[coord.landCoverImg] = img;
+  //     }
+  //   }
 
-    // Update the state with the new coordinates
-    setShowCoordinates(newCoordinates);
-  };
+  //   // Update the state with the new coordinates
+  //   setShowCoordinates(newCoordinates);
+  // };
 
-  const throttledFetchData = useCallback(throttle(fetchData, 500), [
-    mapCenter,
-    scale,
-    pixelBlocks,
-  ]);
+  // const throttledFetchData = useCallback(throttle(fetchData, 500), [
+  //   mapCenter,
+  //   scale,
+  //   pixelBlocks,
+  // ]);
 
   const render = useCallback(() => {
     const buffCtx = buffRef.current?.getContext("2d");
@@ -163,16 +162,17 @@ const EditMapCanvas = ({
   }, [
     scale,
     mapCenter,
-    showCoordinates,
+    toolInfo,
     selectedPixelBlock,
     mousePosition,
     flashOverlap,
+    pixelBlocks,
   ]);
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
       initializeCanvasSize();
-      throttledFetchData(); // Fetch data after resizing
+      // throttledFetchData(); // Fetch data after resizing
       render(); // Render after fetching data
     });
 
@@ -182,19 +182,35 @@ const EditMapCanvas = ({
 
     // Initial render
     initializeCanvasSize();
-    throttledFetchData();
+    // throttledFetchData();
     render();
 
     return () => {
       resizeObserver.disconnect();
     };
-  }, [initializeCanvasSize, throttledFetchData, render]);
+  }, [initializeCanvasSize, render]);
 
   useEffect(() => {
+    pixelBlocks?.forEach((coord: PixelBlock) => {
+      if (coord.landCoverImg && !imagesRef.current[coord.landCoverImg]) {
+        const img = new Image();
+        img.src = coord.landCoverImg;
+        imagesRef.current[coord.landCoverImg] = img;
+      }
+    });
+  }, [pixelBlocks, defaultSginImages]);
+
+  useEffect(() => {
+    defaultSginImages.forEach(({ id, src }) => {
+      if (!imagesRef.current[id]) {
+        const img = new Image();
+        img.src = src;
+        imagesRef.current[id] = img;
+      }
+    });
     if (initData) {
       setInitData(initData);
       setPixelBlocks(initData);
-      setShowCoordinates(initData);
     }
   }, [initData]);
 
@@ -209,8 +225,8 @@ const EditMapCanvas = ({
 
     switch (model) {
       case "OBSERVE":
-        const clickedPixelBlock = showCoordinates.find(
-          (block) =>
+        const clickedPixelBlock = pixelBlocks.find(
+          (block: PixelBlock) =>
             buffPosition.x >= block.x &&
             buffPosition.x < block.x + block.width &&
             buffPosition.y >= block.y &&
@@ -396,7 +412,7 @@ const EditMapCanvas = ({
       );
     }
 
-    showCoordinates.forEach((coord) => {
+    pixelBlocks.forEach((coord: PixelBlock) => {
       const scaledPadding = coord.borderSize
         ? padding + coord.borderSize * scale
         : padding;
@@ -465,7 +481,6 @@ const EditMapCanvas = ({
       );
     }
   };
-
 
   useEffect(() => {
     const animationFrameId = requestAnimationFrame(render);

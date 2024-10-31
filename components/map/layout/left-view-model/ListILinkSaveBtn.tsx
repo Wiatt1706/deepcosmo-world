@@ -1,33 +1,32 @@
 "use client";
 import {
-  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
-  Input,
   Modal,
-  ModalBody,
   ModalContent,
-  ModalFooter,
-  ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
 import { TbHeart, TbList, TbPlus, TbStar } from "react-icons/tb";
 import { ListAddInput } from "./ListAddBtn";
 import { useAtomValue } from "jotai";
 import { userCustomListAtom } from "../../store/ShowBaseAtomStore";
+import { Session } from "@supabase/auth-helpers-nextjs";
+import { useUserStore } from "@/components/SocketManager";
 
 export default function CustomListSaveWrapper({
+  session,
   children,
   onListClick,
 }: {
+  session?: Session | null;
   children: React.ReactNode;
   onListClick: (listObj: any) => void;
 }) {
   const userCustomList = useAtomValue(userCustomListAtom);
-
+  const checkLogin = useUserStore((state) => state.checkLogin);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   // Process and ensure default lists exist (Star and Like)
@@ -94,85 +93,96 @@ export default function CustomListSaveWrapper({
 
   return (
     <>
-      <Dropdown
-        showArrow
-        radius="sm"
-        classNames={{
-          base: "before:bg-default-200", // change arrow background
-          content: "p-0 border-small border-divider bg-background",
-        }}
-      >
-        <DropdownTrigger>{children}</DropdownTrigger>
-        <DropdownMenu
-          disabledKeys={["title"]}
-          aria-label="Static Actions"
-          itemClasses={{
-            base: [
-              "rounded-md",
-              "text-default-500",
-              "transition-opacity",
-              "data-[hover=true]:text-foreground",
-              "data-[hover=true]:bg-default-100",
-              "dark:data-[hover=true]:bg-default-50",
-              "data-[selectable=true]:focus:bg-default-50",
-              "data-[pressed=true]:opacity-70",
-              "data-[focus-visible=true]:ring-default-500",
-            ],
+      {session?.user ? (
+        <>
+          <Dropdown
+            showArrow
+            radius="sm"
+            classNames={{
+              base: "before:bg-default-200", // change arrow background
+              content: "p-0 border-small border-divider bg-background",
+            }}
+          >
+            <DropdownTrigger>{children}</DropdownTrigger>
+            <DropdownMenu
+              disabledKeys={["title"]}
+              aria-label="Static Actions"
+              itemClasses={{
+                base: [
+                  "rounded-md",
+                  "text-default-500",
+                  "transition-opacity",
+                  "data-[hover=true]:text-foreground",
+                  "data-[hover=true]:bg-default-100",
+                  "dark:data-[hover=true]:bg-default-50",
+                  "data-[selectable=true]:focus:bg-default-50",
+                  "data-[pressed=true]:opacity-70",
+                  "data-[focus-visible=true]:ring-default-500",
+                ],
+              }}
+            >
+              <DropdownItem
+                isReadOnly
+                key="title"
+                className="h-10 gap-2 text-[14px] text-[#272727] text-center justify-center items-center"
+              >
+                保存到您的列表中
+              </DropdownItem>
+
+              <DropdownSection
+                className="max-h-[300px] overflow-auto"
+                aria-label="Profile & Actions"
+                showDivider
+              >
+                {processedLists().map((item: any) => (
+                  <DropdownItem
+                    onClick={() => onListClick(item)}
+                    key={item.key}
+                    startContent={item.icon}
+                  >
+                    {item.textValue}
+                  </DropdownItem>
+                ))}
+              </DropdownSection>
+              <DropdownItem
+                key={"add"}
+                onClick={onOpen}
+                startContent={
+                  <TbPlus
+                    size={20}
+                    color="#0070f0"
+                    strokeWidth={1.5}
+                    className="mx-1"
+                  />
+                }
+              >
+                新建列表
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <Modal
+            radius="sm"
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            scrollBehavior="inside"
+            classNames={{
+              backdrop: "backdrop-blur-lg bg-opacity-80 bg-[#010E18]",
+            }}
+          >
+            <ModalContent>
+              {(onClose) => <>{ListAddInput({ onOpenChange })}</>}
+            </ModalContent>
+          </Modal>
+        </>
+      ) : (
+        <div
+          onClickCapture={() => {
+            checkLogin();
           }}
         >
-          <DropdownItem
-            isReadOnly
-            key="title"
-            className="h-10 gap-2 text-[14px] text-[#272727] text-center justify-center items-center"
-          >
-            保存到您的列表中
-          </DropdownItem>
-
-          <DropdownSection
-            className="max-h-[300px] overflow-auto"
-            aria-label="Profile & Actions"
-            showDivider
-          >
-            {processedLists().map((item: any) => (
-              <DropdownItem
-                onClick={() => onListClick(item)}
-                key={item.key}
-                startContent={item.icon}
-              >
-                {item.textValue}
-              </DropdownItem>
-            ))}
-          </DropdownSection>
-          <DropdownItem
-            key={"add"}
-            onClick={onOpen}
-            startContent={
-              <TbPlus
-                size={20}
-                color="#0070f0"
-                strokeWidth={1.5}
-                className="mx-1"
-              />
-            }
-          >
-            新建列表
-          </DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-
-      <Modal
-        radius="sm"
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        scrollBehavior="inside"
-        classNames={{
-          backdrop: "backdrop-blur-lg bg-opacity-80 bg-[#010E18]",
-        }}
-      >
-        <ModalContent>
-          {(onClose) => <>{ListAddInput({ onOpenChange })}</>}
-        </ModalContent>
-      </Modal>
+          {children}
+        </div>
+      )}
     </>
   );
 }
