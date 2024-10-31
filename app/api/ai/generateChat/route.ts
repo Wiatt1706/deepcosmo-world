@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       try {
         const result = await chat.sendMessageStream(text);
         for await (const chunk of result.stream) {
-          controller.enqueue(new TextEncoder().encode(JSON.stringify(chunk.text())));
+          controller.enqueue(new TextEncoder().encode(chunk.text()));
         }
       } catch (error) {
         console.error("Error calling Gemini API:", error);
