@@ -280,7 +280,7 @@ const ShowMapCanvas = ({
 
       // Determine which sign to draw
       if (
-        coord.isInland &&
+        coord.type === 1 &&
         (signImageModule === "" || signImageModule === "sign_home")
       ) {
         drawSign("sign_home");

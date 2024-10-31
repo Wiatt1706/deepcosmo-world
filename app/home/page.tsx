@@ -42,7 +42,7 @@ export default async function Home({
   let productsQuery = supabase
     .from("land_info")
     .select("*, author: profiles(*),likes(*)")
-    .eq("is_inland", true);
+    .eq("land_owner", session?.user.id);
 
   if (search) {
     productsQuery = productsQuery.ilike("land_name", "%" + search + "%");
@@ -65,7 +65,6 @@ export default async function Home({
       ),
       likes: land.likes.length,
     })) ?? [];
-
 
   return (
     <div className="flex relative w-full h-full overflow-hidden">

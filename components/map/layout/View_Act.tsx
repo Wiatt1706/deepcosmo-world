@@ -15,8 +15,9 @@ import {
   ButtonGroup,
   Select as NextSelect,
   SelectItem,
+  Textarea,
 } from "@nextui-org/react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { clsx } from "clsx";
 import { TbX } from "react-icons/tb";
 import { useBaseStore, useEditMapStore } from "../SocketManager";
@@ -46,14 +47,32 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
     }
   }, [model]);
 
-  const updateData = useCallback(() => {
-    const updatedPixelBlocks = pixelBlocks.map((block: PixelBlock) =>
-      block.x === selectedPixelBlock.x && block.y === selectedPixelBlock.y
-        ? selectedPixelBlock
-        : block
-    );
-    setPixelBlocks(updatedPixelBlocks);
-  }, [pixelBlocks, selectedPixelBlock, setPixelBlocks, addNotification]);
+  const cachedSelectedBlock = useRef(selectedPixelBlock);
+
+  useEffect(() => {
+    if (
+      selectedPixelBlock &&
+      cachedSelectedBlock.current !== selectedPixelBlock
+    ) {
+      const existingBlock = pixelBlocks.find(
+        (block: any) =>
+          block.x === selectedPixelBlock.x && block.y === selectedPixelBlock.y
+      );
+
+      if (
+        existingBlock &&
+        JSON.stringify(existingBlock) !== JSON.stringify(selectedPixelBlock)
+      ) {
+        const updatedPixelBlocks = pixelBlocks.map((block: any) =>
+          block.x === selectedPixelBlock.x && block.y === selectedPixelBlock.y
+            ? selectedPixelBlock
+            : block
+        );
+        setPixelBlocks(updatedPixelBlocks);
+        cachedSelectedBlock.current = selectedPixelBlock; // 更新缓存
+      }
+    }
+  }, [selectedPixelBlock, pixelBlocks, setPixelBlocks]);
 
   const deletePixelBlock = useCallback(() => {
     const updatedPixelBlocks = pixelBlocks.filter(
@@ -104,7 +123,6 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
         <ActionButtons
           isLoading={isLoading}
           deletePixelBlock={deletePixelBlock}
-          updateData={updateData}
         />
       </div>
     )
@@ -349,6 +367,27 @@ export function InfoSection({
       </div>
       <div className={styles["colRow"]}>
         <label className={clsx([styles["col"], styles["col-text"]])}>
+          <span>描述</span>
+        </label>
+        <Textarea
+          maxRows={4}
+          key={
+            selectedPixelBlock.x.toString() + selectedPixelBlock.y.toString()
+          }
+          value={selectedPixelBlock.description}
+          onChange={(e) => {
+            setSelectedPixelBlock({
+              ...selectedPixelBlock,
+              description: e.target.value,
+            });
+          }}
+          labelPlacement="outside"
+          placeholder="Enter your description"
+          className="p-1"
+        />
+      </div>
+      <div className={styles["colRow"]}>
+        <label className={clsx([styles["col"], styles["col-text"]])}>
           <span>borderSize</span>
         </label>
 
@@ -363,8 +402,8 @@ export function InfoSection({
               });
             }}
             suffix="px"
-            maxValue={10}
-            minValue={1}
+            maxValue={20}
+            minValue={0}
           />
         </div>
       </div>
@@ -386,58 +425,24 @@ export function InfoSection({
   );
 }
 
-export function ActionButtons({
-  isLoading,
-  deletePixelBlock,
-  updateData,
-}: any) {
+export function ActionButtons({ isLoading, deletePixelBlock }: any) {
   return (
-    <div className={styles["fixed-bottom"]}>
-      <div className={styles["columnGgroup"]}>
-        <div className={styles["colRow"]}>
-          <ButtonGroup className="w-full">
-            <Button
-              isIconOnly
-              size="lg"
-              aria-label="TbTrashFilled"
-              onClick={deletePixelBlock}
-            >
-              <TbTrash />
-            </Button>
-            <Button
-              isLoading={isLoading}
-              spinner={
-                <svg
-                  className="animate-spin h-5 w-5 text-current"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    fill="currentColor"
-                  />
-                </svg>
-              }
-              className="w-full"
-              onClick={updateData}
-              size="lg"
-              color="primary"
-              aria-label="update"
-            >
-              Update
-            </Button>
-          </ButtonGroup>
-        </div>
+    <div
+      className={
+        styles["fixed-bottom"] + " flex items-center justify-center h-[68px]"
+      }
+    >
+      <div className={styles["colRow"]}>
+        <ButtonGroup className="w-full">
+          <Button
+            isIconOnly
+            size="lg"
+            aria-label="TbTrashFilled"
+            onClick={deletePixelBlock}
+          >
+            <TbTrash />
+          </Button>
+        </ButtonGroup>
       </div>
     </div>
   );

@@ -313,8 +313,8 @@ export default function PhotosModel({
                   土块封面
                 </span>
                 <Locked
-                  isLocked={selectedPixelBlock?.blockCount < 9}
-                  lockMessage={LockMessage(9)}
+                  isLocked={selectedPixelBlock?.blockCount < 4}
+                  lockMessage={LockMessage(4)}
                 >
                   <div className="flex gap-2 mb-2">
                     <div
@@ -348,8 +348,8 @@ export default function PhotosModel({
                   展示图 {selectedShowCover.length + "/3"}
                 </span>
                 <Locked
-                  isLocked={selectedPixelBlock?.blockCount < 16}
-                  lockMessage={LockMessage(16)}
+                  isLocked={selectedPixelBlock?.blockCount < 6}
+                  lockMessage={LockMessage(6)}
                 >
                   <div className="flex gap-2 mb-6">
                     <div
@@ -396,8 +396,8 @@ export default function PhotosModel({
                   开启外站嵌入
                 </span>
                 <Locked
-                  isLocked={selectedPixelBlock?.blockCount < 16}
-                  lockMessage={LockMessage(16)}
+                  isLocked={selectedPixelBlock?.blockCount < 6}
+                  lockMessage={LockMessage(6)}
                 >
                   <div className="flex flex-col  mb-2 items-center justify-center bg-[#f3f6f8]">
                     <Switch

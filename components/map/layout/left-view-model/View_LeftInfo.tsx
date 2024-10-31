@@ -75,7 +75,6 @@ export default function LeftInfoView({
                 externalLinkType: requestDTO.external_link_type, // 处理可选的外部链接类型
                 externalLink: requestDTO.external_link, // 处理可选的外部链接
                 author: requestDTO.author,
-                isInland: requestDTO.is_inland,
                 landLevel: requestDTO.land_level,
                 parentLandId: requestDTO.parent_land_id,
               };
@@ -205,13 +204,13 @@ const ViewLeftInfo = ({ session, pixelBlock }: any) => {
           </a>
         </CustomListSaveWrapper>
 
-        {pixelBlock.isInland && (
+        {pixelBlock.type === 1 && (
           <IconButton
             icon={<TbDoor size={16} strokeWidth={2} />}
             label="进入"
             filled
             onClick={() => {
-              console.log("分享");
+              console.log("里世界");
             }}
           />
         )}

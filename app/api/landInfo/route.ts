@@ -50,6 +50,7 @@ export async function POST(request: Request) {
                 world_size_y: requestDTO.height,
                 land_name: requestDTO.name ?? `Land_${requestDTO.x}_${requestDTO.y}`,
                 cover_icon_url: requestDTO.landCoverImg,
+                land_description: requestDTO.description,
                 use_external_link: requestDTO.useExternalLink ?? false,
                 external_link_type: requestDTO.externalLinkType,
                 external_link: requestDTO.externalLink,
@@ -105,6 +106,7 @@ export async function PUT(request: Request) {
             if (updatedBlock.height !== undefined) updateData.world_size_y = updatedBlock.height;
             if (updatedBlock.name !== undefined) updateData.land_name = updatedBlock.name;
             if (updatedBlock.landCoverImg !== undefined) updateData.cover_icon_url = updatedBlock.landCoverImg;
+            if (updatedBlock.description !== undefined) updateData.land_description = updatedBlock.description;
             if (updatedBlock.useExternalLink !== undefined) updateData.use_external_link = updatedBlock.useExternalLink;
             if (updatedBlock.externalLinkType !== undefined) updateData.external_link_type = updatedBlock.externalLinkType;
             if (updatedBlock.externalLink !== undefined) updateData.external_link = updatedBlock.externalLink;

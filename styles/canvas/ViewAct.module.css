@@ -59,7 +59,7 @@
 
 .col-group {
     overflow-y: auto;
-    height: calc(100% - 158px);
+    height: calc(100% - 135px);
 }
 
 .col-text {

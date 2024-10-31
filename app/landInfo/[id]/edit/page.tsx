@@ -58,6 +58,7 @@ export default async function EditInfo({ params }: any) {
         blockCount: requestDTO.block_count,
         type: parseInt(requestDTO.land_type),
         status: parseInt(requestDTO.land_status),
+        description: requestDTO.land_description,
         landCoverImg: requestDTO.cover_icon_url, // 如果没有封面图片，则设置为undefined
         showCoverImgList: requestDTO.show_cover_list,
         skipUrl: requestDTO.skip_url, // 处理可选的跳转URL

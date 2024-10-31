@@ -25,7 +25,7 @@ export default async function EditInfo({
   let { data: requestDTOs } = await supabase
     .from("land_info")
     .select(
-      "id,land_name,world_coordinates_x,world_coordinates_y,world_size_x,world_size_y,fill_color,border_size,block_count,land_type,land_status,cover_icon_url,is_inland"
+      "id,land_name,world_coordinates_x,world_coordinates_y,world_size_x,world_size_y,fill_color,border_size,block_count,land_type,land_status,cover_icon_url"
     )
     .eq("parent_land_id", landId);
 
@@ -44,7 +44,6 @@ export default async function EditInfo({
         type: parseInt(requestDTO.land_type),
         status: parseInt(requestDTO.land_status),
         landCoverImg: requestDTO.cover_icon_url, // 如果没有封面图片，则设置为undefined
-        isInland: requestDTO.is_inland, // 是否存在里世界
       } as PixelBlock;
     }) || [];
 

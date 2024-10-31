@@ -30,7 +30,6 @@ interface PixelBlock {
     useExternalLink?: boolean; // 是否使用外部链接
     externalLinkType?: string; // 外部链接类型
     externalLink?: string; // 外部链接
-    isInland?: boolean; // 是否存在里世界
 }
 
 export interface Photo {
@@ -112,13 +111,13 @@ export const LAND_TYPE = [
     { key: "0", label: "像素块" },
     { key: "1", label: "地图块" },
     { key: "2", label: "展示块" },
-    { key: "3", label: "Game" },
+    { key: "3", label: "游戏" },
 ];
 export const OPTION_TEST_LIST4 = [
-    { key: "0", label: "空置", color: "#0d2235" },
-    { key: "1", label: "预公开", color: "#f9721f" },
-    { key: "2", label: "公开", color: "#0080ff" },
-    { key: "3", label: "上架", color: "#2e4065" },
+    { key: "0", label: "未公开", color: "#0d2235" },
+    { key: "1", label: "公开", color: "#f9721f" },
+    { key: "2", label: "收费", color: "#0080ff" },
+    { key: "3", label: "出售", color: "#2e4065" },
     { key: "4", label: "停止", color: "#c0d3e8" },
 ];
 export const OPTION_TEST_LIST5 = [
