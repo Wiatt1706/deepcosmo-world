@@ -70,6 +70,7 @@ export default function Component() {
       while (true) {
         const { done, value } = await reader!.read();
         if (done) break;
+        console.log("value：", decoder.decode(value, { stream: true }));
         fullResponse += decoder.decode(value, { stream: true });
 
         // Update the last message in the state
