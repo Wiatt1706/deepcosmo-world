@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+em-emoji-picker {
+
+    --border-radius: 8px;
+    --category-icon-size: 18px;
+    --color-border-over: rgba(0, 0, 0, 0.1);
+    --color-border: rgba(0, 0, 0, 0.05);
+    --font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, sans-serif;
+    --font-size: 16px;
+    --rgb-accent: 67, 213, 255;
+    --rgb-background: 12, 32, 52;
+    --rgb-color: 209, 219, 230;
+    --rgb-input: 255, 235, 235;
+    --shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+    height: 30vh;
+    min-height: 250px;
+    max-height: 800px;
+}
+
 @font-face {
     font-family: 'Noto Sans';
     src: url('/public/fonts/static/NotoSans-Regular.ttf') format('truetype');

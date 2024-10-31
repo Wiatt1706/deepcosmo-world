@@ -1,148 +1,217 @@
 "use client";
-import React, { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import Link from "next/link";
 import styles from "@/styles/chatAi/Gemini.module.css";
 import { CommentEditor } from "@/components/assembly/comment-editor/index";
 import { GeminiSVG } from "@/components/utils/icons";
-import ChatList from "../../components/Ai/chatAi/ChatList";
-import { ChatMessage } from "@/components/Ai/chatAi/ChatTypes";
-import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
-import { post } from "@/utils/api";
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
-const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API;
+const key = process.env.NEXT_PUBLIC_GEMINI_API;
+const genAI = new GoogleGenerativeAI(key!);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-const genAI = new GoogleGenerativeAI(API_KEY || "");
-
-const fileToGenerativePart = (data: string, mimeType: string) => ({
-  inlineData: {
-    data: data,
-    mimeType,
-  },
-});
-
-const handleGenerateContent = async (
-  message: ChatMessage[],
-  newPrompt: string
-) => {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const chat = model.startChat({
-      history: message,
-      generationConfig: {
-        maxOutputTokens: 20000,
-      },
-    });
-
-    const result = await chat.sendMessage(newPrompt);
-    console.log("result:", result);
-    const response = await result.response;
-    const text = response.text();
-    console.log("text:", text);
-
-    return text;
-  } catch (error) {
-    console.error("Error generating content:", error);
-    return "An error occurred while generating content.";
-  }
+type Message = {
+  role: "user" | "model";
+  parts: { text: string }[];
 };
 
-const handleGenerateImgContent = async (prompt: string, files: File[]) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-  const readFileAsDataURL = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+export default function Component() {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const latestMessagesRef = useRef<Message[]>([]);
 
-  try {
-    const imageParts = await Promise.all(
-      files.map(async (file) => {
-        const dataUrl = await readFileAsDataURL(file);
-        const base64Data = dataUrl.split(",")[1];
-        return fileToGenerativePart(base64Data, file.type);
-      })
-    );
+  useEffect(() => {
+    latestMessagesRef.current = messages;
+  }, [messages]);
 
-    const result = await model.generateContent([prompt, ...imageParts]);
-    const response = await result.response;
-    const text = response.text();
-    return text;
-  } catch (error) {
-    console.error("Error generating image content:", error);
-    return "An error occurred while generating image content.";
-  }
-};
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
-const PostPage: React.FC = () => {
-  const [chatList, setChatList] = useState<ChatMessage[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(false);
-
-  const addItem = (role: string, text: string) => {
-    setChatList((prev) => [...prev, { role, parts: [{ text }] }]);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleCallback = async (prompt: string, files: File[]) => {
-    setLoading(true);
+  const handleSend = async (text: string, files: File[]) => {
+    if (!text.trim()) return;
 
-    addItem("user", prompt);
+    const userMessage: Message = { role: "user", parts: [{ text }] };
+    setMessages((prev) => [...prev, userMessage]);
+    setIsLoading(true);
 
-    const responseText = files.length
-      ? await handleGenerateImgContent(prompt, files)
-      : await getGenerate(chatList, prompt);
-
-    addItem("model", responseText);
-    setLoading(false);
-  };
-
-  const getGenerate = async (message: ChatMessage[], newPrompt: string) => {
     try {
-      const response = await post(`/ai/generateChat`, {
-        history: message,
-        prompt: newPrompt,
+      const response = await fetch("/api/ai/generateChat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          history: latestMessagesRef.current,
+          text,
+        }),
       });
 
-      console.log("response:", response);
-
-      if (!response.data) {
-        throw new Error(response.data.message);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-      return response.message;
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let fullResponse = "";
+      const modelMessage: Message = { role: "model", parts: [{ text: "" }] };
+
+      setMessages((prev) => [...prev, modelMessage]);
+
+      while (true) {
+        const { done, value } = await reader!.read();
+        if (done) break;
+        fullResponse += decoder.decode(value, { stream: true });
+
+        // Update the last message in the state
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1].parts[0].text = fullResponse;
+          return updated;
+        });
+      }
     } catch (error) {
-      console.error("生成文本时发生错误:", error);
-      // 提供用户友好的提示
-      return "抱歉，无法生成文本。请尝试使用不同的提示或稍后再试。";
+      console.error("Error calling chat API:", error);
+      setMessages((prev) => [
+        ...prev,
+        { role: "model", parts: [{ text: "抱歉，发生了一个错误。" }] },
+      ]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleSend2 = async (text: string, files: File[]) => {
+    if (!text.trim()) return;
+
+    const userMessage: Message = { role: "user", parts: [{ text }] };
+    setMessages((prev) => [...prev, userMessage]);
+    setIsLoading(true);
+
+    try {
+      const chat = model.startChat({
+        history: latestMessagesRef.current,
+        generationConfig: {
+          maxOutputTokens: 1000,
+        },
+      });
+
+      const result = await chat.sendMessageStream(text);
+      let fullResponse = "";
+      const modelMessage: Message = { role: "model", parts: [{ text: "" }] };
+
+      setMessages((prev) => [...prev, modelMessage]);
+
+      for await (const chunk of result.stream) {
+        const chunkText = chunk.text();
+        fullResponse += chunkText;
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1].parts[0].text = fullResponse;
+          return updated;
+        });
+      }
+    } catch (error) {
+      console.error("Error calling Gemini API:", error);
+      setMessages((prev) => [
+        ...prev,
+        { role: "model", parts: [{ text: "抱歉，发生了一个错误。" }] },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderMessageContent = (message: Message) => {
+    return (
+      <ReactMarkdown
+        components={{
+          code({ node, inline, className, children }: any) {
+            const match = /language-(\w+)/.exec(className || "");
+            const codeContent = String(children).replace(/\n$/, "");
+
+            return inline ? (
+              <code>{children}</code>
+            ) : (
+              <div className="relative">
+                <SyntaxHighlighter
+                  style={okaidia}
+                  language={match ? match[1] : ""}
+                >
+                  {codeContent}
+                </SyntaxHighlighter>
+                <CopyToClipboard text={codeContent}>
+                  <button
+                    className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-white bg-gray-700 rounded hover:bg-gray-600"
+                    onClick={() => alert("代码已复制！")}
+                  >
+                    复制
+                  </button>
+                </CopyToClipboard>
+              </div>
+            );
+          },
+        }}
+      >
+        {message.parts[0].text}
+      </ReactMarkdown>
+    );
+  };
+
   return (
-    <div className={styles.container}>
-      <div className={styles.box}>
-        <div className={styles.title}>
-          <GeminiSVG width={45} height={45} />
-          <h1>
-            Gemini Pro <span className={styles.ideasText}>Chat</span>
-            <Link href="/ai/pro" className="d_c_c">
-              🧙🏾‍♂️
-            </Link>
-          </h1>
-          <p>
-            Based on Gemini Pro API from <Link href="/">DeepCosmo</Link>
-          </p>
-        </div>
-        <ChatList isLoading={isLoading} chatList={chatList} />
-        <div className={styles.editor}>
-          <CommentEditor
-            onCallback={handleCallback}
-            placeholder="在这里输入你的问题"
-            isLoading={isLoading}
-            uploadImgSeting={{ allowMultiple: true, maxFileCount: 4 }}
-          />
+    <>
+      <div className={styles.container}>
+        <div className={styles.box}>
+          <div className={styles.title}>
+            <GeminiSVG width={45} height={45} />
+            <h1>
+              Gemini Pro <span className={styles.ideasText}>Chat</span>
+              <Link href="/ai" className="d_c_c">
+                🧙🏾‍♂️
+              </Link>
+            </h1>
+            <p>
+              Based on Gemini Pro API from <Link href="/">DeepCosmo</Link>
+            </p>
+          </div>
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={`mb-4 ${
+                message.role === "user" ? "text-right" : "text-left"
+              }`}
+            >
+              <div
+                className={`inline-block p-2 rounded-lg overflow-hidden max-w-full ${
+                  message.role === "user"
+                    ? "bg-[#18181b] text-primary-foreground"
+                    : "bg-[#f4f4f5] text-[#18181b] text-sm space-y-4 break-words space-x-2"
+                }`}
+              >
+                {renderMessageContent(message)}
+              </div>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
         </div>
       </div>
-    </div>
+      <div className={styles.editor}>
+        <CommentEditor
+          onCallback={handleSend}
+          placeholder="在这里输入你的问题"
+          isLoading={isLoading}
+          uploadImgSeting={{ allowMultiple: true, maxFileCount: 4 }}
+        />
+      </div>
+    </>
   );
-};
-
-export default PostPage;
+}

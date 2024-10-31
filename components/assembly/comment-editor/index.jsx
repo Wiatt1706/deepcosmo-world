@@ -6,8 +6,6 @@ import ImageBtn from "./ImageBtn";
 import { FormattedMessage } from "react-intl";
 import { Loader2, XCircle } from "lucide-react";
 import { BlockButton } from "@/components/assembly/DLCModule";
-import { useKeyboardEvent } from "@/components/utils/GeneralEvent";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 export const CommentEditor = ({
   onCallback,
@@ -22,10 +20,6 @@ export const CommentEditor = ({
   // 用于存储文本框的内容
   const [text, setText] = useState("");
   const [files, setFiles] = useState([]); // 用于存储选中的文件对象
-
-  useKeyboardEvent(["Control", "Enter"], () => {
-    handleCallback();
-  });
 
   useEffect(() => {
     if (showFormatToolbarDef !== undefined) {
@@ -186,7 +180,6 @@ export const CommentUserEditor = ({
   isLoading = false,
   session,
 }) => {
-
   return (
     <div className={styles.review_writing}>
       {session && (
