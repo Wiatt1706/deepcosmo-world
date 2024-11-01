@@ -5,15 +5,13 @@ import {
   drawGrid,
   drawRectFrame,
   drawRuler,
-  drawSignImage,
   getMouseupPixel,
-  throttle,
 } from "./helpers/BaseDraw";
 import { useEvent } from "../utils/GeneralEvent";
-import { PixelBlock, defaultSginImages } from "@/types/MapTypes";
+import { defaultSginImages } from "@/types/MapTypes";
 import { Position } from "@/types/CanvasTypes";
 import { useCanvasSize } from "../hook/canvas/useCanvasBase";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
   isShowSignImageAtom,
   lastListPixelBlockAtom,
@@ -21,16 +19,15 @@ import {
   locatePosAtom,
   selectedPixelBlockAtom,
   signImageModuleAtom,
-  viewMapCenterAtom,
-  viewportAtom,
 } from "./store/ShowBaseAtomStore";
+import { user } from "@nextui-org/theme";
 const ShowMapCanvas = ({
-  scale,
+  loadScale,
   loadX,
   loadY,
   pixelPadding = 1.5,
 }: {
-  scale: number;
+  loadScale: number;
   loadX?: number;
   loadY?: number;
   pixelPadding?: number;
@@ -46,9 +43,6 @@ const ShowMapCanvas = ({
   const [lastListPixelBlock, setLastListPixelBlock] = useAtom(
     lastListPixelBlockAtom
   );
-
-  const setViewport = useSetAtom(viewportAtom);
-  const setViewMapCenter = useSetAtom(viewMapCenterAtom);
   const loadData = useAtomValue(loadDataAtom);
   const locatePos = useAtomValue(locatePosAtom);
   const isShowSignImage = useAtomValue(isShowSignImageAtom);
@@ -58,12 +52,96 @@ const ShowMapCanvas = ({
     x: loadX || 0,
     y: loadY || 0,
   });
+  const [scale, setScale] = useState<number>(loadScale);
 
   const dragStartRef = useRef<Position | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isDrag, setIsDrag] = useState<boolean>(false);
 
   const initializeCanvasSize = useCanvasSize(containerRef, buffRef);
+
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    setScale(loadScale);
+  }, [loadScale]);
+
+  useEffect(() => {
+    if (isTransitioning && selectedPixelBlock) {
+      const targetCenter = {
+        x: selectedPixelBlock.x + selectedPixelBlock.width / 2,
+        y: selectedPixelBlock.y + selectedPixelBlock.height / 2,
+      };
+
+      const duration = 3000; // 动画时长
+      const startTime = performance.now();
+
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // 计算当前的缩放和中心
+        const currentScale =
+          scale +
+          (Math.max(window.innerWidth, window.innerHeight) /
+            Math.max(selectedPixelBlock.width, selectedPixelBlock.height) -
+            scale) *
+            progress;
+        const currentX =
+          mapCenter.x + (targetCenter.x - mapCenter.x) * progress;
+        const currentY =
+          mapCenter.y + (targetCenter.y - mapCenter.y) * progress;
+
+        setScale(currentScale);
+        setMapCenter({ x: currentX, y: currentY });
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setIsTransitioning(false);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    }
+  }, [isTransitioning, selectedPixelBlock]);
+
+  // useEffect(() => {
+  //   if (isTransitioning && selectedPixelBlock) {
+  //     setIsTransitioning(true);
+  //     const targetCenter = {
+  //       x: selectedPixelBlock.x + selectedPixelBlock.width / 2,
+  //       y: selectedPixelBlock.y + selectedPixelBlock.height / 2,
+  //     };
+  //     const duration = 3000; // 动画时长
+  //     const startTime = performance.now();
+
+  //     const animate = (currentTime: number) => {
+  //       const elapsed = currentTime - startTime;
+  //       const progress = Math.min(elapsed / duration, 1);
+
+  //       // 计算当前的缩放和中心
+  //       const currentScale = scale + (4 - scale) * progress; // 从当前缩放到目标缩放
+  //       const currentX =
+  //         mapCenter.x + (targetCenter.x - mapCenter.x) * progress;
+  //       const currentY =
+  //         mapCenter.y + (targetCenter.y - mapCenter.y) * progress;
+
+  //       setScale(currentScale);
+  //       setMapCenter({ x: currentX, y: currentY });
+
+  //       if (progress < 1) {
+  //         requestAnimationFrame(animate);
+  //       } else {
+  //         // 动画结束后的重置
+  //         setIsTransitioning(false);
+  //       }
+  //     };
+
+  //     requestAnimationFrame(animate);
+  //   }
+  // }, [isTransitioning, selectedPixelBlock]);
+
   useEffect(() => {
     setMapCenter({ x: locatePos.x || 0, y: locatePos.y || 0 });
   }, [locatePos]);
@@ -107,43 +185,26 @@ const ShowMapCanvas = ({
     containerRef.current
   );
 
-  useEvent("mousemove", (e: MouseEvent) => {
-    setIsDragging(true);
-    if (!isDrag || !dragStartRef.current) return;
+  useEvent(
+    "mousemove",
+    useCallback(
+      (e: MouseEvent) => {
+        setIsDragging(true);
+        if (!isDrag || !dragStartRef.current) return;
 
-    const deltaX = (e.clientX - dragStartRef.current.x) / scale;
-    const deltaY = (e.clientY - dragStartRef.current.y) / scale;
+        const deltaX = (e.clientX - dragStartRef.current.x) / scale;
+        const deltaY = (e.clientY - dragStartRef.current.y) / scale;
 
-    setMapCenter((prev) => ({
-      x: Math.round(prev.x - deltaX),
-      y: Math.round(prev.y - deltaY),
-    }));
+        setMapCenter((prev) => ({
+          x: prev.x - deltaX,
+          y: prev.y - deltaY,
+        }));
 
-    dragStartRef.current = { x: e.clientX, y: e.clientY };
-  });
-
-  // const fetchData = () => {
-  //   const buffCtx = buffRef.current?.getContext("2d");
-  //   if (!buffCtx) return;
-
-  //   const halfWidth = buffCtx.canvas.width / (2 * scale);
-  //   const halfHeight = buffCtx.canvas.height / (2 * scale);
-
-  //   const viewport = {
-  //     x: mapCenter.x - halfWidth,
-  //     y: mapCenter.y - halfHeight,
-  //     width: buffCtx.canvas.width / scale,
-  //     height: buffCtx.canvas.height / scale,
-  //   };
-
-  //   // setViewport(viewport);
-  //   // setViewMapCenter(mapCenter);
-  // };
-
-  // const throttledFetchData = useCallback(throttle(fetchData, 10000), [
-  //   mapCenter,
-  //   scale,
-  // ]);
+        dragStartRef.current = { x: e.clientX, y: e.clientY };
+      },
+      [scale, dragStartRef, isDrag, setMapCenter]
+    )
+  );
 
   const render = useCallback(() => {
     const buffCtx = buffRef.current?.getContext("2d");
@@ -172,6 +233,8 @@ const ShowMapCanvas = ({
     setSelectedPixelBlock(clickedPixelBlock || null);
 
     if (clickedPixelBlock) {
+      setIsTransitioning(true);
+
       const updatedSet = new Set([clickedPixelBlock, ...lastListPixelBlock]); // 用 Set 去重
 
       // 将 Set 转换为数组以便进行操作
@@ -242,7 +305,7 @@ const ShowMapCanvas = ({
       return height * scale - 2 * p;
     };
 
-    // drawGrid(buffCtx, mapCenter, scale, 20, canvasWidth, canvasHeight);
+    drawGrid(buffCtx, mapCenter, scale, 20, canvasWidth, canvasHeight);
     signImageDrawListRef.current = {};
     loadData?.forEach((coord) => {
       const scaledPadding = coord.borderSize
@@ -253,12 +316,14 @@ const ShowMapCanvas = ({
       const scaledWidth = CONVER_WIDTH(coord.width, scaledPadding);
       const scaledHeight = CONVER_HEIGHT(coord.height, scaledPadding);
 
-      // Draw rectangle
-      buffCtx.fillStyle = coord.color;
-      buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
-
-      // Skip drawing images if the scaled width is too small
-      if (scale * coord.width < 60) return;
+      if (scale * coord.width < 60) {
+        buffCtx.fillStyle = "rgba(0,0,0,0.1)";
+        buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
+        return;
+      } else {
+        buffCtx.fillStyle = coord.color;
+        buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
+      }
 
       // Draw image if it exists
       const img = coord.landCoverImg && imagesRef.current[coord.landCoverImg];
@@ -317,17 +382,14 @@ const ShowMapCanvas = ({
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
       initializeCanvasSize();
-      // throttledFetchData(); // Fetch data after resizing
       render(); // Render after fetching data
     });
 
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
     }
-
     // Initial render
     initializeCanvasSize();
-    // throttledFetchData();
     render();
 
     return () => {

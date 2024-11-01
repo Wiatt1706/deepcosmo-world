@@ -64,7 +64,7 @@ export default function ShowMapIndex({
     >
       <LeftInfoView session={session} />
       <CanavsToolView scale={scale} setScale={setScale} session={session} />
-      <ShowMapCanvas scale={scale} loadX={loadX} loadY={loadY} />
+      <ShowMapCanvas loadScale={scale} loadX={loadX} loadY={loadY} />
     </div>
   );
 }

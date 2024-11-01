@@ -20,8 +20,6 @@ export default async function EditInfo({
     data: { session },
   } = await supabase.auth.getSession();
 
-  console.log("session:", session);
-
   let { data: requestDTOs } = await supabase
     .from("land_info")
     .select(

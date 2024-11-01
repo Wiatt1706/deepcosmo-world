@@ -10,51 +10,53 @@ import MenuLeft from "@/components/layout/menu-left";
 import Footer from "@/components/layout/footer";
 import UserInfoMenu from "@/components/land/user-info-menu";
 
-const orderByMap: { [key: string]: string } = {
-  new: "created_at", // 当 sort 为 "new" 时，按照 "created_at" 字段排序
+const orderByMap: Record<string, string> = {
+  new: "created_at",
+  level: "land_level",
 };
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: any; // 此处的类型根据你的需要进行调整
-}) {
-  const { sort = "new", search } = searchParams; // 默认页码为 1，每页显示数量为 12
 
+export default async function Home({ searchParams }: { searchParams: any }) {
   const supabase = createServerComponentClient({ cookies });
+  const { page = 1, pageSize = 12, sort = "level", search } = searchParams;
 
   const {
     data: { session },
   } = await supabase.auth.getSession();
-
-  if (!session) {
-    return <PageNotFound />;
-  }
+  if (!session) return <PageNotFound />;
 
   const { data: userInfo } = await supabase
     .from("profiles")
     .select()
-    .eq("id", session?.user.id);
+    .eq("id", session.user.id);
 
-  if (!userInfo || userInfo.length === 0) {
-    return <PageNotFound />;
-  }
+  if (!userInfo?.length) return <PageNotFound />;
 
-  let productsQuery = supabase
+  // 查询总行数
+  const countQuery = supabase
     .from("land_info")
-    .select("*, author: profiles(*),likes(*)")
-    .eq("land_owner", session?.user.id);
+    .select("count", { count: "exact" })
+    .eq("land_owner", session.user.id);
 
   if (search) {
-    productsQuery = productsQuery.ilike("land_name", "%" + search + "%");
+    countQuery.ilike("name", `%${search}%`);
   }
 
-  const { data } = await productsQuery.order(
-    orderByMap[sort] || orderByMap.featured,
-    {
-      ascending: false,
-      nullsFirst: false,
-    }
-  );
+  const { count } = await countQuery;
+  const calculatedTotalPages = Math.ceil((count || 0) / pageSize);
+
+  // 主查询
+  const mainQuery = supabase
+    .from("land_info")
+    .select("*, author: profiles(*), likes(*)")
+    .eq("land_owner", session.user.id);
+
+  if (search) {
+    mainQuery.ilike("land_name", `%${search}%`);
+  }
+
+  const { data } = await mainQuery
+    .range((page - 1) * pageSize, page * pageSize - 1)
+    .order(orderByMap[sort] || orderByMap.level, { ascending: false });
 
   const lands =
     data?.map((land) => ({
