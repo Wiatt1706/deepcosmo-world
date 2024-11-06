@@ -119,6 +119,96 @@ export const drawRectFrame = (
   ctx.restore();
 };
 
+export const drawGridDynamic = (
+  ctx: CanvasRenderingContext2D,
+  offsetPoint: Position,
+  scale: number,
+  pixelSize: number,
+  canvasWidth: number,
+  canvasHeight: number,
+  progress: number, // 新增的动画进度参数
+  rectSize?: number
+) => {
+  const dpr = window.devicePixelRatio;
+  const scaledPixelSize = pixelSize * scale * dpr;
+  const halfWidth = (canvasWidth / 2) * dpr;
+  const halfHeight = (canvasHeight / 2) * dpr;
+
+  const startX = (halfWidth - offsetPoint.x * dpr * scale) % scaledPixelSize;
+  const startY = (halfHeight - offsetPoint.y * dpr * scale) % scaledPixelSize;
+
+  // 主色调的 HSL 表示，用于增加随机性
+  const baseHue = 200; // 蓝色调
+  const baseSaturation = 10; // 适中的饱和度
+  const baseLightness = 100; // 较浅的亮度
+
+  ctx.save();
+  ctx.scale(1 / dpr, 1 / dpr);
+
+  // 计算中心点和矩形区域大小（如果rectSize提供的话）
+  const centerX = halfWidth - offsetPoint.x * dpr * scale;
+  const centerY = halfHeight - offsetPoint.y * dpr * scale;
+  const rectHalfSize = rectSize ? (rectSize / 2) * dpr * scale : 0;
+
+  if (rectSize) {
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+    ctx.lineWidth = 1 * dpr;
+    ctx.strokeRect(
+      centerX - rectHalfSize,
+      centerY - rectHalfSize,
+      rectSize * dpr * scale,
+      rectSize * dpr * scale
+    );
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(
+      centerX - rectHalfSize,
+      centerY - rectHalfSize,
+      rectSize * dpr * scale,
+      rectSize * dpr * scale
+    );
+    ctx.clip();
+  }
+
+  // 通过颜色的轻微随机性来生成视觉变化
+  for (
+    let x = startX - scaledPixelSize;
+    x < canvasWidth * dpr;
+    x += scaledPixelSize
+  ) {
+    for (
+      let y = startY - scaledPixelSize;
+      y < canvasHeight * dpr;
+      y += scaledPixelSize
+    ) {
+      // 通过 `progress` 和随机值来控制透明度和亮度变化
+      const opacityProgress = (Math.sin(progress * Math.PI) + 1) / 2;
+      const opacity = opacityProgress * 0.5 + 0.3 + Math.random() * 0.1; // 透明度范围增加小随机性
+
+      const lightnessVariation = Math.random() * 10 - 5; // 随机亮度变化，范围 [-5, 5]
+      const lightness = baseLightness + lightnessVariation; // 保持在基础色调上增加亮度随机性
+
+      // 生成当前单元格的 HSL 色值
+      ctx.fillStyle = `hsla(${baseHue}, ${baseSaturation}%, ${lightness}%, ${opacity})`;
+      ctx.fillRect(x, y, scaledPixelSize, scaledPixelSize);
+
+      // 绘制网格轮廓
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.lineWidth = dpr;
+      ctx.strokeRect(x, y, scaledPixelSize, scaledPixelSize);
+    }
+  }
+
+  ctx.globalAlpha = 1;
+
+  if (rectSize) {
+    ctx.restore();
+  }
+
+  ctx.restore();
+};
+
 export const drawGrid = (
   ctx: CanvasRenderingContext2D,
   offsetPoint: Position,

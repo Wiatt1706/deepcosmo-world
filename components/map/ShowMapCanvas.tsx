@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useCallback, useState } from "react";
 import styles from "@/styles/canvas/map-canvas.module.css";
 import {
   drawGrid,
+  drawGridDynamic,
   drawRectFrame,
   drawRuler,
   getMouseupPixel,
@@ -20,23 +21,30 @@ import {
   selectedPixelBlockAtom,
   signImageModuleAtom,
 } from "./store/ShowBaseAtomStore";
-import { user } from "@nextui-org/theme";
 const ShowMapCanvas = ({
-  loadScale,
+  scale,
+  setScale,
   loadX,
   loadY,
   pixelPadding = 1.5,
 }: {
-  loadScale: number;
+  scale: number;
+  setScale: (scale: number) => void;
   loadX?: number;
   loadY?: number;
   pixelPadding?: number;
 }) => {
+  // 用于存储动画开始时间
+  const animationStartRef = useRef<number | null>(null);
+  // 用于判断是否初次渲染的状态
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const buffRef = useRef<HTMLCanvasElement | null>(null);
   const imagesRef = useRef<{ [key: string]: HTMLImageElement }>({});
   const signImageDrawListRef = useRef<{ [key: string]: any }>({});
-
+  // 创建一个存储每个方块随机延迟的 Map
+  const blockDelays = useRef(new Map());
   const [selectedPixelBlock, setSelectedPixelBlock] = useAtom(
     selectedPixelBlockAtom
   );
@@ -52,95 +60,12 @@ const ShowMapCanvas = ({
     x: loadX || 0,
     y: loadY || 0,
   });
-  const [scale, setScale] = useState<number>(loadScale);
 
   const dragStartRef = useRef<Position | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isDrag, setIsDrag] = useState<boolean>(false);
 
   const initializeCanvasSize = useCanvasSize(containerRef, buffRef);
-
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  useEffect(() => {
-    setScale(loadScale);
-  }, [loadScale]);
-
-  useEffect(() => {
-    if (isTransitioning && selectedPixelBlock) {
-      const targetCenter = {
-        x: selectedPixelBlock.x + selectedPixelBlock.width / 2,
-        y: selectedPixelBlock.y + selectedPixelBlock.height / 2,
-      };
-
-      const duration = 3000; // 动画时长
-      const startTime = performance.now();
-
-      const animate = (currentTime: number) => {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        // 计算当前的缩放和中心
-        const currentScale =
-          scale +
-          (Math.max(window.innerWidth, window.innerHeight) /
-            Math.max(selectedPixelBlock.width, selectedPixelBlock.height) -
-            scale) *
-            progress;
-        const currentX =
-          mapCenter.x + (targetCenter.x - mapCenter.x) * progress;
-        const currentY =
-          mapCenter.y + (targetCenter.y - mapCenter.y) * progress;
-
-        setScale(currentScale);
-        setMapCenter({ x: currentX, y: currentY });
-
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          setIsTransitioning(false);
-        }
-      };
-
-      requestAnimationFrame(animate);
-    }
-  }, [isTransitioning, selectedPixelBlock]);
-
-  // useEffect(() => {
-  //   if (isTransitioning && selectedPixelBlock) {
-  //     setIsTransitioning(true);
-  //     const targetCenter = {
-  //       x: selectedPixelBlock.x + selectedPixelBlock.width / 2,
-  //       y: selectedPixelBlock.y + selectedPixelBlock.height / 2,
-  //     };
-  //     const duration = 3000; // 动画时长
-  //     const startTime = performance.now();
-
-  //     const animate = (currentTime: number) => {
-  //       const elapsed = currentTime - startTime;
-  //       const progress = Math.min(elapsed / duration, 1);
-
-  //       // 计算当前的缩放和中心
-  //       const currentScale = scale + (4 - scale) * progress; // 从当前缩放到目标缩放
-  //       const currentX =
-  //         mapCenter.x + (targetCenter.x - mapCenter.x) * progress;
-  //       const currentY =
-  //         mapCenter.y + (targetCenter.y - mapCenter.y) * progress;
-
-  //       setScale(currentScale);
-  //       setMapCenter({ x: currentX, y: currentY });
-
-  //       if (progress < 1) {
-  //         requestAnimationFrame(animate);
-  //       } else {
-  //         // 动画结束后的重置
-  //         setIsTransitioning(false);
-  //       }
-  //     };
-
-  //     requestAnimationFrame(animate);
-  //   }
-  // }, [isTransitioning, selectedPixelBlock]);
 
   useEffect(() => {
     setMapCenter({ x: locatePos.x || 0, y: locatePos.y || 0 });
@@ -206,12 +131,106 @@ const ShowMapCanvas = ({
     )
   );
 
-  const render = useCallback(() => {
-    const buffCtx = buffRef.current?.getContext("2d");
+  const render = useCallback(
+    (timestamp?: number) => {
+      const buffCtx = buffRef.current?.getContext("2d");
+      if (!buffCtx) return;
+
+      if (isFirstLoad && timestamp) {
+        // 如果是初次加载，计算动画进度
+        if (animationStartRef.current === null)
+          animationStartRef.current = timestamp || 0;
+        const progress = (timestamp - animationStartRef.current) / 1500; // 动画持续时间增加到1.5秒
+        drawAnimatedBuff(easeInOutQuad(progress));
+        if (progress < 1) {
+          requestAnimationFrame(render);
+        } else {
+          setIsFirstLoad(false);
+          animationStartRef.current = null;
+        }
+      } else if (!isFirstLoad) {
+        drawBuff();
+      }
+    },
+    [
+      isFirstLoad,
+      scale,
+      mapCenter,
+      selectedPixelBlock,
+      isShowSignImage,
+      signImageModule,
+    ]
+  );
+
+  // 缓动函数，用于平滑缩放
+  const easeInOutQuad = (t: number) =>
+    t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+  const drawAnimatedBuff = (progress: number) => {
+    console.log("drawAnimatedBuff", progress);
+
+    const buffCanvas = buffRef.current;
+    const dpr = window.devicePixelRatio;
+    if (!buffCanvas) return;
+    const buffCtx = buffCanvas.getContext("2d");
     if (!buffCtx) return;
-    buffCtx.clearRect(0, 0, buffCtx.canvas.width, buffCtx.canvas.height);
-    drawBuff();
-  }, [scale, mapCenter, selectedPixelBlock, isShowSignImage, signImageModule]);
+    buffCtx.clearRect(0, 0, buffCanvas.width, buffCanvas.height);
+
+    const canvasWidth = buffCtx.canvas.width / dpr;
+    const canvasHeight = buffCtx.canvas.height / dpr;
+    const padding = (pixelPadding * scale) / dpr;
+
+    const CONVER_X = (x: number, p?: number) => {
+      if (!p) p = padding;
+      return (x - mapCenter.x) * scale + canvasWidth / 2 + p;
+    };
+    const CONVER_Y = (y: number, p?: number) => {
+      if (!p) p = padding;
+      return (y - mapCenter.y) * scale + canvasHeight / 2 + p;
+    };
+    const CONVER_WIDTH = (width: number, p?: number) => {
+      if (!p) p = padding;
+      return width * scale - 2 * p;
+    };
+    const CONVER_HEIGHT = (height: number, p?: number) => {
+      if (!p) p = padding;
+      return height * scale - 2 * p;
+    };
+    loadData?.forEach((coord) => {
+      // 获取或生成该方块的随机延迟
+      if (!blockDelays.current.has(coord.id)) {
+        const delay = Math.random() * 0.5; // 每个方块的随机延迟 0~0.5秒
+        blockDelays.current.set(coord.id, delay);
+      }
+      const delay = blockDelays.current.get(coord.id);
+
+      // 计算方块的显示进度，考虑每个方块的延迟
+      const blockProgress = Math.min(
+        Math.max((easeInOutQuad(progress) - delay) / 0.5, 0),
+        1
+      ); // 0~1 范围的进度
+
+      // 透明度渐变
+      const opacity = blockProgress;
+      buffCtx.fillStyle = `rgba(${parseInt(
+        (coord.color as string).slice(1, 3),
+        16
+      )}, ${parseInt((coord.color as string).slice(3, 5), 16)}, ${parseInt(
+        (coord.color as string).slice(5, 7),
+        16
+      )}, ${opacity})`;
+
+      const scaledPadding = coord.borderSize
+        ? padding + coord.borderSize * scale
+        : padding;
+      const scaledX = CONVER_X(coord.x, scaledPadding);
+      const scaledY = CONVER_Y(coord.y, scaledPadding);
+      const scaledWidth = CONVER_WIDTH(coord.width, scaledPadding);
+      const scaledHeight = CONVER_HEIGHT(coord.height, scaledPadding);
+
+      buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
+    });
+  };
 
   const handleMouseUp = (e: MouseEvent) => {
     e.preventDefault();
@@ -233,8 +252,7 @@ const ShowMapCanvas = ({
     setSelectedPixelBlock(clickedPixelBlock || null);
 
     if (clickedPixelBlock) {
-      setIsTransitioning(true);
-
+      setIsFirstLoad(true);
       const updatedSet = new Set([clickedPixelBlock, ...lastListPixelBlock]); // 用 Set 去重
 
       // 将 Set 转换为数组以便进行操作
@@ -305,7 +323,7 @@ const ShowMapCanvas = ({
       return height * scale - 2 * p;
     };
 
-    drawGrid(buffCtx, mapCenter, scale, 20, canvasWidth, canvasHeight);
+    // drawGrid(buffCtx, mapCenter, scale, 20, canvasWidth, canvasHeight);
     signImageDrawListRef.current = {};
     loadData?.forEach((coord) => {
       const scaledPadding = coord.borderSize
