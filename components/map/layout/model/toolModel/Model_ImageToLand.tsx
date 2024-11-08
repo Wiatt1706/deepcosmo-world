@@ -4,7 +4,7 @@ import { PixelBlock } from "@/types/MapTypes";
 import { TbPhoto, TbTrash, TbCheck, TbHelpOctagon } from "react-icons/tb";
 import { ImgToPixel } from "@/components/map/helpers/ImgToPixel";
 import { Button, ButtonGroup } from "@nextui-org/button";
-import { useEditMapStore } from "@/components/map/SocketManager";
+import { useBaseStore, useEditMapStore } from "@/components/map/SocketManager";
 import { IntegrationData, isRectIntersect } from "./Model_Upload";
 
 export default function ModelImageToLand({ onClose }: { onClose: () => void }) {
@@ -12,7 +12,7 @@ export default function ModelImageToLand({ onClose }: { onClose: () => void }) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // 保存选择的图片URL
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [hasIntersection, setHasIntersection] = useState(false); // 是否存在相交的块
-
+  const toolInfo = useBaseStore((state: any) => state.toolInfo);
   const [pixelBlocks, setPixelBlocks] = useEditMapStore((state: any) => [
     state.pixelBlocks,
     state.setPixelBlocks,
@@ -39,7 +39,13 @@ export default function ModelImageToLand({ onClose }: { onClose: () => void }) {
           setSelectedImage(img.src); // 保存图片的URL
           img.onload = () => {
             ImgToPixel(img, 20).then((data: PixelBlock[]) => {
-              setImageData(data); // 设置 imageData
+              setImageData(
+                data.map((pixel) => ({
+                  ...pixel,
+                  status: toolInfo.status,
+                  type: toolInfo.type,
+                }))
+              ); // 设置 imageData
 
               const intersectingBlocks = new Set<PixelBlock>();
               data.forEach((newBlock) => {

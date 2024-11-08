@@ -18,6 +18,8 @@ export const useBaseStore = create((set) => ({
     terrain_roughness: 5,
     terrain_color: "#0080ff",
     terrain_type: TerrainType.LAND,
+    type: "0",
+    status: "0",
   },
   isSaveing: false,
   canSave: false,

@@ -252,7 +252,6 @@ const ShowMapCanvas = ({
     setSelectedPixelBlock(clickedPixelBlock || null);
 
     if (clickedPixelBlock) {
-      setIsFirstLoad(true);
       const updatedSet = new Set([clickedPixelBlock, ...lastListPixelBlock]); // 用 Set 去重
 
       // 将 Set 转换为数组以便进行操作

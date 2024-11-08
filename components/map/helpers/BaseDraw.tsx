@@ -362,6 +362,7 @@ export const drawRuler = (
     offset: number,
     axis: "x" | "y"
   ) => {
+    const labelInterval = scaledPixelSize > 100 ? 5 : 10; // 放大到间距大于100时每5个单位显示数字，否则每10个单位
     for (let pos = start - scaledPixelSize; pos < end; pos += scaledPixelSize) {
       const label = Math.round(
         (pos - half + offset * dpr * scale) / scaledPixelSize
@@ -375,7 +376,8 @@ export const drawRuler = (
           ctx.moveTo(15 * dpr, pos);
           ctx.lineTo(10 * dpr, pos);
         }
-        if (label % 10 === 0) {
+        if (label % labelInterval === 0) {
+          // 调整刻度显示间隔
           if (axis === "x") {
             ctx.lineTo(pos, 0);
             ctx.fillText(label.toString(), pos + 5, 10 * dpr);

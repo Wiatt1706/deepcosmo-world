@@ -117,7 +117,7 @@ export const OPTION_TEST_LIST4 = [
     { key: "0", label: "未公开", color: "#0d2235" },
     { key: "1", label: "公开", color: "#f9721f" },
     { key: "2", label: "收费", color: "#0080ff" },
-    { key: "3", label: "出售", color: "#2e4065" },
+    { key: "3", label: "可售出", color: "#2e4065" },
     { key: "4", label: "停止", color: "#c0d3e8" },
 ];
 export const OPTION_TEST_LIST5 = [

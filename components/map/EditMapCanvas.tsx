@@ -287,13 +287,14 @@ const EditMapCanvas = ({
           ) {
             const newPixelBlock: PixelBlock = {
               id: adjustedX + "," + adjustedY,
-              type: 1,
               x: adjustedX,
               y: adjustedY,
               width: brushSizeInPixels,
               height: brushSizeInPixels,
               blockCount: usePixelBlocks,
               color: toolInfo.editColor,
+              type: toolInfo.type,
+              status: toolInfo.status,
             };
             setPixelBlocks([...pixelBlocks, newPixelBlock]);
           } else {

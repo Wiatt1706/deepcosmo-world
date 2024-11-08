@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import styles from "@/styles/canvas/ViewLeftMenu.module.css";
 import { useBaseStore, useEditMapStore } from "@/components/map/SocketManager";
-import { TbRefresh } from "react-icons/tb";
-import { RadioGroup, Switch, cn } from "@nextui-org/react";
+import { Select } from "@/components/utils/DLCModule";
+import {
+  Select as NextSelect,
+  SelectItem,
+  RadioGroup,
+  Switch,
+  cn,
+} from "@nextui-org/react";
 import { CustomRadio } from "@/components/utils/CustomRadio";
 import algorithm, { TerrainType } from "@/components/map/helpers/algorithm";
 import { NumInput } from "@/components/utils/NumInput";
 import { ColorPicker } from "@/components/utils/ColorPicker";
-import { PixelBlock } from "@/types/MapTypes";
+import { LAND_TYPE, OPTION_TEST_LIST4, PixelBlock } from "@/types/MapTypes";
 import { isRectIntersect } from "./Model_Upload";
 import { LiLandsBoxSvg } from "@/components/utils/icons";
 
@@ -41,6 +47,9 @@ export default function ModelGenerateLand({
       pixelBlocks.forEach((existingBlock: PixelBlock) => {
         if (isRectIntersect(newBlock, existingBlock)) {
           intersectingBlocks.add(newBlock); // 找到相交的 block
+        } else {
+          newBlock.type = toolInfo.type;
+          newBlock.status = toolInfo.status;
         }
       });
     });
@@ -112,6 +121,100 @@ export default function ModelGenerateLand({
           minValue={1}
         />
 
+        <div className="flex items-center justify-between w-full">
+          <span className="text-sm ml-4">生成类型：</span>
+
+          <div className="flex gap-1 justify-between items-center w-[150px]">
+            <Select
+              aria-label="type_select"
+              options={LAND_TYPE}
+              value={
+                LAND_TYPE.some(
+                  (option) => option.key === toolInfo?.type?.toString()
+                )
+                  ? toolInfo.type.toString()
+                  : LAND_TYPE[0].key
+              }
+              onChange={(v) => setToolInfo("type", v)}
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-between w-full">
+          <span className="text-sm ml-4">生成状态：</span>
+
+          <div className="flex gap-1 justify-between items-center w-[150px]">
+            <NextSelect
+              aria-label="status_select"
+              items={OPTION_TEST_LIST4}
+              classNames={{
+                base: "shadow-none p-1",
+                trigger: "shadow-none bg-[#f3f6f8]",
+              }}
+              onChange={(v) => {
+                setToolInfo("status", v.target.value);
+              }}
+              key={toolInfo.status?.toString()}
+              defaultSelectedKeys={[toolInfo.status?.toString()]}
+              placeholder="请选择"
+              labelPlacement="outside"
+              size="sm"
+              listboxProps={{
+                itemClasses: {
+                  base: [
+                    "rounded-md",
+                    "text-default-500",
+                    "transition-opacity",
+                    "data-[hover=true]:text-foreground",
+                    "data-[hover=true]:bg-default-100",
+                    "dark:data-[hover=true]:bg-default-50",
+                    "data-[selectable=true]:focus:bg-default-50",
+                    "data-[pressed=true]:opacity-70",
+                    "data-[focus-visible=true]:ring-default-500",
+                  ],
+                },
+              }}
+              popoverProps={{
+                classNames: {
+                  base: "before:bg-default-200",
+                  content: "p-0 border-small border-divider bg-background",
+                },
+              }}
+              renderValue={(items) => {
+                return items.map((item) => (
+                  <div key={item.key} className="flex items-center gap-2">
+                    <div
+                      className="w-4 h-4 rounded-full"
+                      style={{
+                        backgroundColor: item.data?.color || "#272727",
+                      }}
+                    />
+                    <div className="flex flex-col">
+                      <span>{item.data?.label}</span>
+                    </div>
+                  </div>
+                ));
+              }}
+            >
+              {(item) => (
+                <SelectItem
+                  key={item.key}
+                  textValue={item.label}
+                  value={item.key}
+                >
+                  <div className="flex gap-2 items-center">
+                    <div
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: item?.color || "#272727" }}
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-small">{item.label}</span>
+                    </div>
+                  </div>
+                </SelectItem>
+              )}
+            </NextSelect>
+          </div>
+        </div>
         <div className="w-full pb-2">
           <div className="flex items-center justify-between w-full my-2    ">
             <span className="text-sm ml-4">控制颜色</span>
