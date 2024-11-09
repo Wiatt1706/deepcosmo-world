@@ -76,6 +76,7 @@ export default function EditMapIndex({
   ]);
   const [isAct, setIsAct] = useState<boolean>(true);
   const [isRightAct, setIsRightAct] = useState<boolean>(false);
+
   const { scale, setScale } = useScale(1, 0.5, 5, 0.5, containerRef.current);
   const [selectedModule, setSelectedModule] = useState<string>("");
 

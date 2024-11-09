@@ -1,4 +1,6 @@
 import { Link } from "@nextui-org/link";
+import { Navbar } from "@/components/layout/navbar";
+import { LogoSvg } from "@/components/utils/icons";
 
 export default function PageNotFound() {
   return (
@@ -8,6 +10,20 @@ export default function PageNotFound() {
       <Link href="/" className="text-blue-500">
         Back to Home
       </Link>
+    </div>
+  );
+}
+
+export function NotFoundWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="w-full d_c_c_c">
+      <div>
+        <Link href="/">
+          <LogoSvg width={25} height={25} />
+          <span className="ml-2 text-lg font-bold">DeepCosmo</span>
+        </Link>
+      </div>
+      {children}
     </div>
   );
 }

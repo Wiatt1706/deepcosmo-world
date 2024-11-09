@@ -102,3 +102,21 @@ body {
     font-family: 'Noto Sans', sans-serif;
     /* 自动隐藏滚动条 */
 }
+
+.bodyBox::before {
+    --size: 45px;
+    --line: color-mix(in lch, red, transparent 70%);
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background:
+        linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size),
+        linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size);
+    mask: linear-gradient(-20deg, transparent 50%, white);
+    pointer-events: none;
+    z-index: -1;
+    transform-style: flat;
+}

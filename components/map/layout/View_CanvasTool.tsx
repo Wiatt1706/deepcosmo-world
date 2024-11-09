@@ -13,6 +13,7 @@ import {
 import {
   isLeftActAtom,
   isShowSignImageAtom,
+  scaleAtom,
   selectedModuleAtom,
   signImageModuleAtom,
 } from "../store/ShowBaseAtomStore";
@@ -22,14 +23,11 @@ import AuthButtonClient from "@/components/layout/auth-button-client";
 import { Session } from "@supabase/auth-helpers-nextjs";
 
 export default function CanavsToolView({
-  scale,
-  setScale,
   session,
 }: {
-  scale: number;
-  setScale: React.Dispatch<React.SetStateAction<number>>;
   session?: Session | null;
 }) {
+  const [scale, setScale] = useAtom(scaleAtom);
   const [isShowSignImage, setIsShowSignImage] = useAtom(isShowSignImageAtom);
   const [signImageModule, setSignImageModule] = useAtom(signImageModuleAtom);
   const handleIncreaseScale = () => {
