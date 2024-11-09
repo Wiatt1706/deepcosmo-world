@@ -471,4 +471,5 @@ const ShowMapCanvas = React.memo(
   }
 );
 
+ShowMapCanvas.displayName = "ShowMapCanvas";
 export default ShowMapCanvas;
