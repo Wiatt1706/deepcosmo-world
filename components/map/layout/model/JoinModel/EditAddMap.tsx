@@ -84,34 +84,22 @@ export default function EditAddMap({
         }
       }
     }
-    await postApi(`/landInfo`, {
-      pixelBlocks: [block],
+    await postApi(`/landInfo/addMap`, {
+      pixelBlocks: block,
+      deleteIds: addMapValidBlocks.map((b) => b.id),
       parentLandId: landInfo.id,
-    }).then((response) => {
-      if (response.data) {
-        delApi(`/landInfo`, {
-          pixelBlocks: addMapValidBlocks,
-          parentLandId: landInfo.id,
-        })
-          .then((response) => {
-            if (response.data) {
-              onNext();
-            } else {
-              addNotification(
-                "添加时，原有地块存在异常，",
-                "error",
-                "添加失败"
-              );
-            }
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-      } else {
-        addNotification("添加当前地块失败，", "error", "添加失败");
+    })
+      .then((response) => {
+        if (response?.data) {
+          addNotification("添加当前地块成功，", "success", "添加成功");
+          onNext();
+        } else {
+          addNotification("添加当前地块失败，", "error", "添加失败");
+        }
+      })
+      .finally(() => {
         setIsLoading(false);
-      }
-    });
+      });
   };
   useEffect(() => {
     if (ValidAim) {

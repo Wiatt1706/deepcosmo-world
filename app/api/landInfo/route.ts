@@ -4,6 +4,51 @@ import { Photo, PixelBlock } from "@/types/MapTypes";
 import { LandInfoService } from "@/utils/serviceimpl";
 import { Json } from "@/types/database.types";
 
+
+export const handleAddedLands = (requestDTOs: PixelBlock[], userId: string, parentLandId: string | null) => {
+    const dataList: Land[] = requestDTOs.map((requestDTO) => {
+        const capacitySize = requestDTO.blockCount * 100;
+        let show_cover_list: Json[] | null = null;
+
+        if (requestDTO.showCoverImgList) {
+            show_cover_list = requestDTO.showCoverImgList.map(photo => {
+                return {
+                    id: photo.id,
+                    src: photo.src,
+                    // 如果有其他字段，确保它们也是 JSON 兼容类型
+                } as Json;
+            });
+        }
+
+        // 文件上传处理（如果有需要，可以在这里添加）
+        return {
+            land_owner: userId,
+            parent_land_id: parentLandId,
+            world_coordinates_x: requestDTO.x,
+            world_coordinates_y: requestDTO.y,
+            world_size_x: requestDTO.width,
+            world_size_y: requestDTO.height,
+            land_name: requestDTO.name ?? `Land_${requestDTO.x}_${requestDTO.y}`,
+            cover_icon_url: requestDTO.landCoverImg,
+            land_description: requestDTO.description,
+            use_external_link: requestDTO.useExternalLink ?? false,
+            external_link_type: requestDTO.externalLinkType,
+            external_link: requestDTO.externalLink,
+            land_type: requestDTO.type.toString() ?? "0",
+            land_level: Math.sqrt(requestDTO.blockCount).toString(),
+            land_status: requestDTO.status ?? "0",
+            capacity_size: capacitySize,
+            border_size: requestDTO.borderSize ?? 0,
+            skip_url: requestDTO.skipUrl,
+            block_count: requestDTO.blockCount ?? 1,
+            fill_color: requestDTO.color,
+            show_cover_list: show_cover_list
+        } as Land;
+    });
+    return dataList;
+}
+
+
 export async function POST(request: Request) {
     const requestBody = await request.json();
     const supabase = createRouteHandlerClient<Database>({ cookies });
@@ -25,49 +70,8 @@ export async function POST(request: Request) {
 
         const userId = userInfo.user?.id as string;
 
-        // 遍历 requestDTOs 数组，生成对应的 Land 对象列表
-        const dataList: Land[] = requestDTOs.map((requestDTO) => {
-            const capacitySize = requestDTO.blockCount * 100;
-            let show_cover_list: Json[] | null = null;
-
-            if (requestDTO.showCoverImgList) {
-                show_cover_list = requestDTO.showCoverImgList.map(photo => {
-                    return {
-                        id: photo.id,
-                        src: photo.src,
-                        // 如果有其他字段，确保它们也是 JSON 兼容类型
-                    } as Json;
-                });
-            }
-
-            // 文件上传处理（如果有需要，可以在这里添加）
-            return {
-                land_owner: userId,
-                parent_land_id: parentLandId,
-                world_coordinates_x: requestDTO.x,
-                world_coordinates_y: requestDTO.y,
-                world_size_x: requestDTO.width,
-                world_size_y: requestDTO.height,
-                land_name: requestDTO.name ?? `Land_${requestDTO.x}_${requestDTO.y}`,
-                cover_icon_url: requestDTO.landCoverImg,
-                land_description: requestDTO.description,
-                use_external_link: requestDTO.useExternalLink ?? false,
-                external_link_type: requestDTO.externalLinkType,
-                external_link: requestDTO.externalLink,
-                land_type: requestDTO.type.toString(),
-                land_level: Math.sqrt(requestDTO.blockCount).toString(),
-                land_status: requestDTO.status ?? "0",
-                capacity_size: capacitySize,
-                border_size: requestDTO.borderSize ?? 0,
-                skip_url: requestDTO.skipUrl,
-                block_count: requestDTO.blockCount ?? 1,
-                fill_color: requestDTO.color,
-                show_cover_list: show_cover_list
-            } as Land;
-        });
-
         // 将生成的 Land 对象列表保存到数据库
-        await LandInfoService.saveRecord(supabase, dataList);
+        await LandInfoService.saveRecord(supabase, handleAddedLands(requestDTOs, userId, parentLandId));
 
         return new Response(JSON.stringify({ data: true, message: "操作成功" }), { status: 200, headers: { "Content-Type": "application/json" } });
     } catch (error: any) {
@@ -168,6 +172,7 @@ export async function DELETE(request: Request) {
 
 
         for (let index = 0; index < requestDTOs.length; index++) {
+
             const { error } = await supabase
                 .from("land_info")
                 .delete()
