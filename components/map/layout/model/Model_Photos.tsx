@@ -27,20 +27,19 @@ import {
 } from "@nextui-org/react";
 import Cropper, { Area } from "react-easy-crop";
 import { v4 as uuidv4 } from "uuid";
-import { useBaseStore } from "../../SocketManager";
 import { CustomRadio } from "@/components/utils/CustomRadio";
 import Locked from "@/components/utils/Locked";
-import { Photo } from "@/types/MapTypes";
+import { Photo, PixelBlock } from "@/types/MapTypes";
 
 export default function PhotosModel({
+  selectedPixelBlock,
+  setSelectedPixelBlock,
   showCoverImgs,
 }: {
+  selectedPixelBlock: any;
+  setSelectedPixelBlock: (selectedPixelBlock: PixelBlock | null) => void;
   showCoverImgs?: Photo[];
 }) {
-  const [selectedPixelBlock, setSelectedPixelBlock] = useBaseStore(
-    (state: any) => [state.selectedPixelBlock, state.setSelectedPixelBlock]
-  );
-
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedShowCover, setSelectedShowCover] = useState<Photo[]>(
     showCoverImgs || []
@@ -58,7 +57,7 @@ export default function PhotosModel({
     null
   );
   const [externalLinkText, setExternalLinkText] = useState<string | null>(
-    selectedPixelBlock.externalLink
+    selectedPixelBlock?.externalLink
   );
   useEffect(() => {
     setSelectedShowCover(showCoverImgs || []);
@@ -205,7 +204,7 @@ export default function PhotosModel({
         });
       }
     }
-  }, [selectedPixelBlock.externalLinkType, externalLinkText]);
+  }, [selectedPixelBlock?.externalLinkType, externalLinkText]);
   const checkExternalLink = (v: string, type: "Bilibili" | "Youtube") => {
     const extractSrc = (iframe: string): string | null => {
       const srcMatch = iframe.match(/src=["']([^"']+)["']/);
@@ -323,7 +322,7 @@ export default function PhotosModel({
                     >
                       <TbUpload size={30} color="#63727e" />
                     </div>
-                    {selectedPixelBlock.landCoverImg && (
+                    {selectedPixelBlock?.landCoverImg && (
                       <div className="relative w-[200px] h-[200px] border border-conditionalborder-transparent rounded flex items-center justify-center bg-[#f3f6f8] hover:bg-[#d9d9d9] cursor-pointer">
                         <img
                           src={selectedPixelBlock.landCoverImg}
@@ -401,7 +400,7 @@ export default function PhotosModel({
                 >
                   <div className="flex flex-col  mb-2 items-center justify-center bg-[#f3f6f8]">
                     <Switch
-                      defaultSelected={selectedPixelBlock.useExternalLink}
+                      defaultSelected={selectedPixelBlock?.useExternalLink}
                       onValueChange={(value) => {
                         setSelectedPixelBlock({
                           ...selectedPixelBlock,
@@ -433,11 +432,11 @@ export default function PhotosModel({
                         </p>
                       </div>
                     </Switch>
-                    {selectedPixelBlock.useExternalLink && (
+                    {selectedPixelBlock?.useExternalLink && (
                       <div className="w-full px-6">
                         <RadioGroup
                           label="提供方"
-                          value={selectedPixelBlock.externalLinkType}
+                          value={selectedPixelBlock?.externalLinkType}
                           onValueChange={(value) => {
                             setSelectedPixelBlock({
                               ...selectedPixelBlock,
@@ -464,10 +463,10 @@ export default function PhotosModel({
                           </div>
                         </RadioGroup>
 
-                        {selectedPixelBlock.externalLinkType && (
+                        {selectedPixelBlock?.externalLinkType && (
                           <div>
                             <span className="text-default-500 text-sm">
-                              其提供 {selectedPixelBlock.externalLinkType}{" "}
+                              其提供 {selectedPixelBlock?.externalLinkType}
                               的iframe嵌入代码
                             </span>
                             <Textarea

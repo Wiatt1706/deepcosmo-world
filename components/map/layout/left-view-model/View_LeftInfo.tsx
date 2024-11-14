@@ -283,7 +283,7 @@ const ViewLeftInfo = ({ session, pixelBlock }: any) => {
             className="m-2 mr-4"
           />
           <span className="text-[#272727] text-sm">
-            {pixelBlock.author.username}
+            {pixelBlock?.author?.username}
           </span>
         </div>
       </div>

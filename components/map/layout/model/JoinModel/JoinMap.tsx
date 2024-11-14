@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { TbMapPinFilled } from "react-icons/tb";
 import {
   Button,
   Modal,
-  ModalBody,
   ModalContent,
+  ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
 import AddMapIndex from "./AddMapIndex";
 import { Session } from "@supabase/auth-helpers-nextjs";
+import EditAddMap from "./EditAddMap";
 
 export default function JoinMap({
   landInfo,
@@ -42,18 +43,19 @@ export default function JoinMap({
       </Button>
 
       <Modal
-        size="3xl"
         backdrop="blur"
+        size={currentStep === 1 ? "3xl" : "md"}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
+        scrollBehavior="inside"
+        className="overflow-hidden"
+        classNames={{ wrapper: "overflow-hidden" }}
       >
         <ModalContent>
           {(onClose) => (
-            <ModalBody>
-              <div className="flex flex-col relative py-4">
-                {/* Step Indicator */}
-
-                <div className="flex items-center space-x-4">
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <div className="flex items-center space-x-2">
                   {[1, 2, 3].map((step) => (
                     <div
                       key={step}
@@ -62,7 +64,7 @@ export default function JoinMap({
                       }`}
                     >
                       <div
-                        className={`h-8 w-8 rounded-full border-2 flex justify-center items-center ${
+                        className={`h-6 w-6 rounded-full border-2 flex justify-center items-center text-xs ${
                           step <= currentStep
                             ? "bg-blue-500 border-blue-500 text-white"
                             : "bg-white border-gray-300 text-gray-500"
@@ -78,7 +80,7 @@ export default function JoinMap({
                         />
                       )}
                       {step === currentStep && (
-                        <span className="ml-2 font-semibold text-lg">
+                        <span className="ml-2 font-semibold text-[16px]">
                           {step === 1 && "Step 1: 选择地块"}
                           {step === 2 && "Step 2: 设置地块信息"}
                           {step === 3 && "Step 3: 提交地块信息"}
@@ -87,36 +89,32 @@ export default function JoinMap({
                     </div>
                   ))}
                 </div>
-
-                {/* Step Content */}
-                <div className="mt-6">
-                  {currentStep === 1 && (
-                    <AddMapIndex session={session} landInfo={landInfo} onNext={nextStep} />
-                  )}
-                  {currentStep === 2 && (
-                    <div className="flex flex-col relative">
-                      <div className="d_c_b">
-                        <Button color="primary" size="sm" onClick={prevStep}>
-                          Previous
-                        </Button>
-                        <Button color="primary" size="sm" onClick={nextStep}>
-                          Next
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                  {currentStep === 3 && (
-                    <div className="flex flex-col relative">
-                      <div className="flex justify-start">
-                        <Button color="primary" size="sm" onClick={prevStep}>
-                          Previous
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+              </ModalHeader>
+              {currentStep === 1 && (
+                <AddMapIndex
+                  session={session}
+                  landInfo={landInfo}
+                  onNext={nextStep}
+                />
+              )}
+              {currentStep === 2 && (
+                <EditAddMap
+                  session={session}
+                  landInfo={landInfo}
+                  onNext={nextStep}
+                  onPrev={prevStep}
+                />
+              )}
+              {currentStep === 3 && (
+                <div className="flex flex-col relative">
+                  <div className="flex justify-start">
+                    <Button color="primary" size="sm" onClick={prevStep}>
+                      Previous
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </ModalBody>
+              )}
+            </>
           )}
         </ModalContent>
       </Modal>

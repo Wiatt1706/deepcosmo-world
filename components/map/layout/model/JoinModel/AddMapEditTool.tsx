@@ -71,18 +71,18 @@ export default function AddMapEditTool({
           </div>
         </div>
 
-        <div className="flex gap-2 px-4">
-          <div className="flex gap-2 justify-between items-center">
-            <div className="w-4 h-4 rounded-full bg-[#dadddf]" />
+        <div className="flex gap-2 px-4 text-[10px] text-[#63727e]">
+          <div className="flex gap-1 justify-between items-center">
+            <div className="w-3 h-3 rounded-full bg-[#dadddf]" />
             <span>待售出</span>
           </div>
-          <div className="flex gap-2 justify-between items-center">
-            <div className="w-4 h-4 rounded-full bg-[#28d3b1]" />
+          <div className="flex gap-1 justify-between items-center">
+            <div className="w-3 h-3 rounded-full bg-[#28d3b1]" />
             <span>我的</span>
           </div>
 
-          <div className="flex gap-2 justify-between items-center">
-            <div className="w-4 h-4 rounded-full bg-[#0070f0]" />
+          <div className="flex gap-1 justify-between items-center">
+            <div className="w-3 h-3 rounded-full bg-[#0070f0]" />
             <span>已选择</span>
           </div>
         </div>

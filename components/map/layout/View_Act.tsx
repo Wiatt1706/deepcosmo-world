@@ -27,7 +27,6 @@ import { ColorPicker } from "@/components/utils/ColorPicker";
 import { NumInput } from "@/components/utils/NumInput";
 
 export default function RightActView({ setIsAct }: { setIsAct: any }) {
-  const addNotification = useNotification((state) => state.addNotification);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPixelBlock, setSelectedPixelBlock, model] = useBaseStore(
     (state: any) => [
@@ -111,7 +110,11 @@ export default function RightActView({ setIsAct }: { setIsAct: any }) {
           </div>
         </div>
         <div className={clsx([styles["col-group"]])}>
-          <PhotosModel showCoverImgs={selectedPixelBlock.showCoverImgList} />
+          <PhotosModel
+            selectedPixelBlock={selectedPixelBlock}
+            setSelectedPixelBlock={setSelectedPixelBlock}
+            showCoverImgs={selectedPixelBlock.showCoverImgList}
+          />
           <div className={styles["columnGgroup"]}>
             <InfoSection
               selectedPixelBlock={selectedPixelBlock}

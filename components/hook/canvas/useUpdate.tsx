@@ -10,6 +10,27 @@ import { useNotification } from "@/components/utils/NotificationBar";
 
 const PUBLIC_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const bucket = "deepcosmo_img";
+export const uploadImgFromBlobUrl = async (
+  supabase: any,
+  bucket: string,
+  filePath: string,
+  blobUrl: string
+) => {
+  try {
+    const response = await fetch(blobUrl);
+    const blob = await response.blob();
+
+    return UploadService.uploadImg(
+      supabase,
+      bucket,
+      filePath,
+      new Blob([blob], { type: blob.type })
+    );
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    return null;
+  }
+};
 
 // 防抖函数
 export const useDebounce = (
@@ -106,33 +127,13 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
       return;
     }
 
-    const uploadImgFromBlobUrl = async (
-      bucket: string,
-      filePath: string,
-      blobUrl: string
-    ) => {
-      try {
-        const response = await fetch(blobUrl);
-        const blob = await response.blob();
-
-        return UploadService.uploadImg(
-          supabase,
-          bucket,
-          filePath,
-          new Blob([blob], { type: blob.type })
-        );
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        return null;
-      }
-    };
-
     const processAddedBlocks = async (addedBlocks: PixelBlock[]) => {
       // 处理图片上传
       for (const block of addedBlocks) {
         if (block.landCoverImg) {
           const filePath = `public/landCover/${uuidv4()}.jpg`;
           const uploadData = await uploadImgFromBlobUrl(
+            supabase,
             bucket,
             filePath,
             block.landCoverImg
@@ -148,6 +149,7 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
             if (img.src) {
               const filePath = `public/showCover/${uuidv4()}.jpg`;
               const uploadData = await uploadImgFromBlobUrl(
+                supabase,
                 bucket,
                 filePath,
                 img.src
@@ -218,6 +220,7 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
             // 处理图片更新逻辑
             const filePath = `public/landCover/${uuidv4()}.jpg`;
             const uploadData = await uploadImgFromBlobUrl(
+              supabase,
               bucket,
               filePath,
               block.landCoverImg
@@ -242,6 +245,7 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
               // 新增图片的处理逻辑
               const filePath = `public/showCover/${uuidv4()}.jpg`;
               const uploadData = await uploadImgFromBlobUrl(
+                supabase,
                 bucket,
                 filePath,
                 img.src
@@ -257,6 +261,7 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
               // 更新图片的处理逻辑
               const filePath = `public/showCover/${uuidv4()}.jpg`;
               const uploadData = await uploadImgFromBlobUrl(
+                supabase,
                 bucket,
                 filePath,
                 img.src
@@ -377,7 +382,11 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
   useEffect(() => {
     if (isSaveing) {
       if (landInfo.capacity_size < landInfo.used_pixel_blocks) {
-        addNotification("当前可用土块不足，无法保存，请减少使用量再次尝试", "error", "保存异常");
+        addNotification(
+          "当前可用土块不足，无法保存，请减少使用量再次尝试",
+          "error",
+          "保存异常"
+        );
         setIsSaveing(false);
         return;
       }

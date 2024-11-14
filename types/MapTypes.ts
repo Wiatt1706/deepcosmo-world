@@ -28,7 +28,7 @@ interface PixelBlock {
     groupId?: string;
     skipUrl?: string;
     useExternalLink?: boolean; // 是否使用外部链接
-    externalLinkType?: string; // 外部链接类型
+    externalLinkType?: string | "Bilibili" | "Youtube"; // 外部链接类型
     externalLink?: string; // 外部链接
     owner?: string;
 }

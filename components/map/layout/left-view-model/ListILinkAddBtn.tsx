@@ -16,9 +16,6 @@ import { useNotification } from "@/components/utils/NotificationBar";
 export default function ListILinkAddBtn() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [serachText, setSerachText] = useState(""); // 跟踪输入框的值
-  const addNotification = useNotification(
-    (state: any) => state.addNotification
-  );
 
   const [isLoading, setIsLoading] = useState(false); // 跟踪加载状态
 

@@ -15,6 +15,8 @@ import { loadDataAtom } from "../../../store/ShowBaseAtomStore";
 import AddMapEditTool from "./AddMapEditTool";
 import { CtrlScale } from "../../View_CanvasTool";
 import { Button } from "@nextui-org/button";
+import { LiLandsBoxSvg } from "@/components/utils/icons";
+import { ModalBody, ModalFooter } from "@nextui-org/react";
 
 const keyMap = {
   UNDO: "ctrl+z",
@@ -134,53 +136,67 @@ export default function AddMapIndex({
         brushSize: 9,
       }),
   };
-
   return (
     <>
-      <div className="flex flex-col relative border">
-        <GlobalHotKeys id="main" keyMap={keyMap} handlers={handlers}>
-          <div className="w-full h-[300px] relative overflow-hidden">
-            <AddMapEditTool toolInfo={toolInfo} setToolInfo={setToolInfo} />
-            <div ref={containerRef} className="w-full h-full relative">
-              <AddMapCanvas
-                scale={scale}
-                loadData={validData}
-                userPixelBlockData={userPixelBlockData}
-                toolInfo={toolInfo}
-                rectSize={
-                  Number.parseInt(String(landInfo?.land_level) || "1") *
-                  10 *
-                  2 *
-                  20
-                }
-              />
-              <div className="absolute bottom-14 right-2">
-                <CtrlScale scale={scale} setScale={setScale} />
+      <ModalBody>
+        <div className="flex flex-col relative ">
+          <div className="flex flex-col relative border">
+            <GlobalHotKeys id="main" keyMap={keyMap} handlers={handlers}>
+              <div className="w-full h-[350px] relative overflow-hidden">
+                <AddMapEditTool toolInfo={toolInfo} setToolInfo={setToolInfo} />
+                <div ref={containerRef} className="w-full h-full relative">
+                  <AddMapCanvas
+                    scale={scale}
+                    loadData={validData}
+                    userPixelBlockData={userPixelBlockData}
+                    toolInfo={toolInfo}
+                    rectSize={
+                      Number.parseInt(String(landInfo?.land_level) || "1") *
+                      10 *
+                      2 *
+                      20
+                    }
+                  />
+                  <div className="absolute bottom-14 right-2">
+                    <CtrlScale scale={scale} setScale={setScale} />
+                  </div>
+                </div>
               </div>
-            </div>
+            </GlobalHotKeys>
           </div>
-        </GlobalHotKeys>
-      </div>
-      <div className="d_c_b mt-4 w-full">
-        <div></div>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            onClick={clearAddMapValidData}
-            isDisabled={!(addMapValidBlocks.length > 0)}
-          >
-            清除
-          </Button>
-          <Button
-            color="primary"
-            size="sm"
-            onClick={onNext}
-            isDisabled={!(addMapValidBlocks.length > 0)}
-          >
-            Next
-          </Button>
         </div>
-      </div>
+      </ModalBody>
+      <ModalFooter>
+        <div className="d_c_b w-full">
+          <div className="flex gap-2 items-center text-gray-500 text-sm">
+            {addMapValidBlocks.length > 0 ? (
+              <>
+                <span>当前共耗费{addMapValidBlocks.length}块 </span>
+                <LiLandsBoxSvg width={16} height={16} />
+              </>
+            ) : (
+              <span>移动光标选择目标地块，数字键切换</span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              onClick={clearAddMapValidData}
+              isDisabled={!(addMapValidBlocks.length > 0)}
+            >
+              清除
+            </Button>
+            <Button
+              color="primary"
+              size="sm"
+              onClick={onNext}
+              isDisabled={!(addMapValidBlocks.length > 0)}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      </ModalFooter>
     </>
   );
 }

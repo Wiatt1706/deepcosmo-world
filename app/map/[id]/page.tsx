@@ -24,7 +24,7 @@ export default async function MapInfo({
     .select("*")
     .eq("id", landId);
 
-  if (!queryLand || queryLand[0].land_type !== "1") {
+  if (!queryLand || queryLand[0]?.land_type !== "1") {
     return (
       <NotFoundWrapper>
         <div className="bodyBox ">没有找到该地块 或 该土块被禁止访问</div>
