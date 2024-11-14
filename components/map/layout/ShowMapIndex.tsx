@@ -1,5 +1,5 @@
 "use client";
-import { LegacyRef, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PixelBlock } from "@/types/MapTypes";
 import LeftInfoView from "./left-view-model/View_LeftInfo";
 import ShowMapCanvas from "../ShowMapCanvas";
@@ -14,7 +14,7 @@ import {
   Session,
   createClientComponentClient,
 } from "@supabase/auth-helpers-nextjs";
-import { CircularProgress } from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
 
 export default function ShowMapIndex({
   session,
@@ -44,11 +44,9 @@ export default function ShowMapIndex({
     let { data: requestDTOs } = await supabase
       .from("land_info")
       .select(
-        "id,land_name,world_coordinates_x,world_coordinates_y,world_size_x,world_size_y,fill_color,border_size,block_count,land_type,land_status,cover_icon_url"
+        "id,land_name,world_coordinates_x,world_coordinates_y,world_size_x,world_size_y,fill_color,border_size,block_count,land_type,land_status,cover_icon_url,land_owner"
       )
       .eq("parent_land_id", landInfo.id);
-
-    console.log("requestDTOs");
 
     const pixelBlocks: PixelBlock[] =
       requestDTOs?.map((requestDTO: any) => {
@@ -65,6 +63,7 @@ export default function ShowMapIndex({
           type: parseInt(requestDTO.land_type),
           status: parseInt(requestDTO.land_status),
           landCoverImg: requestDTO.cover_icon_url, // 如果没有封面图片，则设置为undefined
+          owner: requestDTO.land_owner, // 如果没有封面图片，则设置为undefined
         } as PixelBlock;
       }) || [];
 
@@ -99,12 +98,12 @@ export default function ShowMapIndex({
         {!isLoading ? (
           <>
             <LeftInfoView session={session} />
-            <CanavsToolView session={session} />
+            <CanavsToolView session={session} landInfo={landInfo} />
             <ShowMapCanvas loadScale={loadScale} loadX={loadX} loadY={loadY} />
           </>
         ) : (
           <div className="w-full h-full d_c_c_c">
-            <CircularProgress aria-label="Loading..." label="Loading..." />
+            <Spinner label="Loading..." />
           </div>
         )}
       </div>

@@ -636,26 +636,26 @@ export const BlockCoinsSvg = ({
     >
       <path
         d="M196 392C304.248 392 392 304.248 392 196C392 87.7522 304.248 0 196 0C87.7522 0 0 87.7522 0 196C0 304.248 87.7522 392 196 392Z"
-        fill="#D6A200"
+        fill="#00A3E0" // 明亮的蓝色
       />
       <path
         d="M196 379C297.068 379 379 297.068 379 196C379 94.9319 297.068 13 196 13C94.9319 13 13 94.9319 13 196C13 297.068 94.9319 379 196 379Z"
-        fill="url(#paint0_linear_0_1)"
+        fill="url(#paint0_linear_0_1)" // 蓝色渐变
       />
       <path
         d="M196 353C282.709 353 353 282.709 353 196C353 109.291 282.709 39 196 39C109.291 39 39 109.291 39 196C39 282.709 109.291 353 196 353Z"
-        fill="#EBB200"
+        fill="#00C9A7" // 绿色
       />
       <path
         d="M196 340C275.528 340 340 275.528 340 196C340 116.471 275.528 52 196 52C116.471 52 52 116.471 52 196C52 275.528 116.471 340 196 340Z"
-        fill="url(#paint1_linear_0_1)"
+        fill="url(#paint1_linear_0_1)" // 绿色渐变
       />
       <path
         d="M91 138.131L192.501 91L294 138.131L197.454 220L91 138.131Z"
-        fill="#FDFF03"
+        fill="#A2F1B3" // 绿色高光
       />
-      <path d="M194 309V190.95L91 139V252.35L194 309Z" fill="#CB8B03" />
-      <path d="M194 190.942L294 139V252.334L194 309V190.942Z" fill="#EEB902" />
+      <path d="M194 309V190.95L91 139V252.35L194 309Z" fill="#3DBE91" />
+      <path d="M194 190.942L294 139V252.334L194 309V190.942Z" fill="#6FE4C2" />
       <defs>
         <linearGradient
           id="paint0_linear_0_1"
@@ -665,8 +665,8 @@ export const BlockCoinsSvg = ({
           y2="379"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#FFF901" />
-          <stop offset="1" stopColor="#FCD003" />
+          <stop stopColor="#00A3E0" />
+          <stop offset="1" stopColor="#00C9A7" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_0_1"
@@ -676,8 +676,8 @@ export const BlockCoinsSvg = ({
           y2="52"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#FFF901" />
-          <stop offset="1" stopColor="#FCD003" />
+          <stop stopColor="#00A3E0" />
+          <stop offset="1" stopColor="#00C9A7" />
         </linearGradient>
       </defs>
     </svg>
@@ -696,16 +696,84 @@ export const LandsBoxSvg = ({
       {...props}
       width={width}
       height={height}
-      viewBox="0 0 203 218"
+      viewBox="0 0 536 576"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M0 47.1312L101.501 0L203 47.1312L106.454 129L0 47.1312Z"
-        fill="#FDFF03"
-      />
-      <path d="M103 218V99.9496L0 48V161.35L103 218Z" fill="#CB8B03" />
-      <path d="M103 99.9422L203 48V161.334L103 218V99.9422Z" fill="#EEB902" />
+        d="M0 124.587L268.002 0L536 124.587L281.081 341L0 124.587Z"
+        fill="url(#paint0_linear_0_1)" // 亮蓝色渐变
+      >
+        <animate
+          attributeName="fill"
+          values="#00A3E0;#80D9E2;#00A3E0"
+          dur="2s"
+          keyTimes="0;0.5;1"
+          repeatCount="indefinite"
+          keySplines="0.42 0 0.58 1"
+        />
+      </path>
+      <path
+        d="M272 576V264.208L0 127V426.377L272 576Z"
+        fill="url(#paint1_linear_0_1)" // 绿色渐变
+      >
+        <animate
+          attributeName="fill"
+          values="#00C9A7;#6FE4C2;#00C9A7"
+          dur="2s"
+          keyTimes="0;0.5;1"
+          repeatCount="indefinite"
+          keySplines="0.42 0 0.58 1"
+        />
+      </path>
+      <path
+        d="M272 264.188L536 127V426.334L272 576V264.188Z"
+        fill="url(#paint2_linear_0_1)" // 淡蓝色渐变
+      >
+        <animate
+          attributeName="fill"
+          values="#A1C6FF;#77A6D5;#A1C6FF"
+          dur="2s"
+          keyTimes="0;0.5;1"
+          repeatCount="indefinite"
+          keySplines="0.42 0 0.58 1"
+        />
+      </path>
+      <defs>
+        <linearGradient
+          id="paint0_linear_0_1"
+          x1="0"
+          y1="124.587"
+          x2="536"
+          y2="124.587"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#00A3E0" />
+          <stop offset="1" stopColor="#80D9E2" />
+        </linearGradient>
+        <linearGradient
+          id="paint1_linear_0_1"
+          x1="0"
+          y1="127"
+          x2="272"
+          y2="576"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#00C9A7" />
+          <stop offset="1" stopColor="#6FE4C2" />
+        </linearGradient>
+        <linearGradient
+          id="paint2_linear_0_1"
+          x1="272"
+          y1="127"
+          x2="536"
+          y2="426.334"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#A1C6FF" />
+          <stop offset="1" stopColor="#77A6D5" />
+        </linearGradient>
+      </defs>
     </svg>
   );
 };
@@ -728,10 +796,78 @@ export const LiLandsBoxSvg = ({
     >
       <path
         d="M0 124.587L268.002 0L536 124.587L281.081 341L0 124.587Z"
-        fill="#80D9E2"
-      />
-      <path d="M272 576V264.208L0 127V426.377L272 576Z" fill="#6D73C7" />
-      <path d="M272 264.188L536 127V426.334L272 576V264.188Z" fill="#77A6D5" />
+        fill="url(#paint0_linear_0_1)" // 亮蓝色渐变
+      >
+        <animate
+          attributeName="fill"
+          values="#00A3E0;#80D9E2;#00A3E0"
+          dur="2s"
+          keyTimes="0;0.5;1"
+          repeatCount="indefinite"
+          keySplines="0.42 0 0.58 1"
+        />
+      </path>
+      <path
+        d="M272 576V264.208L0 127V426.377L272 576Z"
+        fill="url(#paint1_linear_0_1)" // 绿色渐变
+      >
+        <animate
+          attributeName="fill"
+          values="#00C9A7;#6FE4C2;#00C9A7"
+          dur="2s"
+          keyTimes="0;0.5;1"
+          repeatCount="indefinite"
+          keySplines="0.42 0 0.58 1"
+        />
+      </path>
+      <path
+        d="M272 264.188L536 127V426.334L272 576V264.188Z"
+        fill="url(#paint2_linear_0_1)" // 淡蓝色渐变
+      >
+        <animate
+          attributeName="fill"
+          values="#A1C6FF;#77A6D5;#A1C6FF"
+          dur="2s"
+          keyTimes="0;0.5;1"
+          repeatCount="indefinite"
+          keySplines="0.42 0 0.58 1"
+        />
+      </path>
+      <defs>
+        <linearGradient
+          id="paint0_linear_0_1"
+          x1="0"
+          y1="124.587"
+          x2="536"
+          y2="124.587"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#00A3E0" />
+          <stop offset="1" stopColor="#80D9E2" />
+        </linearGradient>
+        <linearGradient
+          id="paint1_linear_0_1"
+          x1="0"
+          y1="127"
+          x2="272"
+          y2="576"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#00C9A7" />
+          <stop offset="1" stopColor="#6FE4C2" />
+        </linearGradient>
+        <linearGradient
+          id="paint2_linear_0_1"
+          x1="272"
+          y1="127"
+          x2="536"
+          y2="426.334"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#A1C6FF" />
+          <stop offset="1" stopColor="#77A6D5" />
+        </linearGradient>
+      </defs>
     </svg>
   );
 };

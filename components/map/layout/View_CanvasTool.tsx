@@ -6,37 +6,32 @@ import {
   TbEyeOff,
   TbGrid4X4,
   TbHome,
+  TbMapPinFilled,
   TbMinus,
   TbPennant2,
   TbPlus,
 } from "react-icons/tb";
 import {
-  isLeftActAtom,
   isShowSignImageAtom,
   scaleAtom,
-  selectedModuleAtom,
   signImageModuleAtom,
 } from "../store/ShowBaseAtomStore";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { Button } from "@nextui-org/button";
 import AuthButtonClient from "@/components/layout/auth-button-client";
 import { Session } from "@supabase/auth-helpers-nextjs";
+import JoinMap from "./model/JoinModel/JoinMap";
 
 export default function CanavsToolView({
+  landInfo,
   session,
 }: {
+  landInfo: Land;
   session?: Session | null;
 }) {
   const [scale, setScale] = useAtom(scaleAtom);
   const [isShowSignImage, setIsShowSignImage] = useAtom(isShowSignImageAtom);
   const [signImageModule, setSignImageModule] = useAtom(signImageModuleAtom);
-  const handleIncreaseScale = () => {
-    setScale((prevScale) => Math.min(prevScale + 0.5, 5));
-  };
-
-  const handleDecreaseScale = () => {
-    setScale((prevScale) => Math.max(prevScale - 0.5, 0.5));
-  };
 
   const handleSignImageButtonClick = (v: string) => {
     if (signImageModule === v) {
@@ -109,42 +104,57 @@ export default function CanavsToolView({
           }
         />
       </div>
-      <div className="absolute flex top-5 right-5 gap-2">
+      <div className="absolute top-5 right-5 gap-2 d_c_c">
+        <JoinMap session={session} landInfo={landInfo} />
         <AuthButtonClient session={session} />
       </div>
       <div className={`${styles["right-tool-view"]} right-5 bottom-5`}>
-        <div>
-          <div
-            className={`bg-[#fff] mb-2 shadow flex justify-center items-center w-[40px] h-[40px] rounded cursor-pointer hover:bg-[#d9e0e6] hover:text-[#63727e] `}
-          >
-            <TbGrid4X4 size={20} />
-          </div>
-
-          <div
-            className={`bg-[#fff] shadow justify-center items-center w-[40px] rounded`}
-          >
-            <div
-              onClick={handleIncreaseScale}
-              className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-tl rounded-tr border-b`}
-            >
-              <TbPlus size={20} />
-            </div>
-            <div
-              className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px]`}
-            >
-              <span className="text-[#000] text-[10px]">{`${(
-                scale * 100
-              ).toFixed(0)}%`}</span>
-            </div>
-            <div
-              onClick={handleDecreaseScale}
-              className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-bl rounded-br border-t`}
-            >
-              <TbMinus size={20} />
-            </div>
-          </div>
-        </div>
+        <CtrlScale scale={scale} setScale={setScale} />
       </div>
     </>
   );
 }
+
+export const CtrlScale = ({
+  scale,
+  setScale,
+}: {
+  scale: number;
+  setScale: any;
+}) => {
+  const handleIncreaseScale = () => {
+    setScale((prevScale: number) => Math.min(prevScale + 0.5, 5));
+  };
+
+  const handleDecreaseScale = () => {
+    setScale((prevScale: number) => Math.max(prevScale - 0.5, 0.5));
+  };
+
+  return (
+    <div>
+      <div
+        className={`bg-[#fff] shadow justify-center items-center w-[40px] rounded`}
+      >
+        <div
+          onClick={handleIncreaseScale}
+          className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-tl rounded-tr border-b`}
+        >
+          <TbPlus size={20} />
+        </div>
+        <div
+          className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px]`}
+        >
+          <span className="text-[#000] text-[10px]">{`${(scale * 100).toFixed(
+            0
+          )}%`}</span>
+        </div>
+        <div
+          onClick={handleDecreaseScale}
+          className={`bg-[#fff] flex justify-center items-center w-[40px] h-[40px] cursor-pointer hover:bg-[#d9e0e6] rounded-bl rounded-br border-t`}
+        >
+          <TbMinus size={20} />
+        </div>
+      </div>
+    </div>
+  );
+};

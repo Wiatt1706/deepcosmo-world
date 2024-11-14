@@ -4,6 +4,7 @@ import ShowMapIndex from "@/components/map/layout/ShowMapIndex";
 import LeftToolView from "@/components/map/layout/View_LeftTool";
 import LeftMenuView from "@/components/map/layout/View_LeftMenu";
 import { NotFoundWrapper } from "@/app/404";
+import AddMapIndex from "@/components/map/layout/model/JoinModel/AddMapIndex";
 export default async function MapInfo({
   searchParams,
 }: {

@@ -4,7 +4,7 @@ import { utils, read } from "xlsx";
 import { PixelBlock } from "@/types/MapTypes";
 import TableShow from "@/components/utils/TeabelShow";
 import { Button, ButtonGroup } from "@nextui-org/button";
-import { useEditMapStore } from "@/components/map/SocketManager";
+import { useBaseStore, useEditMapStore } from "@/components/map/SocketManager";
 
 export const IntegrationData = (
   pixelBlocks: PixelBlock[],
@@ -67,6 +67,7 @@ export default function ModelUpload({ onClose }: { onClose: () => void }) {
     state.pixelBlocks,
     state.setPixelBlocks,
   ]);
+  const toolInfo = useBaseStore((state: any) => state.toolInfo);
   const [hasIntersection, setHasIntersection] = useState(false); // 是否存在相交的块
 
   // 处理文件上传
@@ -90,7 +91,13 @@ export default function ModelUpload({ onClose }: { onClose: () => void }) {
       const validData = jsonData.filter((item) => isValidPixelBlock(item));
 
       if (validData.length > 0) {
-        setExcelData(validData as PixelBlock[]);
+        setExcelData(
+          (validData as PixelBlock[]).map((pixel: PixelBlock) => ({
+            ...pixel,
+            status: toolInfo.status,
+            type: toolInfo.type,
+          }))
+        );
         // 检查是否存在相交的块
         const intersectingBlocks = new Set<PixelBlock>();
         (validData as PixelBlock[]).forEach((newBlock) => {

@@ -10,7 +10,6 @@ const initialViewport: PositionAndSize = {
 // 定义你的原子
 export const selectedPixelBlockAtom = atom<PixelBlock | null>(null);
 export const lastListPixelBlockAtom = atom<PixelBlock[]>([]);
-
 export const viewportAtom = atom<PositionAndSize>(initialViewport);
 export const viewMapCenterAtom = atom<Position>({ x: 0, y: 0 });
 export const selectedModuleAtom = atom<string>("");
@@ -23,3 +22,6 @@ export const scaleAtom = atom<number>(1);
 export const selectedListObjAtom = atom<any>(null);
 export const loadDataAtom = atom<PixelBlock[]>([]);
 export const locatePosAtom = atom<Position>({ x: 0, y: 0 });
+
+
+

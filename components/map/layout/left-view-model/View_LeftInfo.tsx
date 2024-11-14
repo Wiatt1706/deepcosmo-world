@@ -25,6 +25,7 @@ import CustomListSaveWrapper from "./ListILinkSaveBtn";
 import { post as postApi } from "@/utils/api";
 import { useNotification } from "@/components/utils/NotificationBar";
 import LocateBtn from "./LocateBtn";
+import { useRouter } from "next/navigation";
 
 export default function LeftInfoView({
   session,
@@ -125,6 +126,10 @@ export default function LeftInfoView({
 }
 
 const ViewLeftInfo = ({ session, pixelBlock }: any) => {
+  const router = useRouter();
+  const [selectedPixelBlock, setSelectedPixelBlock] = useAtom(
+    selectedPixelBlockAtom
+  );
   const [isLoading, setIsLoading] = useState(false); // 跟踪加载状态
   const addNotification = useNotification(
     (state: any) => state.addNotification
@@ -210,7 +215,8 @@ const ViewLeftInfo = ({ session, pixelBlock }: any) => {
             label="进入"
             filled
             onClick={() => {
-              console.log("里世界");
+              setSelectedPixelBlock(null);
+              router.push("/map/" + pixelBlock.id);
             }}
           />
         )}

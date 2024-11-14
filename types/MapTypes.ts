@@ -30,6 +30,7 @@ interface PixelBlock {
     useExternalLink?: boolean; // 是否使用外部链接
     externalLinkType?: string; // 外部链接类型
     externalLink?: string; // 外部链接
+    owner?: string;
 }
 
 export interface Photo {

@@ -455,3 +455,69 @@ export const drawAim = (
 
   ctx.restore();
 };
+
+export function getValidPixelBlocks(
+  adjustedX: number,
+  adjustedY: number,
+  width: number,
+  height: number,
+  loadData: PixelBlock[] | null | undefined
+): PixelBlock[] | null {
+  // 目标矩形区域的坐标
+  const targetRect = {
+    x: adjustedX,
+    y: adjustedY,
+    x2: adjustedX + width,
+    y2: adjustedY + height,
+  };
+
+  // 用于记录目标矩形区域是否被填充
+  const coverage: Set<string> = new Set();
+
+  // 用于存储有效的 PixelBlock
+  const validBlocks: PixelBlock[] = [];
+
+  // 遍历 loadData 中的每个 PixelBlock，记录其覆盖的区域
+  loadData?.forEach((block) => {
+    const blockRect = {
+      x: block.x,
+      y: block.y,
+      x2: block.x + block.width,
+      y2: block.y + block.height,
+    };
+
+    // 计算当前 PixelBlock 覆盖的区域，并添加到 coverage 中
+    let isValid = false;
+    for (let x = blockRect.x; x < blockRect.x2; x++) {
+      for (let y = blockRect.y; y < blockRect.y2; y++) {
+        // 如果该区域在目标矩形内，记录这个点
+        if (
+          x >= targetRect.x &&
+          x < targetRect.x2 &&
+          y >= targetRect.y &&
+          y < targetRect.y2
+        ) {
+          coverage.add(`${x},${y}`);
+          isValid = true; // 标记此 PixelBlock 为有效
+        }
+      }
+    }
+
+    // 如果该 PixelBlock 产生了覆盖，添加到有效块数组中
+    if (isValid) {
+      validBlocks.push(block);
+    }
+  });
+
+  // 检查目标矩形区域内的每个点是否都被填充
+  for (let x = targetRect.x; x < targetRect.x2; x++) {
+    for (let y = targetRect.y; y < targetRect.y2; y++) {
+      if (!coverage.has(`${x},${y}`)) {
+        return null; // 如果有未填充的点，返回 null
+      }
+    }
+  }
+
+  // 如果所有点都被填充，返回有效的 PixelBlock 数据
+  return validBlocks.length > 0 ? validBlocks : null;
+}
