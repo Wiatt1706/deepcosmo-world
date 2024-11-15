@@ -309,14 +309,16 @@ const ShowMapCanvas = React.memo(
     ) => {
       const { width: imgWidth, height: imgHeight } =
         imagesRef.current[imageKey];
-      const centeredX = scaledX + scaledWidth / 2 - imgWidth / dpr / 2;
-      const centeredY = scaledY + scaledHeight / 2 - imgHeight / dpr;
+      const drawWidth = imgWidth / dpr / 1.2;
+      const drawHeight = imgHeight / dpr / 1.2;
+      const centeredX = scaledX + scaledWidth / 2 - drawWidth / 2;
+      const centeredY = scaledY + scaledHeight / 2 - drawHeight;
       return {
         img: imagesRef.current[imageKey],
         x: centeredX,
         y: centeredY,
-        width: imgWidth / dpr,
-        height: imgHeight / dpr,
+        width: drawWidth,
+        height: drawHeight,
       };
     };
 
@@ -361,7 +363,7 @@ const ShowMapCanvas = React.memo(
         const scaledWidth = CONVER_WIDTH(coord.width, scaledPadding);
         const scaledHeight = CONVER_HEIGHT(coord.height, scaledPadding);
 
-        if (scale * coord.width < 60) {
+        if (scale * coord.width < 30) {
           buffCtx.fillStyle = "rgba(0,0,0,0.1)";
           buffCtx.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
           return;

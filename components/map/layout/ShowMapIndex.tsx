@@ -1,5 +1,12 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { PixelBlock } from "@/types/MapTypes";
 import LeftInfoView from "./left-view-model/View_LeftInfo";
 import ShowMapCanvas from "../ShowMapCanvas";
@@ -15,6 +22,16 @@ import {
   createClientComponentClient,
 } from "@supabase/auth-helpers-nextjs";
 import { Spinner } from "@nextui-org/react";
+
+const ReloadDataContext = createContext<(() => void) | null>(null);
+
+export const useReloadData = () => {
+  const context = useContext(ReloadDataContext);
+  if (!context) {
+    throw new Error("useReloadData must be used within a ReloadDataProvider");
+  }
+  return context;
+};
 
 export default function ShowMapIndex({
   session,
@@ -85,7 +102,7 @@ export default function ShowMapIndex({
   }, [isLeftAct]);
 
   return (
-    <>
+    <ReloadDataContext.Provider value={handleLoadData}>
       <div
         className={`h-full absolute right-0 ${
           isRightMenu
@@ -107,6 +124,6 @@ export default function ShowMapIndex({
           </div>
         )}
       </div>
-    </>
+    </ReloadDataContext.Provider>
   );
 }

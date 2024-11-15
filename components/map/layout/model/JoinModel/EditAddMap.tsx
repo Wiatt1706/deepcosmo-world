@@ -39,12 +39,11 @@ export default function EditAddMap({
   const [addMapValidBlocks, setAddMapValidBlocks] = useAtom(
     AddMapValidBlocksAtom
   );
-  const ValidAim = useAtomValue(AddMapValidAimAtom);
+  const [validAim, setValidAim] = useAtom(AddMapValidAimAtom);
 
   const [isLoading, setIsLoading] = useState(false); // 跟踪加载状态
 
   const saveInfo = async () => {
-    console.log("saveInfo", selectedPixelBlock);
     const block = selectedPixelBlock;
     if (!block) {
       return;
@@ -92,6 +91,8 @@ export default function EditAddMap({
       .then((response) => {
         if (response?.data) {
           addNotification("添加当前地块成功，", "success", "添加成功");
+          setValidAim(null);
+          setAddMapValidBlocks([]);
           onNext();
         } else {
           addNotification("添加当前地块失败，", "error", "添加失败");
@@ -101,14 +102,15 @@ export default function EditAddMap({
         setIsLoading(false);
       });
   };
+
   useEffect(() => {
-    if (ValidAim) {
+    if (validAim) {
       const newPixelBlock: PixelBlock = {
-        id: ValidAim.x + "," + ValidAim.y,
-        x: ValidAim.x,
-        y: ValidAim.y,
-        width: ValidAim.width,
-        height: ValidAim.height,
+        id: validAim.x + "," + validAim.y,
+        x: validAim.x,
+        y: validAim.y,
+        width: validAim.width,
+        height: validAim.height,
         blockCount: addMapValidBlocks.length,
         color: "#dadddf",
         type: 0,
@@ -116,7 +118,7 @@ export default function EditAddMap({
       };
       setSelectedPixelBlock(newPixelBlock);
     }
-  }, [ValidAim, addMapValidBlocks]);
+  }, [validAim, addMapValidBlocks]);
   return (
     <>
       <ModalBody className="w-full">

@@ -10,6 +10,7 @@ import {
 import AddMapIndex from "./AddMapIndex";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import EditAddMap from "./EditAddMap";
+import FinishAddMap from "./FinishAddMap";
 
 export default function JoinMap({
   landInfo,
@@ -83,7 +84,7 @@ export default function JoinMap({
                         <span className="ml-2 font-semibold text-[16px]">
                           {step === 1 && "Step 1: 选择地块"}
                           {step === 2 && "Step 2: 设置地块信息"}
-                          {step === 3 && "Step 3: 提交地块信息"}
+                          {step === 3 && "Step 3: 完成"}
                         </span>
                       )}
                     </div>
@@ -105,15 +106,7 @@ export default function JoinMap({
                   onPrev={prevStep}
                 />
               )}
-              {currentStep === 3 && (
-                <div className="flex flex-col relative">
-                  <div className="flex justify-start">
-                    <Button color="primary" size="sm" onClick={prevStep}>
-                      Previous
-                    </Button>
-                  </div>
-                </div>
-              )}
+              {currentStep === 3 && <FinishAddMap onClose={onClose} />}
             </>
           )}
         </ModalContent>

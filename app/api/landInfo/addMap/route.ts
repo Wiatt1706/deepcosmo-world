@@ -46,15 +46,12 @@ export async function POST(request: Request) {
             console.error("LandInfoService.deleteRecord error:", error);
         }
 
-        console.log("deleteIds:", deleteIds);
 
         // 更新用户土块币
         const { error: rpcError } = await supabase.rpc("increment_land_coins", {
             user_id: userId,
             increment_value: -deleteIds.length,
         });
-
-        console.log("rpcError:", rpcError);
 
         return new Response(JSON.stringify({ data: true, message: "操作成功" }), { status: 200, headers: { "Content-Type": "application/json" } });
     } catch (error: any) {

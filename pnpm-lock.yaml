@@ -101,6 +101,9 @@ dependencies:
   axios:
     specifier: ^1.6.8
     version: 1.6.8
+  canvas-confetti:
+    specifier: ^1.9.3
+    version: 1.9.3
   clsx:
     specifier: ^2.1.0
     version: 2.1.0
@@ -247,6 +250,9 @@ dependencies:
     version: 4.5.2(@types/react@18.2.21)(immer@10.0.4)(react@18.2.0)
 
 devDependencies:
+  '@types/canvas-confetti':
+    specifier: ^1.6.4
+    version: 1.6.4
   '@types/multiparty':
     specifier: ^0.0.36
     version: 0.0.36
@@ -3649,6 +3655,10 @@ packages:
   /@tweenjs/tween.js@23.1.1:
     resolution: {integrity: sha512-ZpboH7pCPPeyBWKf8c7TJswtCEQObFo3bOBYalm99NzZarATALYCo5OhbCa/n4RQyJyHfhkdx+hNrdL5ByFYDw==, tarball: https://registry.npmmirror.com/@tweenjs/tween.js/-/tween.js-23.1.1.tgz}
 
+  /@types/canvas-confetti@1.6.4:
+    resolution: {integrity: sha512-fNyZ/Fdw/Y92X0vv7B+BD6ysHL4xVU5dJcgzgxLdGbn8O3PezZNIJpml44lKM0nsGur+o/6+NZbZeNTt00U1uA==, tarball: https://registry.npmmirror.com/@types/canvas-confetti/-/canvas-confetti-1.6.4.tgz}
+    dev: true
+
   /@types/debug@4.1.12:
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==, tarball: https://registry.npmmirror.com/@types/debug/-/debug-4.1.12.tgz}
     dependencies:
@@ -4255,6 +4265,10 @@ packages:
 
   /caniuse-lite@1.0.30001660:
     resolution: {integrity: sha512-GacvNTTuATm26qC74pt+ad1fW15mlQ/zuTzzY1ZoIzECTP8HURDfF43kNxPgf7H1jmelCBQTTbBNxdSXOA7Bqg==, tarball: https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001660.tgz}
+    dev: false
+
+  /canvas-confetti@1.9.3:
+    resolution: {integrity: sha512-rFfTURMvmVEX1gyXFgn5QMn81bYk70qa0HLzcIOSVEyl57n6o9ItHeBtUSWdvKAPY0xlvBHno4/v3QPrT83q9g==, tarball: https://registry.npmmirror.com/canvas-confetti/-/canvas-confetti-1.9.3.tgz}
     dev: false
 
   /ccount@2.0.1:
