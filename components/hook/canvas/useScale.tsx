@@ -28,7 +28,6 @@ const useScale = (
     };
 
     const eventTarget = target || window;
-    console.log("eventTarget", eventTarget);
 
     if (eventTarget) {
       eventTarget.addEventListener("wheel", handleWheel as EventListener, {

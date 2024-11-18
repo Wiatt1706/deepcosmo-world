@@ -30,7 +30,15 @@ import { create, useStore } from "zustand";
 import Locked from "../utils/Locked";
 
 import { put as putApi } from "@/utils/api";
-
+import {
+  upladShowImg,
+  uploadImgFromBlobUrl,
+  uploadUpdateImg,
+} from "../hook/canvas/useUpdate";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { UploadService } from "@/utils/serviceimpl";
+const PUBLIC_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const BUCKET = "deepcosmo_img";
 export const useTemporalLandDetailStore = <T,>(
   selector: (state: any) => T,
   equality?: (a: T, b: T) => boolean
@@ -64,6 +72,8 @@ export default function LandInfoDetails({
 }: {
   initLandInfo: any;
 }) {
+  const supabase = createClientComponentClient();
+
   const [landInfo, setLandInfo, setInitialLandInfo] = useLandDetailStore(
     (state: any) => [
       state.landInfo,
@@ -98,8 +108,12 @@ export default function LandInfoDetails({
     null
   );
   const [selectedShowCover, setSelectedShowCover] = useState<Photo[]>(
-    initLandInfo.ShowCoverImg || []
+    initLandInfo.show_cover_list || []
   );
+
+  useEffect(() => {
+    setLandInfo("show_cover_list", selectedShowCover);
+  }, [selectedShowCover]);
 
   const handlePhotoBtn = (id: string) => {
     document.getElementById(id)!.click();
@@ -167,40 +181,47 @@ export default function LandInfoDetails({
 
   const checkExternalLink = (v: string, type: string | undefined) => {
     const extractSrc = (iframe: string): string | null => {
+      if (!iframe.includes("<iframe")) {
+        return iframe;
+      }
+
       const srcMatch = iframe.match(/src=["']([^"']+)["']/);
       return srcMatch ? srcMatch[1] : null;
     };
 
+    // Extract URL only if v contains an iframe
     const url = extractSrc(v);
 
     if (!url) {
       setErrorExternalLink("无效链接");
       return null;
     }
+
     const absoluteUrl = url.startsWith("//") ? `https:${url}` : url;
-    switch (type) {
-      case "Bilibili":
-        if (absoluteUrl.includes("bilibili.com")) {
-          setErrorExternalLink(null);
-          return url;
-        }
-        setErrorExternalLink("Provided URL is not from Bilibili");
-        break;
 
-      case "Youtube":
-        if (
-          absoluteUrl.includes("youtube.com") ||
-          absoluteUrl.includes("youtu.be")
-        ) {
-          setErrorExternalLink(null);
-          return url;
-        }
-        setErrorExternalLink("Provided URL is not from YouTube");
-        break;
-
-      default:
-        setErrorExternalLink("Unsupported type");
+    // Validate the URL based on the type
+    if (type === "Bilibili" && absoluteUrl.includes("bilibili.com")) {
+      setErrorExternalLink(null);
+      return url;
     }
+
+    if (
+      type === "Youtube" &&
+      (absoluteUrl.includes("youtube.com") || absoluteUrl.includes("youtu.be"))
+    ) {
+      setErrorExternalLink(null);
+      return url;
+    }
+
+    // Handle unsupported or invalid links
+    if (type === "Bilibili") {
+      setErrorExternalLink("Provided URL is not from Bilibili");
+    } else if (type === "Youtube") {
+      setErrorExternalLink("Provided URL is not from YouTube");
+    } else {
+      setErrorExternalLink("Unsupported type");
+    }
+
     return null;
   };
 
@@ -259,6 +280,33 @@ export default function LandInfoDetails({
       }
     });
 
+    const deleteIds: string[] = [];
+    if (changedFields.cover_icon_url !== undefined) {
+      const uploadData = await uploadUpdateImg(
+        supabase,
+        deleteIds,
+        changedFields?.cover_icon_url as string | null,
+        initLandInfo?.cover_icon_url
+      );
+
+      if (uploadData) {
+        changedFields.cover_icon_url = uploadData;
+      }
+    }
+
+    if (changedFields.show_cover_list !== undefined) {
+      await upladShowImg(
+        supabase,
+        deleteIds,
+        changedFields?.show_cover_list as Photo[],
+        initLandInfo?.show_cover_list
+      );
+    }
+    if (deleteIds.length > 0) {
+      console.log("deleteIds:", deleteIds);
+
+      await UploadService.deleteImg(supabase, BUCKET, deleteIds);
+    }
     await putApi(`/landInfo/single`, changedFields).then((response) => {
       setIsLoading(false);
       if (response.data) {
@@ -461,8 +509,8 @@ export default function LandInfoDetails({
         <span className="text-sm text-gray-500 font-bold">土块封面</span>
 
         <Locked
-          isLocked={landInfo?.block_count < 9}
-          lockMessage={LockMessage(9)}
+          isLocked={landInfo?.block_count < 4}
+          lockMessage={LockMessage(4)}
         >
           <div className="flex gap-2 mb-2 w-full">
             <div
@@ -495,8 +543,8 @@ export default function LandInfoDetails({
         </span>
 
         <Locked
-          isLocked={landInfo.block_count < 16}
-          lockMessage={LockMessage(16)}
+          isLocked={landInfo.block_count < 6}
+          lockMessage={LockMessage(6)}
         >
           <div className="flex gap-2 mb-6">
             <div
@@ -542,8 +590,8 @@ export default function LandInfoDetails({
         <span className="text-sm text-gray-500 font-bold">开启外站嵌入</span>
 
         <Locked
-          isLocked={landInfo.block_count < 16}
-          lockMessage={LockMessage(16)}
+          isLocked={landInfo.block_count < 6}
+          lockMessage={LockMessage(6)}
         >
           <div className="flex flex-col  mb-2 items-center rounded bg-[#f3f6f8]">
             <div className="flex items-center justify-between w-full p-6">

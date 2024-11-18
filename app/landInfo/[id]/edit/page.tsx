@@ -41,7 +41,7 @@ export default async function EditInfo({ params }: any) {
 
   let { data: requestDTOs } = await supabase
     .from("land_info")
-    .select("*,author: profiles(*),ShowCoverImg(*)")
+    .select("*,author: profiles(*)")
     .eq("parent_land_id", landId);
 
   const pixelBlocks: PixelBlock[] =
@@ -67,6 +67,8 @@ export default async function EditInfo({ params }: any) {
         externalLink: requestDTO.external_link, // 处理可选的外部链接
       } as PixelBlock;
     }) || [];
+
+  console.log("pixelBlocks:", pixelBlocks);
 
   return (
     <div className="flex relative w-full h-full overflow-hidden">

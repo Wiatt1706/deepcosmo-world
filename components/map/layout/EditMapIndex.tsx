@@ -91,7 +91,6 @@ export default function EditMapIndex({
       // checkLogin(); // 打开用户登录
       return;
     }
-    console.log("session", session);
   }, []);
 
   const usedBlocksSum = useMemo(() => {

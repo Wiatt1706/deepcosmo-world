@@ -30,7 +30,7 @@ export default async function LandInfo({ params }: any) {
 
   let { data: landInfos } = await supabase
     .from("land_info")
-    .select("*,author: profiles(*),ShowCoverImg(*)")
+    .select("*,author: profiles(*)")
     .eq("id", landId);
 
   if (!landInfos || landInfos.length === 0) {

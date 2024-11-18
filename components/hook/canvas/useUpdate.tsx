@@ -9,7 +9,106 @@ import { useBaseStore, useEditMapStore } from "@/components/map/SocketManager";
 import { useNotification } from "@/components/utils/NotificationBar";
 
 const PUBLIC_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const bucket = "deepcosmo_img";
+const BUCKET = "deepcosmo_img";
+
+export const upladShowImg = async (
+  supabase: any,
+  deleteIds: string[],
+  landShowCoverImgList?: Photo[] | null | undefined,
+  originalShowCoverImgList?: Photo[] | null | undefined
+) => {
+  const originalList = originalShowCoverImgList || [];
+  const newList = landShowCoverImgList as Photo[];
+
+  // 处理新增图片
+  for (let i = 0; i < newList.length; i++) {
+    const img = newList[i];
+    const originalImg = originalList.find((o) => o.id === img.id);
+
+    if (!originalImg) {
+      // 新增图片的处理逻辑
+      console.log("新增图片", img);
+
+      const filePath = `public/showCover/${uuidv4()}.jpg`;
+      const uploadData = await uploadImgFromBlobUrl(
+        supabase,
+        BUCKET,
+        filePath,
+        img.src
+      );
+      if (uploadData) {
+        img.src = `${PUBLIC_URL}/storage/v1/object/public/${uploadData.fullPath}`;
+        img.id = uploadData.path;
+      } else {
+        newList.splice(i, 1);
+        i--;
+      }
+    } else if (img.src !== originalImg.src) {
+      console.log("更新图片-img", img);
+      console.log("更新图片-originalImg", originalImg);
+
+      // 更新图片的处理逻辑
+      const filePath = `public/showCover/${uuidv4()}.jpg`;
+      const uploadData = await uploadImgFromBlobUrl(
+        supabase,
+        BUCKET,
+        filePath,
+        img.src
+      );
+      if (uploadData) {
+        img.src = `${PUBLIC_URL}/storage/v1/object/public/${uploadData.fullPath}`;
+      }
+    }
+  }
+
+  // 处理删除图片
+  for (const originalImg of originalList) {
+    if (!newList.find((n) => n.id === originalImg.id)) {
+      // 收集需要删除的图片 ID
+      deleteIds.push(originalImg.id);
+    }
+  }
+};
+export const uploadUpdateImg = async (
+  supabase: any,
+  deleteIds: string[],
+  landCoverImg?: string | null | undefined,
+  originalCoverImg?: string | null | undefined
+) => {
+  let originalFileName =
+    "public/landCover/" + originalCoverImg?.match(/[^/]+$/)?.[0];
+  if (originalFileName && !originalFileName.endsWith(".jpg")) {
+    originalFileName += ".jpg";
+  }
+  if (landCoverImg === null) {
+    deleteIds.push(originalFileName);
+  } else if (typeof landCoverImg === "string") {
+    if (originalCoverImg != null) {
+      deleteIds.push(originalFileName);
+    }
+
+    let landFileName = "public/landCover/" + landCoverImg?.match(/[^/]+$/)?.[0];
+    if (landFileName && !landFileName.endsWith(".jpg")) {
+      landFileName += ".jpg";
+    }
+
+    // 处理图片更新逻辑
+    const uploadData = await uploadImgFromBlobUrl(
+      supabase,
+      BUCKET,
+      landFileName,
+      landCoverImg
+    );
+
+    if (uploadData && uploadData.fullPath) {
+      return `${PUBLIC_URL}/storage/v1/object/public/${uploadData.fullPath}`;
+    }
+    return null; // In case uploadData is empty or null
+  }
+
+  return null; // Default return if landCoverImg is not a string
+};
+
 export const uploadImgFromBlobUrl = async (
   supabase: any,
   bucket: string,
@@ -134,7 +233,7 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
           const filePath = `public/landCover/${uuidv4()}.jpg`;
           const uploadData = await uploadImgFromBlobUrl(
             supabase,
-            bucket,
+            BUCKET,
             filePath,
             block.landCoverImg
           );
@@ -150,7 +249,7 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
               const filePath = `public/showCover/${uuidv4()}.jpg`;
               const uploadData = await uploadImgFromBlobUrl(
                 supabase,
-                bucket,
+                BUCKET,
                 filePath,
                 img.src
               );
@@ -202,7 +301,6 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
         return diffBlock;
       });
 
-      console.log("updatedBlocks Blocks:", updatedBlocks);
       const deleteIds: string[] = [];
       // 图片上传检测
       for (const block of updatedBlocks) {
@@ -211,80 +309,32 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
         );
         // 检查是否有 `landCoverImg` 的更新或删除
         if (block.landCoverImg !== undefined) {
-          const fileName =
-            "public/landCover/" +
-            originalBlock?.landCoverImg?.match(/[^/]+$/)?.[0];
-          if (block.landCoverImg === null && fileName) {
-            deleteIds.push(fileName);
-          } else if (typeof block.landCoverImg === "string") {
-            // 处理图片更新逻辑
-            const filePath = `public/landCover/${uuidv4()}.jpg`;
-            const uploadData = await uploadImgFromBlobUrl(
-              supabase,
-              bucket,
-              filePath,
-              block.landCoverImg
-            );
-            block.landCoverImg = uploadData
-              ? `${PUBLIC_URL}/storage/v1/object/public/${uploadData.fullPath}`
-              : null;
+          const uploadData = await uploadUpdateImg(
+            supabase,
+            deleteIds,
+            block?.landCoverImg as string | null,
+            originalBlock?.landCoverImg
+          );
+
+          if (uploadData) {
+            block.landCoverImg = uploadData;
           }
         }
 
         // 检查 `showCoverImgList` 的变化
         if (block.showCoverImgList) {
-          const originalList = originalBlock?.showCoverImgList || [];
-          const newList = block.showCoverImgList as Photo[];
-
-          // 处理新增图片
-          for (let i = 0; i < newList.length; i++) {
-            const img = newList[i];
-            const originalImg = originalList.find((o) => o.id === img.id);
-
-            if (!originalImg) {
-              // 新增图片的处理逻辑
-              const filePath = `public/showCover/${uuidv4()}.jpg`;
-              const uploadData = await uploadImgFromBlobUrl(
-                supabase,
-                bucket,
-                filePath,
-                img.src
-              );
-              if (uploadData) {
-                img.src = `${PUBLIC_URL}/storage/v1/object/public/${uploadData.fullPath}`;
-                img.id = uploadData.path;
-              } else {
-                newList.splice(i, 1);
-                i--;
-              }
-            } else if (img.src !== originalImg.src) {
-              // 更新图片的处理逻辑
-              const filePath = `public/showCover/${uuidv4()}.jpg`;
-              const uploadData = await uploadImgFromBlobUrl(
-                supabase,
-                bucket,
-                filePath,
-                img.src
-              );
-              if (uploadData) {
-                img.src = `${PUBLIC_URL}/storage/v1/object/public/${uploadData.fullPath}`;
-              }
-            }
-          }
-
-          // 处理删除图片
-          for (const originalImg of originalList) {
-            if (!newList.find((n) => n.id === originalImg.id)) {
-              // 收集需要删除的图片 ID
-              deleteIds.push(originalImg.id);
-            }
-          }
+          await upladShowImg(
+            supabase,
+            deleteIds,
+            block?.showCoverImgList as Photo[],
+            originalBlock?.showCoverImgList
+          );
         }
       }
 
       // 调用删除图片的服务
       if (deleteIds.length > 0) {
-        await UploadService.deleteImg(supabase, bucket, deleteIds);
+        await UploadService.deleteImg(supabase, BUCKET, deleteIds);
       }
 
       await putApi(`/landInfo`, {
@@ -333,7 +383,7 @@ const useUpdate = (landId?: string, initData?: PixelBlock[]) => {
       // 删除相关图片
       if (deleteIds.length > 0) {
         try {
-          await UploadService.deleteImg(supabase, bucket, deleteIds);
+          await UploadService.deleteImg(supabase, BUCKET, deleteIds);
           console.log("Deleted Images:", deleteIds);
         } catch (error) {
           console.error("Failed to delete images:", error);
