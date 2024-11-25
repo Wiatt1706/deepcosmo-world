@@ -101,7 +101,7 @@ export async function PUT(request: Request) {
 
         // 遍历 updatedBlocks 数组，生成对应的部分更新对象列表
         for (const updatedBlock of updatedBlocks) {
-            if (!updatedBlock.id) {
+            if (!updatedBlock.x || !updatedBlock.y) {
                 return new Response(JSON.stringify({ error: "请提供合法入参" }), { status: 500, headers: { "Content-Type": "application/json" } });
             }
             const updateData: Partial<Land> = {};
@@ -136,7 +136,8 @@ export async function PUT(request: Request) {
                 .from("land_info")
                 .update(updateData)
                 .eq("parent_land_id", parentLandId)
-                .eq("id", updatedBlock.id)
+                .eq("world_coordinates_x", updatedBlock.x)
+                .eq("world_coordinates_y", updatedBlock.y)
 
             if (error) {
                 console.error("LandInfoService.upsertRecord error:", error);

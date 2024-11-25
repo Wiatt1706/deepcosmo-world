@@ -49,7 +49,7 @@ export default function LeftInfoView({
         try {
           let { data, error } = await supabase
             .from("land_info")
-            .select("*,author: profiles(*),ShowCoverImg(*)")
+            .select("*,author: profiles(*)")
             .eq("id", selectedPixelBlock.id);
 
           if (error) throw new Error(error.message);

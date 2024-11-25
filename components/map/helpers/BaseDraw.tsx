@@ -334,27 +334,51 @@ export const drawRuler = (
   ctx.scale(1 / dpr, 1 / dpr);
 
   // 绘制刻度尺背景
-  ctx.fillStyle = "#f8fafc";
-  ctx.fillRect(0, 0, canvasWidth * dpr, 15 * dpr);
-  ctx.fillRect(0, 0, 15 * dpr, canvasHeight * dpr);
+  const drawBackground = () => {
+    ctx.fillStyle = "#f8fafc";
+    ctx.fillRect(0, 0, canvasWidth * dpr, 15 * dpr);
+    ctx.fillRect(0, 0, 15 * dpr, canvasHeight * dpr);
+  };
 
   // 绘制边缘线
-  ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(15 * dpr, 0);
-  ctx.lineTo(15 * dpr, canvasHeight * dpr);
-  ctx.moveTo(0, 15 * dpr);
-  ctx.lineTo(canvasWidth * dpr, 15 * dpr);
-  ctx.stroke();
+  const drawBorders = () => {
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(15 * dpr, 0);
+    ctx.lineTo(15 * dpr, canvasHeight * dpr);
+    ctx.moveTo(0, 15 * dpr);
+    ctx.lineTo(canvasWidth * dpr, 15 * dpr);
+    ctx.stroke();
+  };
 
-  // 绘制刻度文本
-  ctx.strokeStyle = "#808080";
-  ctx.fillStyle = "#808080";
-  ctx.font = `${10 * dpr}px Arial`;
-  ctx.lineWidth = 1 * dpr;
+  // 绘制单个刻度和标签
+  const drawTick = (pos: number, label: number, axis: "x" | "y") => {
+    const isMajorTick = label % 10 === 0;
+    const tickLength = isMajorTick ? 15 : 5;
 
-  // 绘制刻度尺刻度
+    ctx.beginPath();
+    if (axis === "x") {
+      ctx.moveTo(pos, 15 * dpr);
+      ctx.lineTo(pos, (15 - tickLength) * dpr);
+      if (isMajorTick) {
+        ctx.fillText(label.toString(), pos + 2 * dpr, 10 * dpr);
+      }
+    } else {
+      ctx.moveTo(15 * dpr, pos);
+      ctx.lineTo((15 - tickLength) * dpr, pos);
+      if (isMajorTick) {
+        ctx.save();
+        ctx.translate(15 * dpr, pos);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(label.toString(), 2 * dpr, -3 * dpr);
+        ctx.restore();
+      }
+    }
+    ctx.stroke();
+  };
+
+  // 绘制刻度和标签
   const drawTicksAndLabels = (
     start: number,
     end: number,
@@ -362,41 +386,32 @@ export const drawRuler = (
     offset: number,
     axis: "x" | "y"
   ) => {
-    const labelInterval = scaledPixelSize > 100 ? 5 : 10; // 放大到间距大于100时每5个单位显示数字，否则每10个单位
-    for (let pos = start - scaledPixelSize; pos < end; pos += scaledPixelSize) {
-      const label = Math.round(
-        (pos - half + offset * dpr * scale) / scaledPixelSize
-      );
-      if (pos > 20 * dpr && pos % scaledPixelSize !== 0) {
-        ctx.beginPath();
-        if (axis === "x") {
-          ctx.moveTo(pos, 15 * dpr);
-          ctx.lineTo(pos, 10 * dpr);
-        } else {
-          ctx.moveTo(15 * dpr, pos);
-          ctx.lineTo(10 * dpr, pos);
-        }
-        if (label % labelInterval === 0) {
-          // 调整刻度显示间隔
-          if (axis === "x") {
-            ctx.lineTo(pos, 0);
-            ctx.fillText(label.toString(), pos + 5, 10 * dpr);
-          } else {
-            ctx.lineTo(0, pos);
-            ctx.save();
-            ctx.translate(15 * dpr, pos);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText(label.toString(), 5 * dpr, -6 * dpr);
-            ctx.restore();
-          }
-        }
-        ctx.stroke();
+    const startPoint = start - scaledPixelSize;
+    const labelOffset = offset * dpr * scale;
+
+    for (let pos = startPoint; pos < end; pos += scaledPixelSize) {
+      const label = Math.round((pos - half + labelOffset) / scaledPixelSize);
+      if (pos > 20 * dpr) {
+        drawTick(pos, label, axis);
       }
     }
   };
 
-  const startX = (halfWidth - offsetPoint.x * dpr * scale) % scaledPixelSize;
-  const startY = (halfHeight - offsetPoint.y * dpr * scale) % scaledPixelSize;
+  // 计算起始位置
+  const calculateStart = (half: number, offset: number) =>
+    (half - offset * dpr * scale) % scaledPixelSize;
+
+  // 开始绘制
+  drawBackground();
+  drawBorders();
+
+  ctx.strokeStyle = "#808080";
+  ctx.fillStyle = "#808080";
+  ctx.font = `${10 * dpr}px Arial`;
+  ctx.lineWidth = 1 * dpr;
+
+  const startX = calculateStart(halfWidth, offsetPoint.x);
+  const startY = calculateStart(halfHeight, offsetPoint.y);
 
   drawTicksAndLabels(startX, canvasWidth * dpr, halfWidth, offsetPoint.x, "x");
   drawTicksAndLabels(
@@ -409,6 +424,7 @@ export const drawRuler = (
 
   ctx.restore();
 };
+
 
 export const drawAim = (
   ctx: CanvasRenderingContext2D,

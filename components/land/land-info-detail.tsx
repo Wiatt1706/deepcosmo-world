@@ -20,6 +20,7 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
+  ModalHeader,
   RadioGroup,
 } from "@nextui-org/react";
 import { CustomRadio } from "../utils/CustomRadio";
@@ -30,14 +31,9 @@ import { create, useStore } from "zustand";
 import Locked from "../utils/Locked";
 
 import { put as putApi } from "@/utils/api";
-import {
-  upladShowImg,
-  uploadImgFromBlobUrl,
-  uploadUpdateImg,
-} from "../hook/canvas/useUpdate";
+import { upladShowImg, uploadUpdateImg } from "../hook/canvas/useUpdate";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { UploadService } from "@/utils/serviceimpl";
-const PUBLIC_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const BUCKET = "deepcosmo_img";
 export const useTemporalLandDetailStore = <T,>(
   selector: (state: any) => T,
@@ -73,7 +69,6 @@ export default function LandInfoDetails({
   initLandInfo: any;
 }) {
   const supabase = createClientComponentClient();
-
   const [landInfo, setLandInfo, setInitialLandInfo] = useLandDetailStore(
     (state: any) => [
       state.landInfo,
@@ -86,6 +81,7 @@ export default function LandInfoDetails({
     undo: state.undo,
     redo: state.redo,
   }));
+  
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -95,15 +91,16 @@ export default function LandInfoDetails({
     }
   }, [initLandInfo, setInitialLandInfo]);
 
-  const [cropping, setCropping] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [cropSrc, setCropSrc] = useState<string | null>(null);
-  const [croppingType, setCroppingType] = useState<
-    "landCover" | "showCover" | null
-  >(null);
-  const [cropAspect, setCropAspect] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [cropState, setCropState] = useState({
+    cropping: false,
+    crop: { x: 0, y: 0 },
+    zoom: 1,
+    cropSrc: null as string | null,
+    croppingType: null as "landCover" | "showCover" | null,
+    cropAspect: 1,
+    croppedAreaPixels: null as Area | null,
+  });
+
   const [errorExternalLink, setErrorExternalLink] = useState<string | null>(
     null
   );
@@ -126,10 +123,13 @@ export default function LandInfoDetails({
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setCropSrc(e.target?.result as string);
-        setCroppingType("landCover");
-        setCropAspect(1); // For 1:1 crop
-        setCropping(true);
+        setCropState((prev) => ({
+          ...prev,
+          croppingType: "landCover",
+          cropSrc: e.target?.result as string,
+          cropAspect: 1,
+          cropping: true,
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -143,10 +143,13 @@ export default function LandInfoDetails({
       const file = files[0];
       const reader = new FileReader();
       reader.onload = (e) => {
-        setCropSrc(e.target?.result as string);
-        setCroppingType("showCover");
-        setCropAspect(2 / 1); // For 2:1 crop
-        setCropping(true);
+        setCropState((prev) => ({
+          ...prev,
+          croppingType: "showCover",
+          cropSrc: e.target?.result as string,
+          cropAspect: 2 / 1,
+          cropping: true,
+        }));
       };
       reader.readAsDataURL(file);
     } else {
@@ -179,87 +182,62 @@ export default function LandInfoDetails({
     });
   };
 
-  const checkExternalLink = (v: string, type: string | undefined) => {
-    const extractSrc = (iframe: string): string | null => {
-      if (!iframe.includes("<iframe")) {
-        return iframe;
-      }
+  const extractSrc = (iframe: string): string | null => {
+    const srcMatch = iframe.match(/src=["']([^"']+)["']/);
+    return srcMatch ? srcMatch[1] : iframe;
+  };
 
-      const srcMatch = iframe.match(/src=["']([^"']+)["']/);
-      return srcMatch ? srcMatch[1] : null;
-    };
+  const checkExternalLink = (v: string, type: string) => {
+    const url = extractSrc(v)?.startsWith("//") ? `https:${v}` : v;
+    const isValid =
+      (type === "Bilibili" && url.includes("bilibili.com")) ||
+      (type === "Youtube" &&
+        (url.includes("youtube.com") || url.includes("youtu.be")));
 
-    // Extract URL only if v contains an iframe
-    const url = extractSrc(v);
-
-    if (!url) {
-      setErrorExternalLink("无效链接");
-      return null;
-    }
-
-    const absoluteUrl = url.startsWith("//") ? `https:${url}` : url;
-
-    // Validate the URL based on the type
-    if (type === "Bilibili" && absoluteUrl.includes("bilibili.com")) {
-      setErrorExternalLink(null);
-      return url;
-    }
-
-    if (
-      type === "Youtube" &&
-      (absoluteUrl.includes("youtube.com") || absoluteUrl.includes("youtu.be"))
-    ) {
-      setErrorExternalLink(null);
-      return url;
-    }
-
-    // Handle unsupported or invalid links
-    if (type === "Bilibili") {
-      setErrorExternalLink("Provided URL is not from Bilibili");
-    } else if (type === "Youtube") {
-      setErrorExternalLink("Provided URL is not from YouTube");
-    } else {
-      setErrorExternalLink("Unsupported type");
-    }
-
-    return null;
+    setErrorExternalLink(isValid ? null : `Invalid ${type} URL`);
+    return isValid ? url : null;
   };
 
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels);
+    setCropState((prev) => ({ ...prev, croppedAreaPixels }));
   };
 
   const handleCropConfirm = () => {
+    if (!cropState.cropSrc || !cropState.croppedAreaPixels) return;
+
     const canvas = document.createElement("canvas");
     const image = new Image();
-    image.src = cropSrc!;
+    image.src = cropState.cropSrc;
+
     image.onload = () => {
       const ctx = canvas.getContext("2d");
-      if (ctx && croppedAreaPixels) {
-        canvas.width = croppedAreaPixels.width;
-        canvas.height = croppedAreaPixels.height;
-        ctx.drawImage(
-          image,
-          croppedAreaPixels.x,
-          croppedAreaPixels.y,
-          croppedAreaPixels.width,
-          croppedAreaPixels.height,
-          0,
-          0,
-          croppedAreaPixels.width,
-          croppedAreaPixels.height
-        );
+      if (ctx) {
+        const { x, y, width, height } = cropState.croppedAreaPixels || {
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+        };
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
+
         canvas.toBlob((blob) => {
-          const url = URL.createObjectURL(blob!);
-          const newPhoto = { src: url, id: uuidv4(), type: croppingType! };
-          if (croppingType === "landCover") {
-            setLandInfo("cover_icon_url", url);
-          } else if (croppingType === "showCover") {
-            const newSelectedShowCover = [...selectedShowCover, newPhoto];
-            setSelectedShowCover(newSelectedShowCover);
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const newPhoto = {
+              src: url,
+              id: uuidv4(),
+              type: cropState.croppingType!,
+            };
+
+            if (cropState.croppingType === "landCover") {
+              setLandInfo("cover_icon_url", url);
+            } else if (cropState.croppingType === "showCover") {
+              setSelectedShowCover((prev) => [...prev, newPhoto]);
+            }
+            setCropState({ ...cropState, cropping: false, cropSrc: null });
           }
-          setCropping(false);
-          setCropSrc(null);
         });
       }
     };
@@ -303,8 +281,6 @@ export default function LandInfoDetails({
       );
     }
     if (deleteIds.length > 0) {
-      console.log("deleteIds:", deleteIds);
-
       await UploadService.deleteImg(supabase, BUCKET, deleteIds);
     }
     await putApi(`/landInfo/single`, changedFields).then((response) => {
@@ -450,35 +426,34 @@ export default function LandInfoDetails({
           onValueChange={(v) => setLandInfo("land_description", v)}
         />
 
-        {cropping && cropSrc && (
+        {cropState.cropping && cropState.cropSrc && (
           <Modal
-            isOpen={cropping}
-            onOpenChange={() => setCropping(false)}
-            radius="none"
-            backdrop="blur"
-            size="xl"
+            isOpen={cropState.cropping}
+            size="full"
+            onClose={() => setCropState({ ...cropState, cropping: false })}
           >
-            <ModalContent>
-              <ModalBody className="flex flex-col gap-2">
-                <div className="w-full min-h-[400px]">
-                  <Cropper
-                    image={cropSrc}
-                    crop={crop}
-                    zoom={zoom}
-                    aspect={cropAspect}
-                    onCropChange={setCrop}
-                    onZoomChange={setZoom}
-                    onCropComplete={onCropComplete}
-                  />
-                </div>
+            <ModalContent className="transparent">
+              <ModalBody>
+                <Cropper
+                  image={cropState.cropSrc!}
+                  crop={cropState.crop}
+                  zoom={cropState.zoom}
+                  aspect={cropState.cropAspect}
+                  onCropChange={(crop) => setCropState({ ...cropState, crop })}
+                  onZoomChange={(zoom) => setCropState({ ...cropState, zoom })}
+                  onCropComplete={onCropComplete}
+                />
               </ModalBody>
               <ModalFooter>
                 <Button
                   color="danger"
                   variant="light"
                   onPress={() => {
-                    setCropping(false);
-                    setCropSrc(null);
+                    setCropState({
+                      ...cropState,
+                      cropping: false,
+                      cropSrc: null,
+                    });
                   }}
                 >
                   取消
