@@ -71,7 +71,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
   return (
     <div className="flex relative w-full h-full overflow-hidden">
       <MenuLeft>
-        <UserInfoMenu />
+        <UserInfoMenu session={session} />
       </MenuLeft>
       <div className="w-full max-h-screen h-full overflow-y-auto inline-block text-center justify-center bg-[#f3f6f8]">
         <div className="flex flex-col items-center">

@@ -4,7 +4,7 @@ import styles from "@/styles/canvas/ViewEditTool.module.css";
 import { TbResize } from "react-icons/tb";
 import { LiLandsBoxSvg } from "@/components/utils/icons";
 import { useAtomValue } from "jotai";
-import { userDataAtom } from "@/components/layout/auth-button-client";
+import { userDataAtom } from "@/components/hook/useUserData";
 
 export default function AddMapEditTool({
   toolInfo,

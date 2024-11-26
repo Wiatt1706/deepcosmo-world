@@ -18,7 +18,16 @@ import {
   User,
 } from "@nextui-org/react";
 import styles from "@/components/layout/menu-left.module.css";
-export default function UserInfoMenu() {
+import { Session } from "@supabase/auth-helpers-nextjs";
+import { useUserData } from "../hook/useUserData";
+
+export default function UserInfoMenu({
+  session,
+}: {
+  session?: Session | null;
+}) {
+  const { userData, isLoading, fetchUserData } = useUserData(session);
+
   return (
     <>
       <div className="flex items-center justify-between px-4 pt-4">
@@ -29,11 +38,11 @@ export default function UserInfoMenu() {
                 as="button"
                 avatarProps={{
                   isBordered: true,
-                  src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+                  src: userData?.avatar_url || "/images/DefPixel.png",
                 }}
                 className="transition-transform"
                 description="@tonyreichert"
-                name="Tony Reichert"
+                name={userData?.username}
               />
               <TbChevronDown size={20} color="#808e9a" />
             </div>
@@ -76,7 +85,6 @@ export default function UserInfoMenu() {
           <div className="px-2">❤️</div>
           Collection
         </Link>
-
       </div>
       <div className=" absolute bottom-0 w-full border-t ">
         <div className=" flex flex-col text-[#141618]">
@@ -85,7 +93,7 @@ export default function UserInfoMenu() {
               Lands <TbInfoCircle size={16} />
             </p>
             <p className="flex items-center gap-1">
-              55 <LandsBoxSvg width={16} height={16} />
+              {userData?.land_coins} <LandsBoxSvg width={16} height={16} />
             </p>
           </div>
           <div className="px-4 py-4 flex items-center justify-between border-b ">
@@ -94,7 +102,7 @@ export default function UserInfoMenu() {
               <TbInfoCircle size={16} />
             </p>
             <p className="flex items-center gap-1">
-              1521 <BlockCoinsSvg width={16} height={16} />
+              {userData?.block_coins} <BlockCoinsSvg width={16} height={16} />
             </p>
           </div>
         </div>

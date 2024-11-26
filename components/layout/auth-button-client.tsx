@@ -30,9 +30,8 @@ import {
 import { useUserStore } from "../SocketManager";
 import { FirstLoginReward } from "./Rewards";
 import { atom, useAtom } from "jotai";
+import { useUserData } from "../hook/useUserData";
 type Provider = "github" | "google";
-
-export const userDataAtom = atom<Profile | null>(null);
 
 export default function AuthButtonClient({
   session,
@@ -42,27 +41,7 @@ export default function AuthButtonClient({
   const supabase = createClientComponentClient();
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState(true); // 跟踪加载状态
-
-  const [userData, setUserData] = useAtom(userDataAtom);
-
-  const handleUserData = useCallback(async () => {
-    setIsLoading(true);
-    if (!session) return;
-    let { data: requestDTOs } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", session?.user.id);
-
-    setUserData(requestDTOs?.[0] || null);
-    setIsLoading(false);
-  }, [supabase, setUserData, session]);
-
-  useEffect(() => {
-    if (session?.user.id && !userData) {
-      handleUserData();
-    }
-  }, [session?.user.id, handleUserData]);
+  const { userData, isLoading, fetchUserData } = useUserData(session);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -71,7 +50,7 @@ export default function AuthButtonClient({
 
   return session ? (
     <>
-      <FirstLoginReward session={session} onRewardClaimed={handleUserData} />
+      <FirstLoginReward session={session} onRewardClaimed={fetchUserData} />
       <Dropdown
         radius="sm"
         classNames={{
