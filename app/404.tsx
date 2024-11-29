@@ -1,5 +1,4 @@
 import { Link } from "@nextui-org/link";
-import { Navbar } from "@/components/layout/navbar";
 import { LogoSvg } from "@/components/utils/icons";
 
 export default function PageNotFound() {
