@@ -87,9 +87,9 @@ const RenderCanvas = (props: BoardProps) => {
   });
 
   const [userAttributes, setUserAttributes] = useState({
-    visibleRadius: 300,
+    visibleRadius: 160,
     visibleAngle: Math.PI / 3,
-    attackRadius: 200,
+    attackRadius: 150,
     attackAngle: Math.PI / 6,
   });
 

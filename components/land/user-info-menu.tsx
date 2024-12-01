@@ -1,5 +1,5 @@
 "use client";
-import { BlockCoinsSvg, LandsBoxSvg, LogoSvg } from "../utils/icons";
+import { BlockCoinsSvg, LandsBoxSvg } from "../utils/icons";
 import {
   TbBell,
   TbChevronDown,
@@ -7,7 +7,7 @@ import {
   TbMessageQuestion,
   TbSettings,
 } from "react-icons/tb";
-import { Link } from "@nextui-org/link";
+import Link from "next/link";
 import {
   Button,
   Dropdown,
@@ -19,14 +19,19 @@ import {
 } from "@nextui-org/react";
 import styles from "@/components/layout/menu-left.module.css";
 import { Session } from "@supabase/auth-helpers-nextjs";
-import { useUserData } from "../hook/useUserData";
+import { usePathname } from "next/navigation"; // 使用 usePathname 获取当前路径
+import { useUserDataContext } from "../UserProvider";
 
 export default function UserInfoMenu({
   session,
 }: {
   session?: Session | null;
 }) {
-  const { userData, isLoading, fetchUserData } = useUserData(session);
+  const userData = useUserDataContext(); // 使用上下文获取用户数据
+  const pathname = usePathname(); // 获取当前的路由路径
+
+  // 判断当前路径是否完全匹配
+  const isActive = (path: string) => pathname === path;
 
   return (
     <>
@@ -41,8 +46,8 @@ export default function UserInfoMenu({
                   src: userData?.avatar_url || "/images/DefPixel.png",
                 }}
                 className="transition-transform"
-                description="@tonyreichert"
-                name={userData?.username}
+                description={userData?.username || "Guest"}
+                name={userData?.username || "Unknown User"}
               />
               <TbChevronDown size={20} color="#808e9a" />
             </div>
@@ -50,14 +55,9 @@ export default function UserInfoMenu({
           <DropdownMenu aria-label="User Actions" variant="flat">
             <DropdownItem key="profile" className="h-14 gap-2">
               <p className="font-bold">Signed in as</p>
-              <p className="font-bold">@tonyreichert</p>
+              <p className="font-bold">{userData?.username || "Guest"}</p>
             </DropdownItem>
             <DropdownItem key="settings">My Settings</DropdownItem>
-            <DropdownItem key="team_settings">Team Settings</DropdownItem>
-            <DropdownItem key="analytics">Analytics</DropdownItem>
-            <DropdownItem key="system">System</DropdownItem>
-            <DropdownItem key="configurations">Configurations</DropdownItem>
-            <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
             <DropdownItem key="logout" color="danger">
               Log Out
             </DropdownItem>
@@ -71,23 +71,43 @@ export default function UserInfoMenu({
         />
       </div>
 
-      <div className="px-3 pb-2">
-        <div className={styles.menuItemLight}>Task Center 🎯</div>
-      </div>
-      <hr />
       <div className="px-3 pt-2 flex flex-col gap-2">
-        <Link color="foreground" className={styles.menuItemActive}>
+        {/* 如果激活状态，禁用点击 */}
+        <Link
+          href={isActive("/home") ? "" : "/home"} // 激活状态下不允许跳转
+          color="foreground"
+          passHref
+          className={
+            isActive("/home") ? styles.menuItemActive : styles.menuItem
+          }
+        >
           <div className="px-2">🎪</div>
           Dashboard
         </Link>
 
-        <Link href="/ai" color="foreground" className={styles.menuItem}>
+        <Link
+          href={isActive("/home/profile") ? "" : "/home/profile"} // 激活状态下不允许跳转
+          color="foreground"
+          className={
+            isActive("/home/profile") ? styles.menuItemActive : styles.menuItem
+          }
+        >
+          <div className="px-2">🎄</div>
+          Profile
+        </Link>
+
+        <Link
+          href={isActive("/ai") ? "" : "/ai"} // 激活状态下不允许跳转
+          color="foreground"
+          className={isActive("/ai") ? styles.menuItemActive : styles.menuItem}
+        >
           <div className="px-2">❤️</div>
           Collection
         </Link>
       </div>
-      <div className=" absolute bottom-0 w-full border-t ">
-        <div className=" flex flex-col text-[#141618]">
+
+      <div className="absolute bottom-0 w-full border-t">
+        <div className="flex flex-col text-[#141618]">
           <div className="px-4 py-4 flex items-center justify-between border-b">
             <p className="flex items-center gap-1">
               Lands <TbInfoCircle size={16} />
@@ -96,7 +116,7 @@ export default function UserInfoMenu({
               {userData?.land_coins} <LandsBoxSvg width={16} height={16} />
             </p>
           </div>
-          <div className="px-4 py-4 flex items-center justify-between border-b ">
+          <div className="px-4 py-4 flex items-center justify-between border-b">
             <p className="flex items-center gap-1">
               BlockCoins
               <TbInfoCircle size={16} />
@@ -106,7 +126,7 @@ export default function UserInfoMenu({
             </p>
           </div>
         </div>
-        <div className="px-4 py-2 ">
+        <div className="px-4 py-2">
           <Slider
             aria-label="Player progress"
             hideThumb={true}
@@ -115,7 +135,7 @@ export default function UserInfoMenu({
             isDisabled
             classNames={{
               base: "max-w-md gap-3",
-              filler: "bg-[#808e9a] ",
+              filler: "bg-[#808e9a]",
             }}
           />
           <div className="flex items-center justify-between text-[#808e9a] text-xs">
@@ -124,11 +144,19 @@ export default function UserInfoMenu({
           </div>
         </div>
         <div className="px-4 py-4 flex items-center justify-between">
-          <Link color="foreground" className={styles.menuItem}>
+          <Link
+            href={"/settings"}
+            color="foreground"
+            className={styles.menuItem}
+          >
             <TbSettings size={20} className="mx-2" />
             设置
           </Link>
-          <Link color="foreground" className={styles.menuItem}>
+          <Link
+            href={"/settings"}
+            color="foreground"
+            className={styles.menuItem}
+          >
             <TbMessageQuestion size={20} className="mx-2" />
             反馈
           </Link>
