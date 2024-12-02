@@ -31,6 +31,7 @@ export default function TableShow({
   columns,
   initVisibleColumns,
   customRenderers = {}, // 新增参数
+  className,
 }: {
   dataList: any;
   columns: Columns[];
@@ -38,6 +39,7 @@ export default function TableShow({
   customRenderers?: {
     [key: string]: (data: any, columnKey: Key) => React.ReactNode;
   };
+  className?: string;
 }) {
   type DataLiat = (typeof dataList)[0];
 
@@ -153,7 +155,20 @@ export default function TableShow({
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
-            className="w-full sm:max-w-[44%]"
+            className="w-full sm:max-w-[40%] "
+            classNames={{
+              label: "text-black/50 dark:text-white/90",
+              input: ["text-black/90 dark:text-white/90"],
+              innerWrapper: "bg-transparent",
+              inputWrapper: [
+                "bg-white",
+                "backdrop-blur-xl",
+                "backdrop-saturate-200",
+                "hover:bg-white/40",
+                "group-data-[focus=true]:bg-white",
+                "!cursor-text",
+              ],
+            }}
             placeholder="Search by name..."
             labelPlacement="outside"
             startContent={<TbSearch size={20} className="text-default-300" />}
@@ -210,9 +225,6 @@ export default function TableShow({
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<TbPlus size={20} />}>
-              Add New
-            </Button>
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -287,14 +299,17 @@ export default function TableShow({
       bottomContent={bottomContent}
       shadow="none"
       selectedKeys={selectedKeys}
-      selectionMode="multiple"
+      selectionMode="single"
       sortDescriptor={sortDescriptor}
       topContent={topContent}
       onSelectionChange={setSelectedKeys}
       onSortChange={setSortDescriptor}
+      topContentPlacement="outside"
+      bottomContentPlacement="outside"
       classNames={{
-        wrapper: "p-8",
+        wrapper: "p-4",
       }}
+      className={className}
     >
       <TableHeader columns={headerColumns}>
         {(column) => (

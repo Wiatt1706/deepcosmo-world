@@ -23,7 +23,7 @@ export default async function BlogLayout({
           <MenuLeft>
             <UserInfoMenu session={session} />
           </MenuLeft>
-          <main className="w-full max-h-screen h-full overflow-y-auto">
+          <main className="w-full max-h-screen h-full overflow-y-auto bg-[#f5f5f5] p-4">
             {children}
           </main>
         </div>
