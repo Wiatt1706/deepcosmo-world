@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import TableShow from "./TableShow";
 import Link from "next/link";
 import {
@@ -9,6 +9,9 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Image,
+  Select,
+  SelectItem,
+  Selection,
 } from "@nextui-org/react";
 import {
   TbChartBar,
@@ -23,25 +26,29 @@ import {
 } from "react-icons/tb";
 import DateComponent from "../utils/DateComponent";
 import { LAND_LEVEL, LAND_TYPE } from "@/types/MapTypes";
+import { statusOptions } from "./data";
 // ViewSwitcher 组件
 const MyLandDataTable = ({ lands }: { lands: any }) => {
+  const [visibleColumns, setVisibleColumns] = useState<Selection>();
+  const [statusFilter, setStatusFilter] = useState<Selection>("all");
+  const [columns, setColumns] = useState([
+    { uid: "land", name: "土块", sortable: true },
+    { uid: "fill_color", name: "颜色" },
+    { uid: "land_level", name: "land_level", sortable: true },
+    { uid: "land_type", name: "land_type", sortable: true },
+    { uid: "created_at", name: "日期", sortable: true },
+    { uid: "actions", name: "Actions" },
+  ]);
   return (
     <>
       <div className="title-h1">
-        <h1 className="px-2 py-4">我的土块</h1>
+        <h1 className="px-4 py-2">我的土块</h1>
       </div>
 
       <TableShow
         className="p-4 pb-8"
         dataList={lands}
-        columns={[
-          { uid: "land", name: "土块", sortable: true },
-          { uid: "fill_color", name: "颜色" },
-          { uid: "land_level", name: "land_level", sortable: true },
-          { uid: "land_type", name: "land_type", sortable: true },
-          { uid: "created_at", name: "日期", sortable: true },
-          { uid: "actions", name: "Actions" },
-        ]}
+        columns={columns}
         customRenderers={{
           land: (data) => (
             <div className="flex items-center text-[14px]">
@@ -89,20 +96,56 @@ const MyLandDataTable = ({ lands }: { lands: any }) => {
           ),
           actions: (land) => (
             <div className="flex w-full justify-center space-x-6">
-              <div className="p-2 hover:bg-gray-200 rounded transition duration-300 ease-in-out">
-                <TbEdit size={20} className="text-gray-400" />
-              </div>
-              <div className="p-2 hover:bg-gray-200 rounded transition duration-300 ease-in-out">
-                <TbChartBar size={20} className="text-gray-400" />
-              </div>
-              <div className="p-2 hover:bg-gray-200 rounded transition duration-300 ease-in-out">
-                <TbTools size={20} className="text-gray-400" />
-              </div>
+              <Link
+                href={`/landInfo/${land.id}`}
+                className="p-2 hover:bg-gray-200 rounded transition duration-300 ease-in-out"
+              >
+                <TbEdit size={18} className="text-gray-500" />
+              </Link>
+              <Link
+                href={`/landInfo/${land.id}`}
+                className="p-2 hover:bg-gray-200 rounded transition duration-300 ease-in-out"
+              >
+                <TbChartBar size={18} className="text-gray-500" />
+              </Link>
+              <Link
+                href={`/landInfo/${land.id}/edit`}
+                className="p-2 hover:bg-gray-200 rounded transition duration-300 ease-in-out"
+              >
+                <TbTools size={18} className="text-gray-500" />
+              </Link>
             </div>
           ),
           coordinates: (data) =>
             `${data.world_coordinates_x}, ${data.world_coordinates_y}`,
         }}
+        actionControls={[
+          <Select
+            key="status"
+            label="状态"
+            size="sm"
+            selectedKeys={statusFilter}
+            selectionMode="multiple"
+            onSelectionChange={setStatusFilter}
+          >
+            {statusOptions.map((status) => (
+              <SelectItem key={status.uid}>{status.name}</SelectItem>
+            ))}
+          </Select>,
+          <Select
+            key="columns"
+            disallowEmptySelection
+            label="Columns"
+            size="sm"
+            selectedKeys={visibleColumns}
+            selectionMode="multiple"
+            onSelectionChange={setVisibleColumns}
+          >
+            {columns.map((col) => (
+              <SelectItem key={col.uid}>{col.name}</SelectItem>
+            ))}
+          </Select>,
+        ]}
       />
     </>
   );

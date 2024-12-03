@@ -50,7 +50,7 @@ export default function LandInfoMenu({
   return (
     <>
       <div className="px-3 pt-2 flex flex-col gap-2">
-        <Link color="foreground" href="/home" className={styles.menuItem}>
+        <Link color="foreground" href="/home/profile" className={styles.menuItem}>
           <TbArrowLeft size={20} className="mx-2" />
           个人中心
         </Link>

@@ -16,6 +16,8 @@ import {
   Pagination,
   Selection,
   SortDescriptor,
+  Select,
+  SelectItem,
 } from "@nextui-org/react";
 import { statusOptions } from "./data";
 import { TbChevronDown, TbPlus, TbSearch } from "react-icons/tb";
@@ -30,8 +32,9 @@ export default function TableShow({
   dataList,
   columns,
   initVisibleColumns,
-  customRenderers = {}, // 新增参数
+  customRenderers = {},
   className,
+  actionControls = [], // 动态传入的操作控件
 }: {
   dataList: any;
   columns: Columns[];
@@ -40,6 +43,7 @@ export default function TableShow({
     [key: string]: (data: any, columnKey: Key) => React.ReactNode;
   };
   className?: string;
+  actionControls?: React.ReactNode[]; // 动态传入的控件列表
 }) {
   type DataLiat = (typeof dataList)[0];
 
@@ -152,10 +156,11 @@ export default function TableShow({
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
+        {/* 动态操作控件区域 */}
+        <div className="flex flex-wrap gap-3 w-full justify-between">
           <Input
             isClearable
-            className="w-full sm:max-w-[40%] "
+            className="w-full sm:max-w-[40%]"
             classNames={{
               label: "text-black/50 dark:text-white/90",
               input: ["text-black/90 dark:text-white/90"],
@@ -169,64 +174,23 @@ export default function TableShow({
                 "!cursor-text",
               ],
             }}
+            size="sm"
             placeholder="Search by name..."
-            labelPlacement="outside"
             startContent={<TbSearch size={20} className="text-default-300" />}
             value={filterValue}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
-          <div className="flex gap-3">
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<TbChevronDown className="text-small" />}
-                  variant="flat"
-                >
-                  Status
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={statusFilter}
-                selectionMode="multiple"
-                onSelectionChange={setStatusFilter}
-              >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<TbChevronDown className="text-small" />}
-                  variant="flat"
-                >
-                  Columns
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={visibleColumns}
-                selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
-              >
-                {columns.map((column) => (
-                  <DropdownItem key={column.uid} className="capitalize">
-                    {capitalize(column.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-          </div>
+          {actionControls.map((control, index) => (
+            <div
+              key={index}
+              className="flex-grow min-w-[98px] max-w-[168px] basis-[calc(33.333%-1rem)]"
+            >
+              {control}
+            </div>
+          ))}
         </div>
+
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
             Total {dataList.length} users
